@@ -1,0 +1,18 @@
+## Visual Studio / .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+ 
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+ 
+## Rider / VS Code
+.idea/
+.vscode/
