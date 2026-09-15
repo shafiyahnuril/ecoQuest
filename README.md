@@ -7,6 +7,10 @@ Anggota 1: Aurelia Mutiah Raudyatuzzahra - 24/534903/TK/59310
 Anggota 2:  Bagas Adjie Pamungkas - 24/544718/TK/60547  
 Anggota 3: Alya Luqyana Nasywa - 24/545645/TK/60716  
 
-## Class Diagram — Modul 3 (Desain Class) 
+## Class Diagram
 
 ![Class Diagram EcoQuest](docs/class-diagram/classDiagram.png) 
+
+## Entity Relationship Diagram (ERD)
+
+![ERD EcoQuest](docs/erd/erd_ecoQuest.png) 
