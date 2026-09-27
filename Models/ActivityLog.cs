@@ -9,8 +9,10 @@ namespace EcoQuest.Models
         private int _activityTypeId;
         private DateTime _logDate;
         private decimal _quantity;
-        private TimeSpan _startTime;
+        private TimeSpan? _startTime;
         private TimeSpan? _endTime;
+        private string _note;
+        private string _photoPath;
         private int _pointsEarned;
         private decimal _co2SavedKg;
         private DateTime _createdAt;
@@ -45,7 +47,7 @@ namespace EcoQuest.Models
             set => _quantity = value;
         }
 
-        public TimeSpan StartTime
+        public TimeSpan? StartTime
         {
             get => _startTime;
             set => _startTime = value;
@@ -55,6 +57,18 @@ namespace EcoQuest.Models
         {
             get => _endTime;
             set => _endTime = value;
+        }
+
+        public string Note
+        {
+            get => _note;
+            set => _note = value;
+        }
+
+        public string PhotoPath
+        {
+            get => _photoPath;
+            set => _photoPath = value;
         }
 
         public int PointsEarned
@@ -80,8 +94,10 @@ namespace EcoQuest.Models
             int activityTypeId,
             DateTime logDate,
             decimal quantity,
-            TimeSpan startTime,
+            TimeSpan? startTime,
             TimeSpan? endTime,
+            string note,
+            string photoPath,
             int pointsEarned,
             decimal co2SavedKg)
         {
@@ -92,6 +108,8 @@ namespace EcoQuest.Models
             Quantity = quantity;
             StartTime = startTime;
             EndTime = endTime;
+            Note = note;
+            PhotoPath = photoPath;
             PointsEarned = pointsEarned;
             Co2SavedKg = co2SavedKg;
             CreatedAt = DateTime.Now;
@@ -99,10 +117,10 @@ namespace EcoQuest.Models
 
         public double GetDurationInHours()
         {
-            if (!EndTime.HasValue)
+            if (!EndTime.HasValue || !StartTime.HasValue)
                 return 0;
 
-            TimeSpan duration = EndTime.Value - StartTime;
+            TimeSpan duration = EndTime.Value - StartTime.Value;
 
             if (duration.TotalHours < 0)
                 return 0;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace EcoQuest.Models
 {
@@ -9,6 +9,7 @@ namespace EcoQuest.Models
         private string _email;
         private string _passwordHash;
         private string _city;
+        private string _avatarUrl;
         private int _totalPoints;
         private decimal _totalCO2SavedKg;
         private int? _currentLevelId;
@@ -20,6 +21,7 @@ namespace EcoQuest.Models
         public string Email { get => _email; set => _email = value; }
         public string PasswordHash { get => _passwordHash; set => _passwordHash = value; }
         public string City { get => _city; set => _city = value; }
+        public string AvatarUrl { get => _avatarUrl; set => _avatarUrl = value; }
         public int TotalPoints { get => _totalPoints; set => _totalPoints = value; }
         public decimal TotalCO2SavedKg { get => _totalCO2SavedKg; set => _totalCO2SavedKg = value; }
         public int? CurrentLevelId { get => _currentLevelId; set => _currentLevelId = value; }
