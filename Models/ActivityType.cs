@@ -16,6 +16,7 @@ namespace EcoQuest.Models
         private InputControlType _inputControlType;
         private decimal _co2Coefficient;
         private decimal _pointFactor;
+        private decimal? _plausibleMaxPerDay;
 
         public int ActivityTypeId
         {
@@ -53,13 +54,20 @@ namespace EcoQuest.Models
             private set => _pointFactor = value;
         }
 
+        public decimal? PlausibleMaxPerDay
+        {
+            get => _plausibleMaxPerDay;
+            private set => _plausibleMaxPerDay = value;
+        }
+
         public ActivityType(
             int activityTypeId,
             string typeName,
             int categoryId,
             InputControlType inputControlType,
             decimal co2Coefficient,
-            decimal pointFactor)
+            decimal pointFactor,
+            decimal? plausibleMaxPerDay)
         {
             ActivityTypeId = activityTypeId;
             TypeName = typeName;
@@ -67,6 +75,7 @@ namespace EcoQuest.Models
             InputControlType = inputControlType;
             Co2Coefficient = co2Coefficient;
             PointFactor = pointFactor;
+            PlausibleMaxPerDay = plausibleMaxPerDay;
         }
 
         public bool BelongsToCategory(ActivityCategory category)

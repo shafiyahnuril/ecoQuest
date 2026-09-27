@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +9,9 @@ namespace ecoQuest.Services
     // strategy untuk aktivitas berbasis jarak
     public class DistanceImpactCalculator : IImpactCalculator
     {
-        public int CalculatePoints(decimal quantity, decimal pointFactor)
+        public int CalculatePoints(decimal co2SavedKg, decimal pointFactor)
         {
-            return (int)(quantity * pointFactor);
+            return (int)Math.Round(co2SavedKg * 20m * pointFactor);
         }
 
         public decimal CalculateCo2(decimal quantity, decimal factor)
