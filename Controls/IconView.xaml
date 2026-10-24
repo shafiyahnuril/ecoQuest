@@ -1,0 +1,15 @@
+<UserControl x:Class="EcoQuest.Controls.IconView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False" IsHitTestVisible="False" SnapsToDevicePixels="True">
+    <!-- Reproduces the prototype svg (viewBox 0 0 24 24, stroke-width 1.75): the whole 24x24 canvas is scaled,
+         so an icon keeps the same proportions as in the prototype at any size. Stroke colour = Foreground. -->
+    <Viewbox Stretch="Uniform">
+        <Canvas Width="24" Height="24">
+            <Path Data="{Binding Data, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  StrokeThickness="{StaticResource Stroke.Icon}" Fill="Transparent" Stretch="None"
+                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+        </Canvas>
+    </Viewbox>
+</UserControl>

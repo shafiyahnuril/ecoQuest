@@ -1,0 +1,6 @@
+<UserControl x:Class="EcoQuest.Views.EveningReviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
+    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Review.Title}" />
+</UserControl>

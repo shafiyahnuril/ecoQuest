@@ -75,4 +75,28 @@
     <sys:Double x:Key="Stroke.Border">1</sys:Double>
     <sys:Double x:Key="Window.MinWidth">1100</sys:Double>
     <sys:Double x:Key="Window.MinHeight">700</sys:Double>
+    <!-- FE-02 shell / dialog / toast (prototype v7: .sidebar .brand .nav .account .logout .modal #toast; @media max-width 1160) -->
+    <Thickness x:Key="Padding.Sidebar">14,28,14,20</Thickness>
+    <Thickness x:Key="Margin.SidebarBrand">10,0,10,42</Thickness>
+    <Thickness x:Key="Margin.BrandText">9,0,0,0</Thickness>
+    <sys:Double x:Key="Size.BrandIcon">27</sys:Double>
+    <Thickness x:Key="Padding.NavItem">13,0</Thickness><!-- CSS 12px vertical; min-height 43 always dominates, so vertical padding is 0 and the label is centred (keeps pitch 43+6 independent of font metrics) -->
+    <Thickness x:Key="Margin.NavItem">0,0,0,6</Thickness>
+    <Thickness x:Key="Margin.NavLabel">12,0,0,0</Thickness>
+    <sys:Double x:Key="Size.NavIcon">18</sys:Double>
+    <Thickness x:Key="Padding.Account">9,13,9,5</Thickness>
+    <Thickness x:Key="Margin.AccountText">10,0,0,0</Thickness>
+    <Thickness x:Key="Padding.Logout">13,10</Thickness>
+    <sys:Double x:Key="Size.LogoutIcon">15</sys:Double>
+    <Thickness x:Key="Margin.LogoutLabel">8,0,0,0</Thickness>
+    <sys:Double x:Key="Breakpoint.Compact">1160</sys:Double>
+    <Thickness x:Key="Margin.Backdrop">17</Thickness>
+    <Thickness x:Key="Margin.DialogIcon">0,0,0,18</Thickness>
+    <Thickness x:Key="Margin.DialogTitle">0,0,0,12</Thickness>
+    <Thickness x:Key="Margin.DialogActions">0,24,0,0</Thickness>
+    <Thickness x:Key="Margin.DialogActionGap">9,0,0,0</Thickness>
+    <sys:Double x:Key="MinWidth.DialogButton">100</sys:Double>
+    <sys:Double x:Key="Size.IconModal">28</sys:Double>
+    <Thickness x:Key="Margin.Toast">0,0,27,26</Thickness>
+    <sys:Double x:Key="Offset.Toast">12</sys:Double>
 </ResourceDictionary>

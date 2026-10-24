@@ -97,4 +97,8 @@
         <Setter Property="FontSize" Value="19" />
         <Setter Property="Foreground" Value="{StaticResource Brand.Logo}" />
     </Style>
+    <Style x:Key="Text.BodyRelaxed" TargetType="TextBlock" BasedOn="{StaticResource Text.BodySecondary}">
+        <!-- .sub: line-height 1.55 x 14 px -->
+        <Setter Property="LineHeight" Value="21.7" />
+    </Style>
 </ResourceDictionary>

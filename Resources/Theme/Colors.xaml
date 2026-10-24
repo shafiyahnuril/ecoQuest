@@ -124,7 +124,7 @@
     <SolidColorBrush x:Key="Bubble.Default.Fg" Color="{StaticResource Color.Bubble.Default.Fg}" po:Freeze="True" />
     <Color x:Key="Color.Bubble.Metric.Bg">#E9F3E5</Color>
     <SolidColorBrush x:Key="Bubble.Metric.Bg" Color="{StaticResource Color.Bubble.Metric.Bg}" po:Freeze="True" />
-    <Color x:Key="Color.Bubble.Modal.Bg">#E9F3E4</Color>
+    <Color x:Key="Color.Bubble.Modal.Bg">#E6F2E5</Color>
     <SolidColorBrush x:Key="Bubble.Modal.Bg" Color="{StaticResource Color.Bubble.Modal.Bg}" po:Freeze="True" />
     <Color x:Key="Color.Weather.IconBg">#FFF4DB</Color>
     <SolidColorBrush x:Key="Weather.IconBg" Color="{StaticResource Color.Weather.IconBg}" po:Freeze="True" />
@@ -157,6 +157,7 @@
     <Color x:Key="Color.Shadow.Footer">#24482C</Color>
     <SolidColorBrush x:Key="Shadow.Footer" Color="{StaticResource Color.Shadow.Footer}" po:Freeze="True" />
     <Color x:Key="Color.Shadow.Dialog">#0B2216</Color>
+    <Color x:Key="Color.Shadow.Toast">#163B24</Color>
     <SolidColorBrush x:Key="Shadow.Dialog" Color="{StaticResource Color.Shadow.Dialog}" po:Freeze="True" />
     <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="Opacity.Disabled">0.45</sys:Double>
 
@@ -185,7 +186,7 @@
     <LinearGradientBrush x:Key="Bg.HeroMountain" StartPoint="0,1" EndPoint="0,0" Opacity="0.25" po:Freeze="True">
         <GradientStop Color="#8CB69B" Offset="0" /><GradientStop Color="#008CB69B" Offset="1" />
     </LinearGradientBrush>
-    <RadialGradientBrush x:Key="Bg.ContentGlow" Center="0.95,0" GradientOrigin="0.95,0" RadiusX="0.32" RadiusY="0.32" po:Freeze="True">
+    <RadialGradientBrush x:Key="Bg.ContentGlow" Center="0.95,0" GradientOrigin="0.95,0" RadiusX="0.43" RadiusY="0.45" po:Freeze="True">
         <GradientStop Color="#F0F6E9" Offset="0" /><GradientStop Color="#00F0F6E9" Offset="1" />
     </RadialGradientBrush>
     <LinearGradientBrush x:Key="Bg.SummaryHero" StartPoint="0,0.2" EndPoint="1,0.8" po:Freeze="True">

@@ -98,4 +98,18 @@
     <sys:String x:Key="Onboarding.2.Body">Catat kuantitas nyata enam aktivitas yang benar-benar kamu lakukan. Cukup beberapa menit.</sys:String>
     <sys:String x:Key="Onboarding.3.Title">Lihat dampakmu bertumbuh</sys:String>
     <sys:String x:Key="Onboarding.3.Body">Setiap langkah kecil dapat dihitung dan dipelajari dari waktu ke waktu.</sys:String>
+    <!-- Shell (FE-02): sidebar labels follow prototype v7 screens 04/13; Nav.PendingHint = UI-UX-Flow-Frontend 3. -->
+    <sys:String x:Key="Brand.Name">EcoQuest</sys:String>
+    <sys:String x:Key="Nav.Dashboard">Beranda</sys:String>
+    <sys:String x:Key="Nav.Review">Evening Review</sys:String>
+    <sys:String x:Key="Nav.History">Riwayat</sys:String>
+    <sys:String x:Key="Nav.Achievements">Pencapaian</sys:String>
+    <sys:String x:Key="Nav.Leaderboard">Leaderboard</sys:String>
+    <sys:String x:Key="Nav.Profile">Profil</sys:String>
+    <sys:String x:Key="Nav.Logout">Keluar</sys:String>
+    <sys:String x:Key="Nav.PendingHint">Refleksi hari ini belum diisi</sys:String>
+    <sys:String x:Key="Nav.Landmark">Navigasi utama</sys:String>
+    <sys:String x:Key="Logout.Confirm">Keluar</sys:String>
+    <sys:String x:Key="Common.Cancel">Batal</sys:String>
+    <sys:String x:Key="Common.Continue">Lanjut</sys:String>
 </ResourceDictionary>
