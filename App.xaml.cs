@@ -3,6 +3,9 @@ using System.Data;
 using System.Windows;
 using DotNetEnv;
 using ecoQuest.Services;
+using EcoQuest.Navigation;
+using EcoQuest.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ecoQuest
 {
@@ -11,9 +14,20 @@ namespace ecoQuest
     /// </summary>
     public partial class App : Application
     {
+        private ServiceProvider? _services;
+
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // FE-02 composition root: build the presentation DI container, show the shell, start on Login.
+            // Placed before the legacy Supabase block so the UI never waits on the network.
+            _services = new ServiceCollection().AddEcoQuestPresentation().BuildServiceProvider();
+            var shell = _services.GetRequiredService<ShellViewModel>();
+            var mainWindow = _services.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = shell;
+            mainWindow.Show();
+            await _services.GetRequiredService<INavigationService>().NavigateTo<LoginViewModel>();
 
             // Load environment variables dari file .env
             Env.Load();
