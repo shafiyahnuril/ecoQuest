@@ -1,0 +1,203 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    mc:Ignorable="po">
+    <!-- Garden Light colour tokens (UI-UX-Flow-Frontend 2.1). WPF colours are #AARRGGBB; CSS #RRGGBBAA values were converted. -->
+    <Color x:Key="Color.Bg.App">#F8F8F2</Color>
+    <SolidColorBrush x:Key="Bg.App" Color="{StaticResource Color.Bg.App}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Surface">#FFFFFF</Color>
+    <SolidColorBrush x:Key="Bg.Surface" Color="{StaticResource Color.Bg.Surface}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Input">#FBFCF9</Color>
+    <SolidColorBrush x:Key="Bg.Input" Color="{StaticResource Color.Bg.Input}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Mint">#E6F0E2</Color>
+    <SolidColorBrush x:Key="Bg.Mint" Color="{StaticResource Color.Bg.Mint}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Banner">#EAF3E5</Color>
+    <SolidColorBrush x:Key="Bg.Banner" Color="{StaticResource Color.Bg.Banner}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Banner">#D5E6CE</Color>
+    <SolidColorBrush x:Key="Line.Banner" Color="{StaticResource Color.Line.Banner}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.NavHover">#E9F1E6</Color>
+    <SolidColorBrush x:Key="Bg.NavHover" Color="{StaticResource Color.Bg.NavHover}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.NavActive">#DFEDDD</Color>
+    <SolidColorBrush x:Key="Bg.NavActive" Color="{StaticResource Color.Bg.NavActive}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.ChipActive">#E3F0E0</Color>
+    <SolidColorBrush x:Key="Bg.ChipActive" Color="{StaticResource Color.Bg.ChipActive}" po:Freeze="True" />
+    <Color x:Key="Color.Line.ChipActive">#A4C9A6</Color>
+    <SolidColorBrush x:Key="Line.ChipActive" Color="{StaticResource Color.Line.ChipActive}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Stepper">#F2F6F0</Color>
+    <SolidColorBrush x:Key="Bg.Stepper" Color="{StaticResource Color.Bg.Stepper}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Footer">#E9F2E4</Color>
+    <SolidColorBrush x:Key="Bg.Footer" Color="{StaticResource Color.Bg.Footer}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Footer">#CADDC6</Color>
+    <SolidColorBrush x:Key="Line.Footer" Color="{StaticResource Color.Line.Footer}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.Track">#E3E9DF</Color>
+    <SolidColorBrush x:Key="Bg.Track" Color="{StaticResource Color.Bg.Track}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Subtle">#E1E7DC</Color>
+    <SolidColorBrush x:Key="Line.Subtle" Color="{StaticResource Color.Line.Subtle}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Input">#7F9786</Color>
+    <SolidColorBrush x:Key="Line.Input" Color="{StaticResource Color.Line.Input}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Secondary">#B5CDB8</Color>
+    <SolidColorBrush x:Key="Line.Secondary" Color="{StaticResource Color.Line.Secondary}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Chart">#E5EBE2</Color>
+    <SolidColorBrush x:Key="Line.Chart" Color="{StaticResource Color.Line.Chart}" po:Freeze="True" />
+    <Color x:Key="Color.Line.ActivityHover">#BED8BC</Color>
+    <SolidColorBrush x:Key="Line.ActivityHover" Color="{StaticResource Color.Line.ActivityHover}" po:Freeze="True" />
+    <Color x:Key="Color.Line.Dashed">#E1E7DC</Color>
+    <SolidColorBrush x:Key="Line.Dashed" Color="{StaticResource Color.Line.Dashed}" po:Freeze="True" />
+    <Color x:Key="Color.Overlay.Backdrop">#80142C21</Color>
+    <SolidColorBrush x:Key="Overlay.Backdrop" Color="{StaticResource Color.Overlay.Backdrop}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.Primary">#327A4C</Color>
+    <SolidColorBrush x:Key="Brand.Primary" Color="{StaticResource Color.Brand.Primary}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.PrimaryHover">#28653E</Color>
+    <SolidColorBrush x:Key="Brand.PrimaryHover" Color="{StaticResource Color.Brand.PrimaryHover}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.PrimaryPressed">#205B3A</Color>
+    <SolidColorBrush x:Key="Brand.PrimaryPressed" Color="{StaticResource Color.Brand.PrimaryPressed}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.Forest">#205B3A</Color>
+    <SolidColorBrush x:Key="Brand.Forest" Color="{StaticResource Color.Brand.Forest}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.Logo">#153B28</Color>
+    <SolidColorBrush x:Key="Brand.Logo" Color="{StaticResource Color.Brand.Logo}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.Leaf">#74A65C</Color>
+    <SolidColorBrush x:Key="Brand.Leaf" Color="{StaticResource Color.Brand.Leaf}" po:Freeze="True" />
+    <Color x:Key="Color.Brand.Sage">#B9D3AE</Color>
+    <SolidColorBrush x:Key="Brand.Sage" Color="{StaticResource Color.Brand.Sage}" po:Freeze="True" />
+    <Color x:Key="Color.Text.Primary">#202C25</Color>
+    <SolidColorBrush x:Key="Text.Primary" Color="{StaticResource Color.Text.Primary}" po:Freeze="True" />
+    <Color x:Key="Color.Text.Secondary">#5B685F</Color>
+    <SolidColorBrush x:Key="Text.Secondary" Color="{StaticResource Color.Text.Secondary}" po:Freeze="True" />
+    <Color x:Key="Color.Text.Nav">#586A5B</Color>
+    <SolidColorBrush x:Key="Text.Nav" Color="{StaticResource Color.Text.Nav}" po:Freeze="True" />
+    <Color x:Key="Color.Text.OnPrimary">#FFFFFF</Color>
+    <SolidColorBrush x:Key="Text.OnPrimary" Color="{StaticResource Color.Text.OnPrimary}" po:Freeze="True" />
+    <Color x:Key="Color.Text.NavActive">#247A47</Color>
+    <SolidColorBrush x:Key="Text.NavActive" Color="{StaticResource Color.Text.NavActive}" po:Freeze="True" />
+    <Color x:Key="Color.Text.Locked">#9AA79F</Color>
+    <SolidColorBrush x:Key="Text.Locked" Color="{StaticResource Color.Text.Locked}" po:Freeze="True" />
+    <Color x:Key="Color.State.Error">#B94C45</Color>
+    <SolidColorBrush x:Key="State.Error" Color="{StaticResource Color.State.Error}" po:Freeze="True" />
+    <Color x:Key="Color.State.ErrorBg">#FFF1EE</Color>
+    <SolidColorBrush x:Key="State.ErrorBg" Color="{StaticResource Color.State.ErrorBg}" po:Freeze="True" />
+    <Color x:Key="Color.State.ErrorLine">#EAC5C0</Color>
+    <SolidColorBrush x:Key="State.ErrorLine" Color="{StaticResource Color.State.ErrorLine}" po:Freeze="True" />
+    <Color x:Key="Color.State.ErrorText">#933B34</Color>
+    <SolidColorBrush x:Key="State.ErrorText" Color="{StaticResource Color.State.ErrorText}" po:Freeze="True" />
+    <Color x:Key="Color.State.WarningFg">#8A5A00</Color>
+    <SolidColorBrush x:Key="State.WarningFg" Color="{StaticResource Color.State.WarningFg}" po:Freeze="True" />
+    <Color x:Key="Color.State.WarningBg">#FFF4DB</Color>
+    <SolidColorBrush x:Key="State.WarningBg" Color="{StaticResource Color.State.WarningBg}" po:Freeze="True" />
+    <Color x:Key="Color.Accent.Amber">#E8A83E</Color>
+    <SolidColorBrush x:Key="Accent.Amber" Color="{StaticResource Color.Accent.Amber}" po:Freeze="True" />
+    <Color x:Key="Color.Accent.Blue">#397CB5</Color>
+    <SolidColorBrush x:Key="Accent.Blue" Color="{StaticResource Color.Accent.Blue}" po:Freeze="True" />
+    <Color x:Key="Color.Toast.Bg">#184E31</Color>
+    <SolidColorBrush x:Key="Toast.Bg" Color="{StaticResource Color.Toast.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Cat.Transportasi">#6AA9B9</Color>
+    <SolidColorBrush x:Key="Cat.Transportasi" Color="{StaticResource Color.Cat.Transportasi}" po:Freeze="True" />
+    <Color x:Key="Color.Cat.Energi">#E7B35A</Color>
+    <SolidColorBrush x:Key="Cat.Energi" Color="{StaticResource Color.Cat.Energi}" po:Freeze="True" />
+    <Color x:Key="Color.Cat.Sampah">#83AE6A</Color>
+    <SolidColorBrush x:Key="Cat.Sampah" Color="{StaticResource Color.Cat.Sampah}" po:Freeze="True" />
+    <Color x:Key="Color.Cat.Konsumsi">#AD9ACE</Color>
+    <SolidColorBrush x:Key="Cat.Konsumsi" Color="{StaticResource Color.Cat.Konsumsi}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Green.Bg">#E2F1E0</Color>
+    <SolidColorBrush x:Key="Bubble.Green.Bg" Color="{StaticResource Color.Bubble.Green.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Green.Fg">#278647</Color>
+    <SolidColorBrush x:Key="Bubble.Green.Fg" Color="{StaticResource Color.Bubble.Green.Fg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Blue.Bg">#E8F0FF</Color>
+    <SolidColorBrush x:Key="Bubble.Blue.Bg" Color="{StaticResource Color.Bubble.Blue.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Blue.Fg">#397CDB</Color>
+    <SolidColorBrush x:Key="Bubble.Blue.Fg" Color="{StaticResource Color.Bubble.Blue.Fg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Amber.Bg">#FFF1CF</Color>
+    <SolidColorBrush x:Key="Bubble.Amber.Bg" Color="{StaticResource Color.Bubble.Amber.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Amber.Fg">#E5A322</Color>
+    <SolidColorBrush x:Key="Bubble.Amber.Fg" Color="{StaticResource Color.Bubble.Amber.Fg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Orange.Bg">#FFF0E6</Color>
+    <SolidColorBrush x:Key="Bubble.Orange.Bg" Color="{StaticResource Color.Bubble.Orange.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Orange.Fg">#EC773A</Color>
+    <SolidColorBrush x:Key="Bubble.Orange.Fg" Color="{StaticResource Color.Bubble.Orange.Fg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Purple.Bg">#F1E7FA</Color>
+    <SolidColorBrush x:Key="Bubble.Purple.Bg" Color="{StaticResource Color.Bubble.Purple.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Purple.Fg">#9372BB</Color>
+    <SolidColorBrush x:Key="Bubble.Purple.Fg" Color="{StaticResource Color.Bubble.Purple.Fg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Default.Bg">#E6F2E5</Color>
+    <SolidColorBrush x:Key="Bubble.Default.Bg" Color="{StaticResource Color.Bubble.Default.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Default.Fg">#237343</Color>
+    <SolidColorBrush x:Key="Bubble.Default.Fg" Color="{StaticResource Color.Bubble.Default.Fg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Metric.Bg">#E9F3E5</Color>
+    <SolidColorBrush x:Key="Bubble.Metric.Bg" Color="{StaticResource Color.Bubble.Metric.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Bubble.Modal.Bg">#E9F3E4</Color>
+    <SolidColorBrush x:Key="Bubble.Modal.Bg" Color="{StaticResource Color.Bubble.Modal.Bg}" po:Freeze="True" />
+    <Color x:Key="Color.Weather.IconBg">#FFF4DB</Color>
+    <SolidColorBrush x:Key="Weather.IconBg" Color="{StaticResource Color.Weather.IconBg}" po:Freeze="True" />
+    <Color x:Key="Color.Weather.IconFg">#E2A438</Color>
+    <SolidColorBrush x:Key="Weather.IconFg" Color="{StaticResource Color.Weather.IconFg}" po:Freeze="True" />
+    <Color x:Key="Color.Advice.Title">#225638</Color>
+    <SolidColorBrush x:Key="Advice.Title" Color="{StaticResource Color.Advice.Title}" po:Freeze="True" />
+    <Color x:Key="Color.Advice.Body">#365543</Color>
+    <SolidColorBrush x:Key="Advice.Body" Color="{StaticResource Color.Advice.Body}" po:Freeze="True" />
+    <Color x:Key="Color.Advice.Impact">#28633D</Color>
+    <SolidColorBrush x:Key="Advice.Impact" Color="{StaticResource Color.Advice.Impact}" po:Freeze="True" />
+    <Color x:Key="Color.Hero.Border">#DCE8D8</Color>
+    <SolidColorBrush x:Key="Hero.Border" Color="{StaticResource Color.Hero.Border}" po:Freeze="True" />
+    <Color x:Key="Color.History.DayHoverBg">#EEF6E9</Color>
+    <SolidColorBrush x:Key="History.DayHoverBg" Color="{StaticResource Color.History.DayHoverBg}" po:Freeze="True" />
+    <Color x:Key="Color.History.DayHoverLine">#9DC6A4</Color>
+    <SolidColorBrush x:Key="History.DayHoverLine" Color="{StaticResource Color.History.DayHoverLine}" po:Freeze="True" />
+    <Color x:Key="Color.Badge.IconBg">#EDF4E3</Color>
+    <SolidColorBrush x:Key="Badge.IconBg" Color="{StaticResource Color.Badge.IconBg}" po:Freeze="True" />
+    <Color x:Key="Color.Avatar.ProfileBg">#E1F0DB</Color>
+    <SolidColorBrush x:Key="Avatar.ProfileBg" Color="{StaticResource Color.Avatar.ProfileBg}" po:Freeze="True" />
+    <Color x:Key="Color.Onboard.DotInactive">#CAD8C8</Color>
+    <SolidColorBrush x:Key="Onboard.DotInactive" Color="{StaticResource Color.Onboard.DotInactive}" po:Freeze="True" />
+    <Color x:Key="Color.Auth.CopyBorder">#E0EBDC</Color>
+    <SolidColorBrush x:Key="Auth.CopyBorder" Color="{StaticResource Color.Auth.CopyBorder}" po:Freeze="True" />
+    <Color x:Key="Color.Auth.CopyBg">#E6FAFDF6</Color>
+    <SolidColorBrush x:Key="Auth.CopyBg" Color="{StaticResource Color.Auth.CopyBg}" po:Freeze="True" />
+    <Color x:Key="Color.Skeleton.Base">#E6F0E2</Color>
+    <SolidColorBrush x:Key="Skeleton.Base" Color="{StaticResource Color.Skeleton.Base}" po:Freeze="True" />
+    <Color x:Key="Color.Shadow.Footer">#24482C</Color>
+    <SolidColorBrush x:Key="Shadow.Footer" Color="{StaticResource Color.Shadow.Footer}" po:Freeze="True" />
+    <Color x:Key="Color.Shadow.Dialog">#0B2216</Color>
+    <SolidColorBrush x:Key="Shadow.Dialog" Color="{StaticResource Color.Shadow.Dialog}" po:Freeze="True" />
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="Opacity.Disabled">0.45</sys:Double>
+
+    <!-- Allowed gradients (not for ordinary cards) -->
+    <LinearGradientBrush x:Key="Bg.Sidebar" StartPoint="0.2,0" EndPoint="0.8,1" po:Freeze="True">
+        <GradientStop Color="#F7F9F3" Offset="0" /><GradientStop Color="#EFF5EC" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Bg.AuthVisual" StartPoint="0.3,0" EndPoint="0.7,1" po:Freeze="True">
+        <GradientStop Color="#F1F8ED" Offset="0" /><GradientStop Color="#E5F0E3" Offset="0.62" /><GradientStop Color="#D9E9D6" Offset="1" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="Bg.AuthForm" GradientOrigin="1,0" Center="1,0" RadiusX="0.46" RadiusY="0.46" po:Freeze="True">
+        <GradientStop Color="#EDF6E9" Offset="0" /><GradientStop Color="#00EDF6E9" Offset="1" />
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="Bg.AuthHalo" po:Freeze="True">
+        <GradientStop Color="#9EFBF1CD" Offset="0" /><GradientStop Color="#00FBF1CD" Offset="0.67" />
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="Bg.Onboarding" StartPoint="0.5,0" EndPoint="0.5,1" po:Freeze="True">
+        <GradientStop Color="#E5F1E7" Offset="0" /><GradientStop Color="#D8E9D5" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Bg.Hero" StartPoint="0,0.3" EndPoint="1,0.7" po:Freeze="True">
+        <GradientStop Color="#F9FBF4" Offset="0.08" /><GradientStop Color="#E4F1DF" Offset="1" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="Bg.HeroGlow" Center="0.74,0.44" GradientOrigin="0.74,0.44" RadiusX="0.31" RadiusY="0.31" po:Freeze="True">
+        <GradientStop Color="#FFF7E8" Offset="0" /><GradientStop Color="#00FFF7E8" Offset="1" />
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="Bg.HeroMountain" StartPoint="0,1" EndPoint="0,0" Opacity="0.25" po:Freeze="True">
+        <GradientStop Color="#8CB69B" Offset="0" /><GradientStop Color="#008CB69B" Offset="1" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="Bg.ContentGlow" Center="0.95,0" GradientOrigin="0.95,0" RadiusX="0.32" RadiusY="0.32" po:Freeze="True">
+        <GradientStop Color="#F0F6E9" Offset="0" /><GradientStop Color="#00F0F6E9" Offset="1" />
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="Bg.SummaryHero" StartPoint="0,0.2" EndPoint="1,0.8" po:Freeze="True">
+        <GradientStop Color="#EFF7E9" Offset="0" /><GradientStop Color="#FAFDF7" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Bg.Forecast" StartPoint="0,0.2" EndPoint="1,0.8" po:Freeze="True">
+        <GradientStop Color="#FFFFFF" Offset="0.03" /><GradientStop Color="#FCFDF8" Offset="0.8" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Bg.Avatar" StartPoint="0,0" EndPoint="1,1" po:Freeze="True">
+        <GradientStop Color="#94C89A" Offset="0" /><GradientStop Color="#E2F3DA" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Chart.Area" StartPoint="0,0" EndPoint="0,1" po:Freeze="True">
+        <GradientStop Color="#389FCCA0" Offset="0" /><GradientStop Color="#009FCCA0" Offset="1" />
+    </LinearGradientBrush>
+</ResourceDictionary>

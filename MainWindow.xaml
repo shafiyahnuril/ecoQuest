@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ecoQuest"
+        xmlns:dev="clr-namespace:ecoQuest.Views.Dev"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Style="{StaticResource Window.Base}" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        Title="EcoQuest" Height="800" Width="1280" MinHeight="700" MinWidth="1100"
+        WindowStartupLocation="CenterScreen">
+    <!-- TEMPORARY (FE-01): hosts the theme preview. Replaced by the real shell in FE-03; preview removed in FE-21. -->
+    <dev:ThemePreviewView />
 </Window>

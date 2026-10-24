@@ -1,0 +1,805 @@
+﻿<UserControl x:Class="ecoQuest.Views.Dev.ThemePreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <!-- TEMPORARY (FE-01): shows every theme token, component, state, icon and illustration. Delete in FE-21. -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{StaticResource Bg.App}">
+        <StackPanel Margin="{StaticResource Padding.Page}">
+            <TextBlock Style="{StaticResource Text.Eyebrow}" Text="Pratinjau tema (sementara)" />
+            <TextBlock Style="{StaticResource Text.Header}" Text="Garden Light" Margin="0,0,0,16" />
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Warna" Margin="0,8,0,10" />
+            <WrapPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.App}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.App" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.App" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Surface}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Surface" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Surface" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Input}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Input" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Input" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Mint}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Mint" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Mint" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Banner}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Banner" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Banner" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Banner}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Banner" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Banner" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.NavHover}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.NavHover" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.NavHover" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.NavActive}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.NavActive" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.NavActive" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.ChipActive}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.ChipActive" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.ChipActive" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.ChipActive}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.ChipActive" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.ChipActive" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Stepper}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Stepper" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Stepper" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Footer}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Footer" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Footer" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Footer}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Footer" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Footer" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Track}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Track" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Track" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Subtle}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Subtle" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Subtle" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Input}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Input" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Input" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Secondary}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Secondary" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Secondary" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Chart}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Chart" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Chart" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.ActivityHover}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.ActivityHover" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.ActivityHover" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Line.Dashed}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Line.Dashed" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Line.Dashed" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Overlay.Backdrop}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Overlay.Backdrop" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Overlay.Backdrop" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.Primary}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.Primary" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.Primary" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.PrimaryHover}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.PrimaryHover" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.PrimaryHover" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.PrimaryPressed}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.PrimaryPressed" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.PrimaryPressed" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.Forest}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.Forest" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.Forest" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.Logo}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.Logo" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.Logo" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.Leaf}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.Leaf" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.Leaf" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Brand.Sage}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Brand.Sage" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Brand.Sage" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Text.Primary}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Text.Primary" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Text.Primary" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Text.Secondary}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Text.Secondary" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Text.Secondary" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Text.Nav}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Text.Nav" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Text.Nav" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Text.OnPrimary}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Text.OnPrimary" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Text.OnPrimary" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Text.NavActive}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Text.NavActive" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Text.NavActive" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Text.Locked}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Text.Locked" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Text.Locked" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource State.Error}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="State.Error" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="State.Error" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource State.ErrorBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="State.ErrorBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="State.ErrorBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource State.ErrorLine}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="State.ErrorLine" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="State.ErrorLine" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource State.ErrorText}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="State.ErrorText" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="State.ErrorText" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource State.WarningFg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="State.WarningFg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="State.WarningFg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource State.WarningBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="State.WarningBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="State.WarningBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Accent.Amber}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Accent.Amber" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Accent.Amber" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Accent.Blue}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Accent.Blue" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Accent.Blue" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Toast.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Toast.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Toast.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Cat.Transportasi}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Cat.Transportasi" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Cat.Transportasi" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Cat.Energi}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Cat.Energi" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Cat.Energi" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Cat.Sampah}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Cat.Sampah" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Cat.Sampah" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Cat.Konsumsi}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Cat.Konsumsi" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Cat.Konsumsi" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Green.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Green.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Green.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Green.Fg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Green.Fg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Green.Fg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Blue.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Blue.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Blue.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Blue.Fg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Blue.Fg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Blue.Fg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Amber.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Amber.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Amber.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Amber.Fg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Amber.Fg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Amber.Fg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Orange.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Orange.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Orange.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Orange.Fg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Orange.Fg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Orange.Fg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Purple.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Purple.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Purple.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Purple.Fg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Purple.Fg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Purple.Fg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Default.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Default.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Default.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Default.Fg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Default.Fg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Default.Fg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Metric.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Metric.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Metric.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bubble.Modal.Bg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bubble.Modal.Bg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bubble.Modal.Bg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Weather.IconBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Weather.IconBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Weather.IconBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Weather.IconFg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Weather.IconFg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Weather.IconFg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Advice.Title}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Advice.Title" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Advice.Title" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Advice.Body}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Advice.Body" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Advice.Body" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Advice.Impact}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Advice.Impact" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Advice.Impact" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Hero.Border}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Hero.Border" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Hero.Border" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource History.DayHoverBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="History.DayHoverBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="History.DayHoverBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource History.DayHoverLine}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="History.DayHoverLine" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="History.DayHoverLine" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Badge.IconBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Badge.IconBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Badge.IconBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Avatar.ProfileBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Avatar.ProfileBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Avatar.ProfileBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Onboard.DotInactive}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Onboard.DotInactive" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Onboard.DotInactive" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Auth.CopyBorder}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Auth.CopyBorder" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Auth.CopyBorder" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Auth.CopyBg}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Auth.CopyBg" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Auth.CopyBg" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Skeleton.Base}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Skeleton.Base" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Skeleton.Base" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Shadow.Footer}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Shadow.Footer" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Shadow.Footer" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Shadow.Dialog}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Shadow.Dialog" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Shadow.Dialog" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Sidebar}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Sidebar" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Sidebar" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.AuthVisual}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.AuthVisual" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.AuthVisual" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.AuthForm}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.AuthForm" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.AuthForm" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.AuthHalo}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.AuthHalo" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.AuthHalo" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Onboarding}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Onboarding" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Onboarding" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Hero}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Hero" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Hero" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.HeroGlow}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.HeroGlow" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.HeroGlow" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.HeroMountain}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.HeroMountain" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.HeroMountain" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.ContentGlow}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.ContentGlow" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.ContentGlow" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.SummaryHero}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.SummaryHero" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.SummaryHero" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Forecast}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Forecast" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Forecast" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Bg.Avatar}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Bg.Avatar" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Bg.Avatar" />
+</StackPanel>
+<StackPanel Width="132" Margin="0,0,10,12">
+  <Border Height="38" CornerRadius="8" BorderThickness="1" BorderBrush="{StaticResource Line.Subtle}" Background="{StaticResource Chart.Area}" />
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Chart.Area" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" ToolTip="Chart.Area" />
+</StackPanel>
+            </WrapPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Tipografi" Margin="0,16,0,10" />
+            <Border Style="{StaticResource Border.Card}"><StackPanel>
+<TextBlock Style="{StaticResource Text.Display}" Text="Text.Display — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Hero}" Text="Text.Hero — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Header}" Text="Text.Header — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.AuthTitle}" Text="Text.AuthTitle — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Title}" Text="Text.Title — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Subtitle}" Text="Text.Subtitle — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Body}" Text="Text.Body — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.BodyStrong}" Text="Text.BodyStrong — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Button}" Text="Text.Button — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Small}" Text="Text.Small — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Tiny}" Text="Text.Tiny — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Eyebrow}" Text="Text.Eyebrow — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Number}" Text="Text.Number — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+<TextBlock Style="{StaticResource Text.Impact}" Text="Text.Impact — Aksi kecil, dampak nyata 0,45 kg CO₂" Margin="0,0,0,6" />
+            </StackPanel></Border>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Tombol" Margin="0,16,0,10" />
+            <WrapPanel>
+                <Button x:Name="BtnPrimary" Style="{StaticResource Button.Primary}" Content="Simpan refleksi hari ini" VerticalAlignment="Top" Margin="0,0,10,10" />
+                <Button x:Name="BtnSecondary" Style="{StaticResource Button.Secondary}" Content="Isi jurnal hari ini" VerticalAlignment="Top" Margin="0,0,10,10" />
+                <Button x:Name="BtnGhost" Style="{StaticResource Button.Ghost}" Content="Lewati" VerticalAlignment="Top" Margin="0,0,10,10" />
+                <Button x:Name="BtnSmall" Style="{StaticResource Button.Small}" Content="Ekspor CSV" VerticalAlignment="Top" Margin="0,0,10,10" />
+                <Button Style="{StaticResource Button.Primary}" Content="Nonaktif" IsEnabled="False" VerticalAlignment="Top" Margin="0,0,10,10" />
+                <Button Style="{StaticResource Button.Icon}" AutomationProperties.Name="Unduh" ToolTip="Unduh" VerticalAlignment="Top" Margin="0,0,10,10">
+                    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Download}" Width="18" Height="18" />
+                </Button>
+            </WrapPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Input" Margin="0,16,0,10" />
+            <StackPanel MaxWidth="430" HorizontalAlignment="Left">
+                <TextBlock Style="{StaticResource Text.Label}" Text="Username atau email (kosong)" Margin="0,0,0,6" />
+                <TextBox x:Name="TxtEmpty" Style="{StaticResource TextBox.Default}" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="Username (terisi)" Margin="0,0,0,6" />
+                <TextBox x:Name="TxtFilled" Style="{StaticResource TextBox.Default}" Text="dinda" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="Username (error)" Margin="0,0,0,6" />
+                <TextBox x:Name="TxtError" Style="{StaticResource TextBox.Default}" Text="taken" />
+                <TextBlock Style="{StaticResource Text.FieldError}" Text="Username sudah digunakan." Margin="0,5,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="Password (kosong)" Margin="0,0,0,6" />
+                <PasswordBox x:Name="PwdEmpty" Style="{StaticResource PasswordBox.Default}" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="Password (terisi)" Margin="0,0,0,6" />
+                <PasswordBox x:Name="PwdFilled" Style="{StaticResource PasswordBox.Default}" Password="Rahasia123" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="Kota" Margin="0,0,0,6" />
+                <ComboBox x:Name="CmbCity" Style="{StaticResource ComboBox.Default}" SelectedIndex="0" Margin="0,0,0,15">
+                    <ComboBoxItem Content="Yogyakarta" />
+                    <ComboBoxItem Content="Jakarta" />
+                    <ComboBoxItem Content="Bandung" />
+                </ComboBox>
+                <TextBlock Style="{StaticResource Text.Small}" Text="Fokus keyboard: tekan Tab untuk berpindah antar kontrol di halaman ini; cincin 2 px Brand.Primary harus tampil." />
+            </StackPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Tinggi terukur (DIP)" Margin="0,16,0,10" />
+            <Border Style="{StaticResource Border.Card}" MaxWidth="430" HorizontalAlignment="Left">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Small}" Text="Spesifikasi: tombol 43 · tombol kecil 34 · input 40" Margin="0,0,0,8" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=BtnPrimary, StringFormat='Button.Primary: {0:0.##}'}" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=BtnSecondary, StringFormat='Button.Secondary: {0:0.##}'}" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=BtnGhost, StringFormat='Button.Ghost: {0:0.##}'}" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=BtnSmall, StringFormat='Button.Small: {0:0.##}'}" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=TxtEmpty, StringFormat='TextBox.Default: {0:0.##}'}" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=PwdEmpty, StringFormat='PasswordBox.Default: {0:0.##}'}" />
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{Binding ActualHeight, ElementName=CmbCity, StringFormat='ComboBox.Default: {0:0.##}'}" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Saklar, chip, segmented, pill" Margin="0,16,0,10" />
+            <StackPanel HorizontalAlignment="Left">
+                <WrapPanel Margin="0,0,0,10">
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Ya" IsChecked="True" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Tidak" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Ya (nonaktif)" IsChecked="True" IsEnabled="False" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Tidak (nonaktif)" IsEnabled="False" VerticalAlignment="Center" />
+                </WrapPanel>
+                <WrapPanel Margin="0,0,0,10">
+                    <ToggleButton Style="{StaticResource ToggleButton.Chip}" Content="7 hari" IsChecked="True" VerticalAlignment="Top" Margin="0,0,7,7" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Chip}" Content="30 hari" VerticalAlignment="Top" Margin="0,0,7,7" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Chip}" Content="Aktif nonaktif" IsChecked="True" IsEnabled="False" VerticalAlignment="Top" Margin="0,0,7,7" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Chip}" Content="Tidak aktif nonaktif" IsEnabled="False" VerticalAlignment="Top" Margin="0,0,14,7" />
+                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="seg" Content="Mingguan" IsChecked="True" VerticalAlignment="Top" Margin="0,0,7,7" />
+                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="seg" Content="Bulanan" VerticalAlignment="Top" Margin="0,0,7,7" />
+                </WrapPanel>
+                <WrapPanel>
+                    <Border Style="{StaticResource Border.Pill}" VerticalAlignment="Top" Margin="0,0,10,0">
+                        <TextBlock Style="{StaticResource Text.Pill}" Text="Terkunci · 21:42 WIB" />
+                    </Border>
+                    <Border Style="{StaticResource Border.Pill}" VerticalAlignment="Top" Margin="0,0,10,0">
+                        <TextBlock Style="{StaticResource Text.Pill}" Text="Sudah diraih" />
+                    </Border>
+                    <Border Style="{StaticResource Border.Pill}" Opacity="{StaticResource Opacity.Disabled}" VerticalAlignment="Top">
+                        <TextBlock Style="{StaticResource Text.Pill}" Text="Belum diraih (redup)" />
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Progress (0%, 3%, 18%, 54%, 100%)" Margin="0,16,0,10" />
+            <StackPanel Width="430" HorizontalAlignment="Left">
+                <ProgressBar Style="{StaticResource ProgressBar.Mini}" Value="0" Margin="0,0,0,10" />
+                <ProgressBar Style="{StaticResource ProgressBar.Mini}" Value="3" Margin="0,0,0,10" />
+                <ProgressBar Style="{StaticResource ProgressBar.Mini}" Value="18" Margin="0,0,0,10" />
+                <ProgressBar Style="{StaticResource ProgressBar.Mini}" Value="54" Margin="0,0,0,10" />
+                <ProgressBar Style="{StaticResource ProgressBar.Mini}" Value="100" />
+            </StackPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Gelembung ikon (Bubble.*)" Margin="0,16,0,10" />
+            <WrapPanel>
+                <StackPanel Margin="0,0,16,8" Width="80">
+                    <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}">
+                        <Ellipse Fill="{StaticResource Bubble.Green.Bg}" />
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Leaf}" Stroke="{StaticResource Bubble.Green.Fg}" Width="22" Height="22" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Tiny}" Text="Green" TextAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Margin="0,0,16,8" Width="80">
+                    <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}">
+                        <Ellipse Fill="{StaticResource Bubble.Blue.Bg}" />
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Bus}" Stroke="{StaticResource Bubble.Blue.Fg}" Width="22" Height="22" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Tiny}" Text="Blue" TextAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Margin="0,0,16,8" Width="80">
+                    <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}">
+                        <Ellipse Fill="{StaticResource Bubble.Amber.Bg}" />
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Bulb}" Stroke="{StaticResource Bubble.Amber.Fg}" Width="22" Height="22" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Tiny}" Text="Amber" TextAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Margin="0,0,16,8" Width="80">
+                    <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}">
+                        <Ellipse Fill="{StaticResource Bubble.Orange.Bg}" />
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Flame}" Stroke="{StaticResource Bubble.Orange.Fg}" Width="22" Height="22" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Tiny}" Text="Orange" TextAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Margin="0,0,16,8" Width="80">
+                    <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}">
+                        <Ellipse Fill="{StaticResource Bubble.Purple.Bg}" />
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Trophy}" Stroke="{StaticResource Bubble.Purple.Fg}" Width="22" Height="22" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Tiny}" Text="Purple" TextAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Margin="0,0,16,8" Width="80">
+                    <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}">
+                        <Ellipse Fill="{StaticResource Bubble.Default.Bg}" />
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Award}" Stroke="{StaticResource Bubble.Default.Fg}" Width="22" Height="22" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.Tiny}" Text="Default" TextAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+            </WrapPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Kartu, banner, skeleton, footer, tooltip" Margin="0,16,0,10" />
+            <StackPanel MaxWidth="640" HorizontalAlignment="Left">
+                <Border Style="{StaticResource Border.Card}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.Subtitle}" Text="Total CO₂ dihindari" />
+                        <TextBlock Style="{StaticResource Text.Impact}" Text="≈ 0,45 kg CO₂" Margin="0,4,0,8" />
+                        <ProgressBar Style="{StaticResource ProgressBar.Mini}" Value="60" />
+                        <TextBlock Style="{StaticResource Text.Tiny}" Text="{StaticResource Points.Disclaimer}" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Border.Banner.Info}" Margin="0,0,0,8">
+                    <TextBlock Style="{StaticResource Text.Body}" Text="{StaticResource Dashboard.PendingBanner}" />
+                </Border>
+                <Border Style="{StaticResource Border.Banner.Warning}" Margin="0,0,0,8">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Alert}" Stroke="{StaticResource State.WarningFg}" Width="18" Height="18" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <TextBlock Style="{StaticResource Text.Body}" Foreground="{StaticResource State.WarningFg}" Text="Periksa angka ini." VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Border.Banner.Error}" Margin="0,0,0,12">
+                    <TextBlock Style="{StaticResource Text.Body}" Foreground="{StaticResource State.ErrorText}" Text="{StaticResource Offline.Title}" />
+                </Border>
+                <Border Style="{StaticResource Border.ActivityRow}" Margin="0,0,0,12">
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Baris aktivitas (arahkan kursor)" />
+                </Border>
+                <Border Style="{StaticResource Border.Skeleton}" Height="16" Margin="0,0,0,8" />
+                <Border Style="{StaticResource Border.Skeleton}" Height="16" Width="220" HorizontalAlignment="Left" Margin="0,0,0,12" />
+                <Border Style="{StaticResource Border.StickyFooter}">
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Footer sticky" />
+                </Border>
+                <Button Content="Arahkan kursor untuk tooltip" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left" Margin="0,12,0,0">
+                    <Button.ToolTip>
+                        <ToolTip Style="{StaticResource ToolTip.Default}" Content="Asal estimasi CO₂: 0,21 kg CO₂ × kuantitas" />
+                    </Button.ToolTip>
+                </Button>
+            </StackPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Ikon (33)" Margin="0,16,0,10" />
+            <WrapPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Leaf}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Leaf" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Home}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Home" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Moon}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Moon" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.BookOpen}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.BookOpen" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.History}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.History" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Award}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Award" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Trophy}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Trophy" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.User}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.User" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Wifi}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Wifi" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Flame}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Flame" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Calendar}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Calendar" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Star}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Star" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Walk}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Walk" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Bus}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Bus" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Bulb}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Bulb" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Recycle}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Recycle" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Bottle}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Bottle" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Bag}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Bag" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Check}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Check" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Info}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Info" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Lock}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Lock" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Cloud}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Cloud" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Note}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Note" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Camera}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Camera" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Logout}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Logout" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Plus}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Plus" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Arrow}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Arrow" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Settings}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Settings" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Download}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Download" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Alert}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Alert" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Sun}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Sun" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Wind}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Wind" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+<StackPanel Width="96" Margin="0,0,8,12">
+  <Border Width="44" Height="44" Background="{StaticResource Bg.Mint}" CornerRadius="22" HorizontalAlignment="Center">
+    <Path Style="{StaticResource Icon.Path}" Data="{StaticResource Icon.Chevron}" Width="22" Height="22" />
+  </Border>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Chevron" TextAlignment="Center" Margin="0,4,0,0" />
+</StackPanel>
+            </WrapPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Ilustrasi (6)" Margin="0,16,0,10" />
+            <WrapPanel>
+<StackPanel Margin="0,0,16,12">
+  <Image Width="320" Stretch="Uniform">
+    <Image.Source><BitmapImage UriSource="/Resources/Images/floating_garden_island_waterfall.png" DecodePixelWidth="320" CacheOption="OnLoad" /></Image.Source>
+  </Image>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="floating_garden_island_waterfall.png" />
+</StackPanel>
+<StackPanel Margin="0,0,16,12">
+  <Image Width="320" Stretch="Uniform">
+    <Image.Source><BitmapImage UriSource="/Resources/Images/cozy_eco_evening_desk_diorama.png" DecodePixelWidth="320" CacheOption="OnLoad" /></Image.Source>
+  </Image>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="cozy_eco_evening_desk_diorama.png" />
+</StackPanel>
+<StackPanel Margin="0,0,16,12">
+  <Image Width="160" Stretch="Uniform">
+    <Image.Source><BitmapImage UriSource="/Resources/Images/eco_sprout_in_mossy_pot.png" DecodePixelWidth="160" CacheOption="OnLoad" /></Image.Source>
+  </Image>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="eco_sprout_in_mossy_pot.png" />
+</StackPanel>
+<StackPanel Margin="0,0,16,12">
+  <Image Width="205" Stretch="Uniform">
+    <Image.Source><BitmapImage UriSource="/Resources/Images/eco_island_success_badge.png" DecodePixelWidth="205" CacheOption="OnLoad" /></Image.Source>
+  </Image>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="eco_island_success_badge.png" />
+</StackPanel>
+<StackPanel Margin="0,0,16,12">
+  <Image Width="320" Stretch="Uniform">
+    <Image.Source><BitmapImage UriSource="/Resources/Images/eco_friendly_offline_wi_fi_island.png" DecodePixelWidth="320" CacheOption="OnLoad" /></Image.Source>
+  </Image>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="eco_friendly_offline_wi_fi_island.png" />
+</StackPanel>
+<StackPanel Margin="0,0,16,12">
+  <Image Width="320" Stretch="Uniform">
+    <Image.Source><BitmapImage UriSource="/Resources/Images/dreamy_waterfall_hillside_vignette.png" DecodePixelWidth="320" CacheOption="OnLoad" /></Image.Source>
+  </Image>
+  <TextBlock Style="{StaticResource Text.Tiny}" Text="dreamy_waterfall_hillside_vignette.png" />
+</StackPanel>
+            </WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

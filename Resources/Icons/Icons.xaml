@@ -1,0 +1,86 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    mc:Ignorable="po">
+    <!-- 24x24 line icons from the v7 prototype (app.js "icons"). Render with Style Icon.Path and set Stroke. Source/licence: see DESIGN-DELTA D-10. -->
+    <Style x:Key="Icon.Path" TargetType="Path">
+        <Setter Property="Stretch" Value="Uniform" />
+        <Setter Property="StrokeThickness" Value="{StaticResource Stroke.Icon}" />
+        <Setter Property="StrokeLineJoin" Value="Round" />
+        <Setter Property="StrokeStartLineCap" Value="Round" />
+        <Setter Property="StrokeEndLineCap" Value="Round" />
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="Stroke" Value="{StaticResource Brand.Forest}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+    <PathGeometry x:Key="Icon.Leaf" po:Freeze="True" Figures="M21 3C10 3 3 8 3 16a5 5 0 0 0 5 5C16 21 21 14 21 3ZM4 20 17 7" />
+    <GeometryGroup x:Key="Icon.Home" po:Freeze="True">
+        <PathGeometry Figures="m3 10 9-7 9 7v10H3z" />
+        <PathGeometry Figures="M9 20v-7h6v7" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Moon" po:Freeze="True" Figures="M20 15.5A8 8 0 0 1 8.5 4 8 8 0 1 0 20 15.5" />
+    <PathGeometry x:Key="Icon.BookOpen" po:Freeze="True" Figures="M12 7C9 5.6 6 5.4 3 6v13c3-.6 6-.4 9 1 3-1.4 6-1.6 9-1V6c-3-.6-6-.4-9 1Zm0 0v13" />
+    <GeometryGroup x:Key="Icon.History" po:Freeze="True">
+        <PathGeometry Figures="M3 12a9 9 0 1 0 3-7" />
+        <PathGeometry Figures="M3 4v5h5M12 7v5l4 2" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Icon.Award" po:Freeze="True">
+        <EllipseGeometry Center="12,8" RadiusX="5" RadiusY="5" />
+        <PathGeometry Figures="m8 13-2 8 6-3 6 3-2-8" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Trophy" po:Freeze="True" Figures="M7 3h10v8a5 5 0 0 1-10 0zM7 5H4v4a4 4 0 0 0 4 4m9-8h3v4a4 4 0 0 1-4 4M12 16v5m-5 0h10" />
+    <GeometryGroup x:Key="Icon.User" po:Freeze="True">
+        <EllipseGeometry Center="12,8" RadiusX="4" RadiusY="4" />
+        <PathGeometry Figures="M4 21a8 8 0 0 1 16 0" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Wifi" po:Freeze="True" Figures="M2 2 22 22M3 9a15 15 0 0 1 18 0M6 13a10 10 0 0 1 12 0M9 17a5 5 0 0 1 6 0" />
+    <PathGeometry x:Key="Icon.Flame" po:Freeze="True" Figures="M12 22c-4 0-7-3-7-7 0-3 2-5 3-7 0 4 3 4 3 4 2-4 1-7 1-10 5 4 7 8 7 13 0 4-3 7-7 7z" />
+    <GeometryGroup x:Key="Icon.Calendar" po:Freeze="True">
+        <RectangleGeometry Rect="3,5,18,16" RadiusX="2" RadiusY="2" />
+        <PathGeometry Figures="M7 3v4M17 3v4M3 10h18" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Star" po:Freeze="True" Figures="m12 2 3 7 7 .6-5.4 4.8 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.6 9 9z" />
+    <GeometryGroup x:Key="Icon.Walk" po:Freeze="True">
+        <EllipseGeometry Center="7,5" RadiusX="2" RadiusY="2" />
+        <PathGeometry Figures="m9 9 3 2 3-1m-6-1-3 5 4 2-1 5m3-10 1 5 4 4M6 14l-3 6" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Icon.Bus" po:Freeze="True">
+        <RectangleGeometry Rect="4,3,16,16" RadiusX="3" RadiusY="3" />
+        <PathGeometry Figures="M4 12h16M8 19v2m8-2v2M8 7h2m4 0h2" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Bulb" po:Freeze="True" Figures="M9 18h6m-6 3h6m-5-5c-1-3-4-4-4-8a6 6 0 0 1 12 0c0 4-3 5-4 8z" />
+    <PathGeometry x:Key="Icon.Recycle" po:Freeze="True" Figures="m8 4 2-2 3 5H7m7 0 2-1 4 6h-5m3 3-1 5h-7l2-4M8 18H4l-2-6 4-2" />
+    <PathGeometry x:Key="Icon.Bottle" po:Freeze="True" Figures="M10 2h4m-4 3h4M9 7V5h6v2l2 3v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V10z" />
+    <PathGeometry x:Key="Icon.Bag" po:Freeze="True" Figures="M4 8h16l-1 13H5zM9 9V6a3 3 0 0 1 6 0v3" />
+    <PathGeometry x:Key="Icon.Check" po:Freeze="True" Figures="m4 12 5 5L20 6" />
+    <GeometryGroup x:Key="Icon.Info" po:Freeze="True">
+        <EllipseGeometry Center="12,12" RadiusX="9" RadiusY="9" />
+        <PathGeometry Figures="M12 11v6m0-10v1" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Icon.Lock" po:Freeze="True">
+        <RectangleGeometry Rect="5,10,14,11" RadiusX="2" RadiusY="2" />
+        <PathGeometry Figures="M8 10V7a4 4 0 0 1 8 0v3" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Cloud" po:Freeze="True" Figures="M20 18H6a4 4 0 0 1-.5-8A6.5 6.5 0 0 1 18 9a4.5 4.5 0 0 1 2 9" />
+    <PathGeometry x:Key="Icon.Note" po:Freeze="True" Figures="M4 4h16v16H4zM8 9h8m-8 4h8" />
+    <GeometryGroup x:Key="Icon.Camera" po:Freeze="True">
+        <PathGeometry Figures="M3 7h4l2-3h6l2 3h4v13H3z" />
+        <EllipseGeometry Center="12,13" RadiusX="4" RadiusY="4" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Logout" po:Freeze="True" Figures="M10 3H5v18h5m4-4 5-5-5-5m5 5H9" />
+    <PathGeometry x:Key="Icon.Plus" po:Freeze="True" Figures="M12 4v16M4 12h16" />
+    <PathGeometry x:Key="Icon.Arrow" po:Freeze="True" Figures="M5 12h14m-6-6 6 6-6 6" />
+    <GeometryGroup x:Key="Icon.Settings" po:Freeze="True">
+        <EllipseGeometry Center="12,12" RadiusX="3" RadiusY="3" />
+        <PathGeometry Figures="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9l2.2 2.2m9.8 9.8 2.2 2.2m0-14.2-2.2 2.2m-9.8 9.8-2.2 2.2" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Download" po:Freeze="True" Figures="M12 3v12m-5-5 5 5 5-5M4 18v3h16v-3" />
+    <PathGeometry x:Key="Icon.Alert" po:Freeze="True" Figures="M12 3 2 21h20zM12 9v5m0 3v1" />
+    <GeometryGroup x:Key="Icon.Sun" po:Freeze="True">
+        <EllipseGeometry Center="12,12" RadiusX="4" RadiusY="4" />
+        <PathGeometry Figures="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M19 5l-1.5 1.5m-11 11L5 19" />
+    </GeometryGroup>
+    <PathGeometry x:Key="Icon.Wind" po:Freeze="True" Figures="M3 8h12a3 3 0 1 0-3-3M2 12h17a3 3 0 1 1-3 3M4 16h6a3 3 0 1 1-3 3" />
+    <PathGeometry x:Key="Icon.Chevron" po:Freeze="True" Figures="m9 18 6-6-6-6" />
+</ResourceDictionary>
