@@ -4,6 +4,16 @@
              xmlns:local="clr-namespace:ecoQuest"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Dependency order matters: Colors -> Typography -> Spacing -> Controls -> Icons -> Strings -->
+                <ResourceDictionary Source="Resources/Theme/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Theme/Typography.xaml" />
+                <ResourceDictionary Source="Resources/Theme/Spacing.xaml" />
+                <ResourceDictionary Source="Resources/Theme/Controls.xaml" />
+                <ResourceDictionary Source="Resources/Icons/Icons.xaml" />
+                <ResourceDictionary Source="Resources/Strings.id.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
