@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="ecoQuest.csproj" />
+  <Project Path="EcoQuest.Tests/EcoQuest.Tests.csproj" />
 </Solution>

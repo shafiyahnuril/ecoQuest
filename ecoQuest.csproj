@@ -6,9 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <RootNamespace>EcoQuest</RootNamespace>
+    <AssemblyName>EcoQuest</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <None Remove="Resources\Fonts\*.ttf" />
     <None Remove="Resources\Images\*.png" />
     <Resource Include="Resources\Fonts\*.ttf" />
@@ -22,4 +25,11 @@
     <PackageReference Include="supabase-csharp" Version="0.16.2" />
   </ItemGroup>
 
+<!-- Project test berada di subfolder; tanpa ini build aplikasi ikut mengompilasi file test. -->
+  <ItemGroup>
+    <Compile Remove="EcoQuest.Tests\**" />
+    <Page Remove="EcoQuest.Tests\**" />
+    <None Remove="EcoQuest.Tests\**" />
+    <None Remove="docs\**;database\**" />
+  </ItemGroup>
 </Project>
