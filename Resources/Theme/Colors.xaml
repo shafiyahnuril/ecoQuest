@@ -176,6 +176,9 @@
     <SolidColorBrush x:Key="Auth.CopyBg" Color="{StaticResource Color.Auth.CopyBg}" po:Freeze="True" />
     <Color x:Key="Color.Skeleton.Base">#E6F0E2</Color>
     <SolidColorBrush x:Key="Skeleton.Base" Color="{StaticResource Color.Skeleton.Base}" po:Freeze="True" />
+    <!-- Busy scrim over content: Bg.App (#F8F8F2) at ~70% opacity; WPF order is #AARRGGBB. -->
+    <Color x:Key="Color.Overlay.Busy">#B3F8F8F2</Color>
+    <SolidColorBrush x:Key="Overlay.Busy" Color="{StaticResource Color.Overlay.Busy}" po:Freeze="True" />
     <Color x:Key="Color.Shadow.Footer">#24482C</Color>
     <SolidColorBrush x:Key="Shadow.Footer" Color="{StaticResource Color.Shadow.Footer}" po:Freeze="True" />
     <Color x:Key="Color.Shadow.Dialog">#0B2216</Color>

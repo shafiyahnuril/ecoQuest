@@ -98,6 +98,18 @@
     <sys:Double x:Key="MinWidth.DialogButton">100</sys:Double>
     <sys:Double x:Key="Size.IconModal">28</sys:Double>
     <Thickness x:Key="Margin.Toast">0,0,27,26</Thickness>
+    <!-- State components (skeleton / empty state / error banner / busy overlay). Banner gap 14 = .banner gap; empty image 85 = prototype sprout. -->
+    <Thickness x:Key="Padding.EmptyState">24,32</Thickness>
+    <sys:Double x:Key="MaxWidth.EmptyState">360</sys:Double>
+    <sys:Double x:Key="Size.EmptyImage">85</sys:Double>
+    <Thickness x:Key="Margin.EmptyImage">0,0,0,16</Thickness>
+    <Thickness x:Key="Margin.EmptyText">0,6,0,0</Thickness>
+    <Thickness x:Key="Margin.EmptyAction">0,16,0,0</Thickness>
+    <Thickness x:Key="Margin.BannerAction">14,0,0,0</Thickness>
+    <Thickness x:Key="Margin.BannerIcon">0,0,12,0</Thickness>
+    <sys:Double x:Key="Size.Spinner">28</sys:Double>
+    <sys:Double x:Key="Stroke.Spinner">3</sys:Double>
+    <Thickness x:Key="Margin.SpinnerText">0,12,0,0</Thickness>
     <sys:Double x:Key="Offset.Toast">12</sys:Double>
     <!-- Auth pages (body.auth-mode). Input/submit 44 differ from the standard 40/43 controls, so they get their own tokens. -->
     <sys:Double x:Key="Height.InputAuth">44</sys:Double>
