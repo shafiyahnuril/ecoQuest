@@ -173,7 +173,7 @@
 
     <Grid Background="{StaticResource Bg.App}">
         <!-- Auth area: Login, Register, Onboarding. No sidebar. -->
-        <ContentControl Content="{Binding AuthViewModel}" IsTabStop="False" />
+        <ContentControl x:Name="AuthHost" Content="{Binding AuthViewModel}" IsTabStop="False" FocusVisualStyle="{x:Null}" />
 
         <!-- Main area: sidebar | page. -->
         <Grid>
@@ -250,10 +250,11 @@
             <!-- .content: Bg.App + soft green glow top-right; the page scrolls, the sidebar stays. -->
             <Grid Grid.Column="1">
                 <Border Background="{StaticResource Bg.ContentGlow}" IsHitTestVisible="False" />
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                <ScrollViewer x:Name="PageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                              IsTabStop="False" FocusVisualStyle="{x:Null}"
                               ctl:ScrollViewerHelper.ScrollToTopOnChange="{Binding MainViewModel}">
                     <Border Style="{StaticResource Border.Content}">
-                        <ContentControl Content="{Binding MainViewModel}" IsTabStop="False" />
+                        <ContentControl x:Name="MainHost" Content="{Binding MainViewModel}" IsTabStop="False" FocusVisualStyle="{x:Null}" />
                     </Border>
                 </ScrollViewer>
             </Grid>

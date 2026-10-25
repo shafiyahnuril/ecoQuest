@@ -135,4 +135,12 @@
     <sys:String x:Key="Logout.Confirm">Keluar</sys:String>
     <sys:String x:Key="Common.Cancel">Batal</sys:String>
     <sys:String x:Key="Common.Continue">Lanjut</sys:String>
+    <!-- Dashboard shells (S-04, task FE dashboard). Not in UI-UX-Flow-Frontend 5 but present in prototype v7 screen 04: flagged for owner confirmation. -->
+    <sys:String x:Key="Dashboard.InsightSubtitle">Insight berdasarkan jurnalmu akan muncul di sini.</sys:String>
+    <sys:String x:Key="Dashboard.InsightHabitTitle">Bangun kebiasaan secara bertahap</sys:String>
+    <sys:String x:Key="Dashboard.InsightHabitBody">Mulai dari kegiatan yang paling mudah untuk dilakukan secara konsisten.</sys:String>
+    <sys:String x:Key="Weather.CityLine">{0} · Saran berdasarkan kota domisili</sys:String>
+    <sys:String x:Key="Dashboard.DonutEmptyValue">0 kg</sys:String>
+    <sys:String x:Key="Dashboard.DonutUnit">CO₂</sys:String>
+    <sys:String x:Key="Dashboard.BreakdownAutomation">Kontribusi per kategori, belum ada data</sys:String>
 </ResourceDictionary>

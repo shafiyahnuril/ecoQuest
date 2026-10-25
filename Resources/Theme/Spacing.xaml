@@ -177,4 +177,36 @@
     <Thickness x:Key="Padding.InputRegisterFocused">12,0</Thickness>
     <Thickness x:Key="Padding.InputRegisterReveal">13,0,44,0</Thickness>
     <Thickness x:Key="Padding.InputRegisterRevealFocused">12,0,43,0</Thickness><!-- .auth-register-fields column-gap -->
+    <!-- Dashboard (S-04). Sources: INVENTORY-v7 .pagehead .banner .hero .stats .metric .insight-* .forecast-*; breakpoint tokens above. -->
+    <GridLength x:Key="Width.CardGap">16</GridLength><!-- = Gap.Card as a column width (.grid gap 16) -->
+    <Thickness x:Key="Margin.PageHead">0,0,0,23</Thickness>
+    <Thickness x:Key="Margin.PageHeadTitle">0,0,0,8</Thickness>
+    <Thickness x:Key="Margin.DashBanner">0,0,0,16</Thickness>
+    <sys:Double x:Key="MinHeight.Hero">302</sys:Double>
+    <Thickness x:Key="Padding.Hero">38</Thickness>
+    <sys:Double x:Key="MaxWidth.HeroTitle">400</sys:Double>
+    <sys:Double x:Key="MaxWidth.HeroBody">310</sys:Double>
+    <sys:Double x:Key="MaxWidth.HeroImage">540</sys:Double>
+    <sys:Double x:Key="Height.HeroMountain">85</sys:Double>
+    <sys:Double x:Key="Radius.HeroInner">17</sys:Double>
+    <!-- .stats: grid gap 12, margin 15 0. Each card carries 6 on every side and the grid -6 so the gap is 12 without a gap property. -->
+    <Thickness x:Key="Margin.Stats">-6,9,-6,9</Thickness>
+    <Thickness x:Key="Margin.MetricCard">6</Thickness>
+    <sys:Double x:Key="Size.IconBubbleMetric">22</sys:Double>
+    <Thickness x:Key="Margin.MetricText">12,0,0,0</Thickness>
+    <Thickness x:Key="Margin.MetricLabel">0,4,0,0</Thickness>
+    <sys:Double x:Key="MinHeight.ChartEmpty">165</sys:Double>
+    <sys:Double x:Key="Size.Donut">150</sys:Double>
+    <sys:Double x:Key="Thickness.DonutRing">29</sys:Double>
+    <sys:Double x:Key="Size.InsightIcon">40</sys:Double>
+    <CornerRadius x:Key="Radius.InsightIcon">12</CornerRadius>
+    <sys:Double x:Key="Size.BubbleInsightRow">37</sys:Double>
+    <sys:Double x:Key="Size.IconBubbleInsightRow">19</sys:Double>
+    <sys:Double x:Key="MinHeight.InsightRow">75</sys:Double>
+    <Thickness x:Key="Padding.InsightRow">13</Thickness>
+    <CornerRadius x:Key="Radius.InsightRow">11</CornerRadius>
+    <sys:Double x:Key="MaxWidth.InsightText">480</sys:Double>
+    <sys:Double x:Key="Size.WeatherIcon">60</sys:Double>
+    <CornerRadius x:Key="Radius.WeatherIcon">18</CornerRadius>
+    <sys:Double x:Key="MinHeight.ForecastContent">96</sys:Double>
 </ResourceDictionary>
