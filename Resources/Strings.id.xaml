@@ -6,7 +6,15 @@
     <sys:String x:Key="Login.Subtitle">Lanjutkan jurnal refleksi dan perjalanan ramah lingkunganmu.</sys:String>
     <sys:String x:Key="Login.Welcome">Selamat datang kembali</sys:String>
     <sys:String x:Key="Login.Submit">Masuk</sys:String>
-    <sys:String x:Key="Login.ToRegister">Belum punya akun? Buat akun</sys:String>
+    <sys:String x:Key="Login.NoAccount">Belum punya akun?</sys:String>
+    <sys:String x:Key="Login.CreateAccount">Buat akun</sys:String>
+    <!-- Not in the HTML prototype: busy state of S-01 (UI-UX-Flow-Frontend S-01, state "Busy"). -->
+    <sys:String x:Key="Login.Busy">Memeriksa…</sys:String>
+    <!-- alt text of the prototype illustration (app.js authScreen) -->
+    <sys:String x:Key="Auth.ArtAlt">Pulau mengapung EcoQuest dengan pepohonan, bunga dan air terjun</sys:String>
+    <!-- Not in the HTML prototype (D-16): action labels of the show/hide password toggle (tooltip + automation name). -->
+    <sys:String x:Key="Login.PasswordShow">Tampilkan password</sys:String>
+    <sys:String x:Key="Login.PasswordHide">Sembunyikan password</sys:String>    <sys:String x:Key="Login.ToRegister">Belum punya akun? Buat akun</sys:String>
     <sys:String x:Key="Login.IdentifierLabel">Username atau email</sys:String>
     <sys:String x:Key="Login.IdentifierPlaceholder">Masukkan username atau email</sys:String>
     <sys:String x:Key="Login.PasswordLabel">Password</sys:String>

@@ -3,6 +3,7 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:conv="clr-namespace:ecoQuest.Converters"
+                    xmlns:ctl="clr-namespace:EcoQuest.Controls"
                     mc:Ignorable="po">
     <!--
         Garden Light control styles (UI-UX-Flow-Frontend 2.4). Merged after Colors/Typography/Spacing and BEFORE Icons,
@@ -567,5 +568,113 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- Lives here, not in Typography: it uses a Spacing token and Typography is merged before Spacing. -->
+    <Style x:Key="Text.AuthDesc" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="LineHeight" Value="19.5" />
+        <Setter Property="Foreground" Value="{StaticResource Text.Secondary}" />
+        <Setter Property="MaxWidth" Value="{StaticResource MaxWidth.AuthDesc}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <!-- ===================== Auth pages (Login/Register): body.auth-mode .auth-card .input / .auth-submit / .auth-error ===================== -->
+    <Style x:Key="TextBox.Auth" TargetType="TextBox" BasedOn="{StaticResource TextBox.Default}">
+        <Setter Property="Background" Value="{StaticResource Bg.AuthInput}" />
+        <Setter Property="MinHeight" Value="{StaticResource Height.InputAuth}" />
+        <Setter Property="Padding" Value="{StaticResource Padding.InputAuth}" />
+        <Style.Triggers>
+            <!-- Keeps the text still when the 2 px focus border replaces the 1 px border (outer size is fixed by MinHeight). -->
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="Padding" Value="{StaticResource Padding.InputAuthFocused}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="PasswordBox.Auth" TargetType="PasswordBox" BasedOn="{StaticResource PasswordBox.Default}">
+        <Setter Property="Background" Value="{StaticResource Bg.AuthInput}" />
+        <Setter Property="MinHeight" Value="{StaticResource Height.InputAuth}" />
+        <Setter Property="Padding" Value="{StaticResource Padding.InputAuth}" />
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="Padding" Value="{StaticResource Padding.InputAuthFocused}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Button.AuthSubmit" TargetType="Button" BasedOn="{StaticResource Button.Primary}">
+        <Setter Property="MinHeight" Value="{StaticResource Height.ButtonAuth}" />
+        <Setter Property="Margin" Value="{StaticResource Margin.AuthSubmit}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- .auth-card .alt .btn (ghost + small): width auto, min-height 30, padding 7x12, 12 px. -->
+    <Style x:Key="Button.AuthLink" TargetType="Button" BasedOn="{StaticResource Button.Ghost}">
+        <Setter Property="MinHeight" Value="{StaticResource MinHeight.AuthLink}" />
+        <Setter Property="Padding" Value="{StaticResource Padding.AuthLink}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- .auth-error: #FFF1EE / #EAC5C0 / #933B34, radius 9, padding 11. Collapsed while there is no message. -->
+    <Style x:Key="Border.AuthError" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource State.ErrorBg}" />
+        <Setter Property="BorderBrush" Value="{StaticResource State.ErrorLine}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Button}" />
+        <Setter Property="Padding" Value="{StaticResource Padding.AuthBanner}" />
+        <Setter Property="Margin" Value="{StaticResource Margin.AuthBanner}" />
+    </Style>
+
+    <!-- Same look as Button.Icon, for a ToggleButton (Button.Icon targets Button only). -->
+    <Style x:Key="ToggleButton.Icon" TargetType="ToggleButton">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Width" Value="{StaticResource Size.IconButton}" />
+        <Setter Property="Height" Value="{StaticResource Size.IconButton}" />
+        <Setter Property="Foreground" Value="{StaticResource Brand.Forest}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.Input}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Bg.Mint}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="{StaticResource Opacity.Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Reveal variants of the auth inputs: more right padding so text never runs under the toggle (D-16). -->
+    <Style x:Key="TextBox.AuthReveal" TargetType="TextBox" BasedOn="{StaticResource TextBox.Auth}">
+        <Setter Property="Padding" Value="{StaticResource Padding.InputAuthReveal}" />
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="Padding" Value="{StaticResource Padding.InputAuthRevealFocused}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="PasswordBox.AuthReveal" TargetType="PasswordBox" BasedOn="{StaticResource PasswordBox.Auth}">
+        <Setter Property="Padding" Value="{StaticResource Padding.InputAuthReveal}" />
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="Padding" Value="{StaticResource Padding.InputAuthRevealFocused}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Default look of the shared password control: height of an auth input (44). Pages may override MinHeight. -->
+    <Style TargetType="ctl:PasswordInput">
+        <Setter Property="MinHeight" Value="{StaticResource Height.InputAuth}" />
+        <Setter Property="IsTabStop" Value="False" />
     </Style>
 </ResourceDictionary>
