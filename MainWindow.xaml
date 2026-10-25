@@ -1,4 +1,4 @@
-﻿<Window x:Class="ecoQuest.MainWindow"
+<Window x:Class="ecoQuest.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,6 +18,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
         <conv:ResourceKeyConverter x:Key="ResourceKey" />
         <conv:CompactWidthConverter x:Key="IsCompactWidth" />
+        <conv:LocalImageConverter x:Key="LocalImage" />
 
         <!-- ===== Sidebar navigation item (.nav button): hover = Bg.NavHover, active = Bg.NavActive (wins over hover, as in the CSS) ===== -->
         <Style x:Key="Button.NavItem" TargetType="Button">
@@ -210,19 +211,26 @@
                     <ItemsControl Grid.Row="1" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource NavItemTemplate}"
                                   IsTabStop="False" AutomationProperties.Name="{DynamicResource Nav.Landmark}" />
 
-                    <!-- Account block (.account). TODO(after Core/Contracts): avatar initial, user name and city come from the
-                         session (ShellViewModel.UserName / City / AvatarImagePath, UIR-24/25). Structure only for now. -->
+                    <!-- Account block (.account): avatar (photo or initial), user name (bold) and city, fed by the session (UIR-24/25). -->
                     <Border Grid.Row="2" BorderBrush="{StaticResource Line.Subtle}" BorderThickness="0,1,0,0"
                             Padding="{StaticResource Padding.Account}">
                         <StackPanel Orientation="Horizontal">
-                            <Grid Width="{StaticResource Size.AvatarSidebar}" Height="{StaticResource Size.AvatarSidebar}">
+                            <Grid Width="{StaticResource Size.AvatarSidebar}" Height="{StaticResource Size.AvatarSidebar}"
+                                  AutomationProperties.Name="{Binding DisplayName}">
                                 <Ellipse Fill="{StaticResource Bg.Avatar}" />
-                                <TextBlock Style="{StaticResource Text.Number}" Foreground="{StaticResource Brand.Forest}"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock Style="{StaticResource Text.Number}" FontSize="14" Foreground="{StaticResource Brand.Forest}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding AvatarInitial}" />
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush Stretch="UniformToFill"
+                                                    ImageSource="{Binding AvatarImagePath, Converter={StaticResource LocalImage}, ConverterParameter=74}" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
                             </Grid>
                             <StackPanel Margin="{StaticResource Margin.AccountText}" VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource Text.Number}" FontSize="14" />
-                                <TextBlock Style="{StaticResource Text.Small}" />
+                                <TextBlock Style="{StaticResource Text.Base}" FontFamily="{StaticResource Font.Bold}" FontWeight="Bold"
+                                           FontSize="14" TextTrimming="CharacterEllipsis" Text="{Binding DisplayName}" />
+                                <TextBlock Style="{StaticResource Text.Small}" TextTrimming="CharacterEllipsis" Text="{Binding City}" />
                             </StackPanel>
                         </StackPanel>
                     </Border>

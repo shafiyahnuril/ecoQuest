@@ -1,26 +1,39 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EcoQuest.Core.Contracts.Dtos;
+using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Navigation;
 
 namespace EcoQuest.ViewModels;
 
 /// <summary>
 /// Drives MainWindow (SDD-Frontend 3.1): which screen is shown, the sidebar menu and logout.
-/// Singleton. Intentionally holds NO service from Core/Contracts yet; see the TODO block below.
+/// Singleton. Mirrors the session into the account block (UIR-25), owns logout (UIR-23) and the amber dot (UIR-56).
 /// </summary>
-public sealed partial class ShellViewModel : ViewModelBase
+public sealed partial class ShellViewModel : ViewModelBase, IDisposable
 {
     private readonly INavigationService _navigation;
     private readonly IDialogService _dialogs;
     private readonly IUiText _text;
+    private readonly ISessionService _session;
+    private readonly IAuthService _auth;
+    private readonly IEveningReviewService _review;
     private readonly NavItemViewModel _reviewItem;
+    private int _refreshRunning;
+    private volatile bool _refreshAgain;
+    private bool _disposed;
 
-    public ShellViewModel(INavigationService navigation, IDialogService dialogs, IUiText text, ToastViewModel toast)
+    public ShellViewModel(
+        INavigationService navigation, IDialogService dialogs, IUiText text, ToastViewModel toast,
+        ISessionService session, IAuthService auth, IEveningReviewService review)
     {
         _navigation = navigation;
         _dialogs = dialogs;
         _text = text;
         Toast = toast;
+        _session = session;
+        _auth = auth;
+        _review = review;
 
         _reviewItem = new NavItemViewModel(MainMenu.EveningReview, "Nav.Review", "Icon.BookOpen");
         MenuItems =
@@ -34,6 +47,20 @@ public sealed partial class ShellViewModel : ViewModelBase
         ];
 
         _navigation.Navigated += OnNavigated;
+        _session.SessionChanged += OnSessionChanged;
+        ApplySession();
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _navigation.Navigated -= OnNavigated;
+        _session.SessionChanged -= OnSessionChanged;
     }
 
     public ToastViewModel Toast { get; }
@@ -56,14 +83,18 @@ public sealed partial class ShellViewModel : ViewModelBase
     /// <summary>Menu entry of the current screen; null on screens that have none (e.g. the connection-error screen).</summary>
     [ObservableProperty] private MainMenu? _selectedMenu;
 
-    /// <summary>Amber dot on "Evening Review". Stays false until the review contract exists (D-05).</summary>
+    /// <summary>Amber dot on "Evening Review": true while today's review is not submitted (D-05).</summary>
     [ObservableProperty] private bool _hasPendingReview;
 
-    // TODO(after Core/Contracts exists): the account block of the sidebar needs these, fed by ISessionService.SessionChanged (UIR-25):
-    //   [ObservableProperty] string UserName, string City, string? AvatarImagePath  (initial letter + local avatar, UIR-24)
-    //   HasPendingReview must be refreshed through IEveningReviewService.GetTodayAsync via RefreshPendingAsync() (UIR-56).
-    //   IsAuthenticated must come from the session instead of the current screen type, and LogoutCommand must also call
-    //   IAuthService.Logout before navigating. Until then the account block in MainWindow.xaml shows no name, city or avatar.
+    /// <summary>Account block of the sidebar, fed by ISessionService (UIR-24/25). All scalar, so WPF marshals changes raised off the UI thread.</summary>
+    [ObservableProperty] private string _displayName = "";
+
+    [ObservableProperty] private string _city = "";
+
+    [ObservableProperty] private string? _avatarImagePath;
+
+    /// <summary>First letter of the username, shown in the round avatar when there is no photo.</summary>
+    [ObservableProperty] private string _avatarInitial = "";
 
     partial void OnHasPendingReviewChanged(bool value) => _reviewItem.IsPendingIndicatorVisible = value;
 
@@ -98,21 +129,80 @@ public sealed partial class ShellViewModel : ViewModelBase
             return;
         }
 
-        // TODO(after Core/Contracts exists): IAuthService.Logout() before leaving (FR-1.5).
+        _auth.Logout();   // synchronous by contract; ends the session (FR-1.5)
         HasPendingReview = false;
         _navigation.ClearHistory();
         await _navigation.NavigateTo<LoginViewModel>();
     }
 
+    /// <summary>
+    /// Re-reads today's review state (UIR-56). One refresh runs at a time; calls arriving meanwhile are merged into one
+    /// follow-up run so a late "submitted" signal is never lost. A failed call keeps the previous value.
+    /// </summary>
+    public async Task RefreshPendingAsync()
+    {
+        if (!_session.IsAuthenticated)
+        {
+            return;
+        }
+
+        if (Interlocked.CompareExchange(ref _refreshRunning, 1, 0) != 0)
+        {
+            _refreshAgain = true;
+            return;
+        }
+
+        try
+        {
+            do
+            {
+                _refreshAgain = false;
+                var result = await _review.GetTodayAsync();
+                if (result.IsSuccess && result.Value is not null && _session.IsAuthenticated)
+                {
+                    HasPendingReview = result.Value.State == TodayReviewState.NotSubmitted;
+                }
+            }
+            while (_refreshAgain);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _refreshRunning, 0);
+        }
+    }
+
+    [RelayCommand]
+    private Task RefreshPending() => RefreshPendingAsync();
+
     [RelayCommand]
     private void OpenThemePreview() => _dialogs.ShowThemePreview();
+
+    private void OnSessionChanged(object? sender, EventArgs e)
+    {
+        ApplySession();
+        UpdateIsAuthenticated();
+    }
+
+    private void ApplySession()
+    {
+        var user = _session.Current;
+        DisplayName = user?.UserName ?? "";
+        City = user?.City ?? "";
+        AvatarImagePath = user?.AvatarPath;
+        AvatarInitial = string.IsNullOrWhiteSpace(user?.UserName) ? "" : user.UserName.Trim()[..1].ToUpperInvariant();
+    }
+
+    private static bool IsMainAreaScreen(ViewModelBase? screen) =>
+        screen is not null and not (LoginViewModel or RegisterViewModel or OnboardingViewModel);
+
+    private void UpdateIsAuthenticated() => IsAuthenticated = _session.IsAuthenticated && IsMainAreaScreen(_navigation.Current);
 
     private void OnNavigated(object? sender, EventArgs e)
     {
         var current = _navigation.Current;
         CurrentViewModel = current;
-        IsAuthenticated = current is not null and not (LoginViewModel or RegisterViewModel or OnboardingViewModel);
-        if (IsAuthenticated)
+        UpdateIsAuthenticated();
+        if (IsMainAreaScreen(current))
         {
             AuthViewModel = null;
             MainViewModel = current;
@@ -137,6 +227,11 @@ public sealed partial class ShellViewModel : ViewModelBase
         foreach (var item in MenuItems)
         {
             item.IsSelected = item.Menu == SelectedMenu;
+        }
+
+        if (IsAuthenticated)
+        {
+            _ = RefreshPendingAsync();
         }
     }
 }
