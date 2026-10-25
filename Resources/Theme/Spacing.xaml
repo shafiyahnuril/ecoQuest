@@ -134,4 +134,35 @@
     <Thickness x:Key="Padding.InputAuthReveal">13,10,44,10</Thickness>
     <Thickness x:Key="Padding.InputAuthRevealFocused">12,9,43,9</Thickness>
     <Thickness x:Key="Margin.PasswordToggle">0,0,5,0</Thickness>
+    <!-- Register (body.auth-mode .auth-register): clamp(min, vh x height, max) of the view height; read by VhClampConverter via "<prefix>.Min/.Max/.Vh". -->
+    <sys:Double x:Key="Clamp.RegisterInput.Min">36</sys:Double><!-- .auth-register .auth-card .input: clamp(36px,4.7vh,44px) -->
+    <sys:Double x:Key="Clamp.RegisterInput.Max">44</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterInput.Vh">0.047</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterField.Min">9</sys:Double><!-- .auth-register .auth-card .field margin-bottom: clamp(9px,1.5vh,16px) -->
+    <sys:Double x:Key="Clamp.RegisterField.Max">16</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterField.Vh">0.015</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterBrand.Min">10</sys:Double><!-- .auth-register .auth-form-brand margin-bottom: clamp(10px,2vh,23px) -->
+    <sys:Double x:Key="Clamp.RegisterBrand.Max">23</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterBrand.Vh">0.02</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterDesc.Min">12</sys:Double><!-- .auth-register .auth-desc margin-bottom: clamp(12px,2vh,22px) -->
+    <sys:Double x:Key="Clamp.RegisterDesc.Max">22</sys:Double>
+    <sys:Double x:Key="Clamp.RegisterDesc.Vh">0.02</sys:Double>
+    <!-- @media(max-height:740px): field margin 7, h1 23, hint 9. Brand/desc margins reuse Margin.AuthFormBrandShort / Margin.AuthDescShort (12). -->
+    <Thickness x:Key="Margin.RegisterFieldShort">0,0,0,7</Thickness>
+    <sys:Double x:Key="FontSize.RegisterTitleShort">23</sys:Double>
+    <sys:Double x:Key="LineHeight.RegisterTitleShort">26</sys:Double>
+    <sys:Double x:Key="LineHeight.AuthTitle">35</sys:Double>
+    <Thickness x:Key="Margin.AuthTitle">0,0,0,8</Thickness>
+    <sys:Double x:Key="FontSize.AuthHint">10</sys:Double>
+    <sys:Double x:Key="FontSize.AuthHintShort">9</sys:Double>
+    <sys:Double x:Key="LineHeight.AuthHint">14</sys:Double>
+    <Thickness x:Key="Margin.AuthHint">0,7,0,0</Thickness><!-- .field gap 7 between input and small -->
+    <Thickness x:Key="Margin.RegisterAlt">0,8,0,0</Thickness><!-- .auth-register .auth-card .alt margin-top 8 -->
+    <GridLength x:Key="Width.AuthColumnGap">16</GridLength>
+    <!-- Register inputs: no vertical padding, the text is centred in the box. With 10 px padding a text box needs 39.3 px, so the 36 px
+         of short windows (.auth-register .input) could not be reached. Same look at 44 px. Focus: 1 px less on every side (2 px border). -->
+    <Thickness x:Key="Padding.InputRegister">13,0</Thickness>
+    <Thickness x:Key="Padding.InputRegisterFocused">12,0</Thickness>
+    <Thickness x:Key="Padding.InputRegisterReveal">13,0,44,0</Thickness>
+    <Thickness x:Key="Padding.InputRegisterRevealFocused">12,0,43,0</Thickness><!-- .auth-register-fields column-gap -->
 </ResourceDictionary>

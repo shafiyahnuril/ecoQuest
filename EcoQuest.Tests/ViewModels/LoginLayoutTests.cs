@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Navigation;
+using EcoQuest.Tests.TestDoubles;
 using EcoQuest.ViewModels;
 using EcoQuest.Views;
 using NSubstitute;
@@ -11,9 +12,9 @@ using Xunit.Abstractions;
 namespace EcoQuest.Tests.ViewModels;
 
 /// <summary>
-/// Measures the real LoginView with the real theme at several window sizes (DIP). WPF allows one Application per process and it is bound to
-/// the thread that created it, so all sizes run on one dedicated STA thread. Needs a desktop session (no window is shown).
+/// Measures the real LoginView with the real theme at several window sizes (DIP). Runs on the shared WPF host (one Application per process).
 /// </summary>
+[Collection(WpfCollection.Name)]
 public class LoginLayoutTests(ITestOutputHelper output)
 {
     private sealed record Metrics(double Width, double Height, double Page, double VisualColumn, double FormColumn, double Card, double Input, double PageLeft);
@@ -38,39 +39,8 @@ public class LoginLayoutTests(ITestOutputHelper output)
             page.TranslatePoint(new Point(0, 0), view).X);
     }
 
-    private static List<Metrics> RunOnSta(params (double W, double H)[] sizes)
-    {
-        List<Metrics>? result = null;
-        Exception? error = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
-                foreach (var file in new[] { "Resources/Theme/Colors.xaml", "Resources/Theme/Typography.xaml", "Resources/Theme/Spacing.xaml",
-                                             "Resources/Theme/Controls.xaml", "Resources/Icons/Icons.xaml", "Resources/Strings.id.xaml" })
-                {
-                    app.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri($"pack://application:,,,/EcoQuest;component/{file}") });
-                }
-
-                result = sizes.Select(s => Measure(s.W, s.H)).ToList();
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-        });
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-        if (error is not null)
-        {
-            throw new InvalidOperationException("Layout run failed", error);
-        }
-
-        return result!;
-    }
-
+    private static List<Metrics> RunOnSta(params (double W, double H)[] sizes) =>
+        WpfTestHost.Run(() => sizes.Select(s => Measure(s.W, s.H)).ToList());
     [Fact]
     public void Page_fills_the_window_up_to_1560_and_the_card_reaches_490()
     {

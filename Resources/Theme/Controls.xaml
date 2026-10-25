@@ -581,6 +581,7 @@
 
     <!-- ===================== Auth pages (Login/Register): body.auth-mode .auth-card .input / .auth-submit / .auth-error ===================== -->
     <Style x:Key="TextBox.Auth" TargetType="TextBox" BasedOn="{StaticResource TextBox.Default}">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="Background" Value="{StaticResource Bg.AuthInput}" />
         <Setter Property="MinHeight" Value="{StaticResource Height.InputAuth}" />
         <Setter Property="Padding" Value="{StaticResource Padding.InputAuth}" />
@@ -593,6 +594,7 @@
     </Style>
 
     <Style x:Key="PasswordBox.Auth" TargetType="PasswordBox" BasedOn="{StaticResource PasswordBox.Default}">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="Background" Value="{StaticResource Bg.AuthInput}" />
         <Setter Property="MinHeight" Value="{StaticResource Height.InputAuth}" />
         <Setter Property="Padding" Value="{StaticResource Padding.InputAuth}" />
@@ -676,5 +678,21 @@
     <Style TargetType="ctl:PasswordInput">
         <Setter Property="MinHeight" Value="{StaticResource Height.InputAuth}" />
         <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" /><!-- the red border is drawn by the control itself (IsInvalid) -->
+    </Style>
+
+    <!-- .auth-card .field small: hint under a field. Becomes the error text when the Tag (bound to Validation.HasError of the input) is True.
+         Same slot for both, so the layout does not jump. Announced to screen readers when the text changes. -->
+    <Style x:Key="Text.AuthHint" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.AuthHint}" />
+        <Setter Property="LineHeight" Value="{StaticResource LineHeight.AuthHint}" />
+        <Setter Property="Foreground" Value="{StaticResource Text.Secondary}" />
+        <Setter Property="Margin" Value="{StaticResource Margin.AuthHint}" />
+        <Setter Property="AutomationProperties.LiveSetting" Value="Assertive" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource State.ErrorText}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

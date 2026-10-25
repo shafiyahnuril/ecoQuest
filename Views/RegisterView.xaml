@@ -1,6 +1,279 @@
 <UserControl x:Class="EcoQuest.Views.RegisterView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
-    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Register.Title}" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             xmlns:conv="clr-namespace:EcoQuest.Converters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:RegisterViewModel}"
+             Background="{StaticResource Bg.AuthPage}">
+    <!-- S-02 Register. Reference: design-reference/screens/02-register.png and body.auth-mode .auth-register of styles.css (INVENTORY-v7).
+         Same two panels as Login. Form: 2 columns (gap 16): Username | Email, Password | Ulangi password, Kota (full width).
+         Sizes that CSS derives from vh use the ActualHeight of this root (= client area). Heights <= 740 follow @media(max-height:740px). -->
+    <UserControl.Resources>
+        <conv:ShortHeightConverter x:Key="IsShortHeight" />
+        <conv:VhClampConverter x:Key="VhClamp" />
+
+        <Style x:Key="Border.FormPad" TargetType="Border">
+            <Setter Property="Padding" Value="{StaticResource Padding.AuthForm}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="Padding" Value="{StaticResource Padding.AuthFormShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="Grid.FormBrand" TargetType="Grid">
+            <Setter Property="Margin" Value="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource VhClamp}, ConverterParameter=Clamp.RegisterBrand}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="Margin" Value="{StaticResource Margin.AuthFormBrandShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="Text.RegisterTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.AuthTitle}">
+            <Setter Property="LineHeight" Value="{StaticResource LineHeight.AuthTitle}" />
+            <Setter Property="Margin" Value="{StaticResource Margin.AuthTitle}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="FontSize" Value="{StaticResource FontSize.RegisterTitleShort}" />
+                    <Setter Property="LineHeight" Value="{StaticResource LineHeight.RegisterTitleShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="Text.Desc" TargetType="TextBlock" BasedOn="{StaticResource Text.AuthDesc}">
+            <Setter Property="Margin" Value="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource VhClamp}, ConverterParameter=Clamp.RegisterDesc}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="Margin" Value="{StaticResource Margin.AuthDescShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- One field cell: label, input, hint/error. Top-aligned so a hint under one column never moves the box of the other (D-17). -->
+        <Style x:Key="StackPanel.Field" TargetType="StackPanel">
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource VhClamp}, ConverterParameter=Clamp.RegisterField}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="Margin" Value="{StaticResource Margin.RegisterFieldShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Inputs: clamp(36, 4.7vh, 44). Disabled while the request runs. -->
+        <Style x:Key="TextBox.Register" TargetType="TextBox" BasedOn="{StaticResource TextBox.Auth}">
+            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+            <Setter Property="MinHeight" Value="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource VhClamp}, ConverterParameter=Clamp.RegisterInput}" />
+            <Setter Property="Padding" Value="{StaticResource Padding.InputRegister}" />
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="Padding" Value="{StaticResource Padding.InputRegisterFocused}" />
+                </Trigger>
+                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="PasswordInput.Register" TargetType="ctl:PasswordInput" BasedOn="{StaticResource {x:Type ctl:PasswordInput}}">
+            <Setter Property="IsCompact" Value="True" />
+            <Setter Property="MinHeight" Value="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource VhClamp}, ConverterParameter=Clamp.RegisterInput}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ComboBox.Register" TargetType="ComboBox" BasedOn="{StaticResource ComboBox.Default}">
+            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+            <Setter Property="MinHeight" Value="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource VhClamp}, ConverterParameter=Clamp.RegisterInput}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Placeholder overlay: Tag carries the bound text, empty means visible. That Tag binding reads the same ViewModel property as the
+             text box, so it must not take part in validation (ValidatesOnNotifyDataErrors=False in the view) and never shows WPF's red adorner. -->
+        <Style x:Key="Text.PlaceholderField" TargetType="TextBlock" BasedOn="{StaticResource Text.Auth.Placeholder}">
+            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Hint (grey) and error (red) share this one slot. 9 px on short windows. -->
+        <Style x:Key="Text.FieldMessage" TargetType="TextBlock" BasedOn="{StaticResource Text.AuthHint}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="FontSize" Value="{StaticResource FontSize.AuthHintShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="Border.RegisterError" TargetType="Border" BasedOn="{StaticResource Border.AuthError}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="Button.RegisterSubmit" TargetType="Button" BasedOn="{StaticResource Button.AuthSubmit}">
+            <Setter Property="Content" Value="{DynamicResource Register.Submit}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
+                    <Setter Property="MinHeight" Value="{StaticResource Height.ButtonAuthShort}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="PageRoot" MaxWidth="{StaticResource MaxWidth.AuthPage}" HorizontalAlignment="Stretch" Background="{StaticResource Bg.AuthFormPanel}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="0.94*" MinWidth="{StaticResource MinWidth.AuthForm}" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== Visual panel (.auth-visual), shared with Login ===== -->
+        <ctl:AuthVisualPanel Grid.Column="0" Heading="{DynamicResource Register.VisualHeading}" Body="{DynamicResource Register.VisualBody}" />
+
+        <!-- ===== Form panel: scrolls on short windows, card centred when there is room ===== -->
+        <ScrollViewer x:Name="FormScroll" Grid.Column="1" Focusable="False" FocusVisualStyle="{x:Null}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Background="{StaticResource Bg.AuthFormPanel}">
+            <Border MinHeight="{Binding ViewportHeight, ElementName=FormScroll}" Style="{StaticResource Border.FormPad}">
+                <StackPanel x:Name="FormCard" MaxWidth="{StaticResource Width.AuthCard}" VerticalAlignment="Center">
+
+                    <!-- .auth-form-brand -->
+                    <Grid Style="{StaticResource Grid.FormBrand}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <ctl:IconView Data="{DynamicResource Icon.Leaf}" Foreground="{StaticResource Brand.Primary}"
+                                          Width="{StaticResource Size.BrandIcon}" Height="{StaticResource Size.BrandIcon}" />
+                            <TextBlock Style="{StaticResource Text.Brand}" Text="{DynamicResource Brand.Name}"
+                                       Margin="{StaticResource Margin.BrandText}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource Text.Auth.Welcome}" Text="{DynamicResource Register.Welcome}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource Text.RegisterTitle}" Text="{DynamicResource Register.Title}" />
+                    <TextBlock Style="{StaticResource Text.Desc}" Text="{DynamicResource Register.Subtitle}" />
+
+                    <!-- .auth-register-fields -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{StaticResource Width.AuthColumnGap}" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Username -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Style="{StaticResource StackPanel.Field}">
+                            <TextBlock x:Name="UserNameLabel" Style="{StaticResource Text.AuthLabel}" Text="{DynamicResource Register.UsernameLabel}" />
+                            <Grid>
+                                <TextBox x:Name="UserNameBox" Style="{StaticResource TextBox.Register}"
+                                         Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
+                                         ctl:BlurValidation.Command="{Binding ValidateFieldCommand}" ctl:BlurValidation.Parameter="UserName"
+                                         AutomationProperties.LabeledBy="{Binding ElementName=UserNameLabel}"
+                                         AutomationProperties.Name="{DynamicResource Register.UsernameLabel}" />
+                                <TextBlock Style="{StaticResource Text.PlaceholderField}" Tag="{Binding UserName, ValidatesOnNotifyDataErrors=False}" Text="{DynamicResource Register.UsernamePlaceholder}" />
+                            </Grid>
+                            <TextBlock x:Name="UserNameMessage" Style="{StaticResource Text.FieldMessage}"
+                                       Tag="{Binding (Validation.HasError), ElementName=UserNameBox}"
+                                       Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=UserNameBox, FallbackValue={StaticResource Register.UsernameHint}}" />
+                        </StackPanel>
+
+                        <!-- Email (no hint) -->
+                        <StackPanel Grid.Row="0" Grid.Column="2" Style="{StaticResource StackPanel.Field}">
+                            <TextBlock x:Name="EmailLabel" Style="{StaticResource Text.AuthLabel}" Text="{DynamicResource Register.EmailLabel}" />
+                            <Grid>
+                                <TextBox x:Name="EmailBox" Style="{StaticResource TextBox.Register}"
+                                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                         ctl:BlurValidation.Command="{Binding ValidateFieldCommand}" ctl:BlurValidation.Parameter="Email"
+                                         AutomationProperties.LabeledBy="{Binding ElementName=EmailLabel}"
+                                         AutomationProperties.Name="{DynamicResource Register.EmailLabel}" />
+                                <TextBlock Style="{StaticResource Text.PlaceholderField}" Tag="{Binding Email, ValidatesOnNotifyDataErrors=False}" Text="{DynamicResource Register.EmailPlaceholder}" />
+                            </Grid>
+                            <TextBlock x:Name="EmailMessage" Style="{StaticResource Text.FieldMessage}"
+                                       Tag="{Binding (Validation.HasError), ElementName=EmailBox}"
+                                       Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=EmailBox, FallbackValue=''}" />
+                        </StackPanel>
+
+                        <!-- Password -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Style="{StaticResource StackPanel.Field}">
+                            <TextBlock x:Name="PasswordLabel" Style="{StaticResource Text.AuthLabel}" Text="{DynamicResource Register.PasswordLabel}" />
+                            <ctl:PasswordInput x:Name="PasswordField" Style="{StaticResource PasswordInput.Register}"
+                                               Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                               Placeholder="{DynamicResource Register.PasswordPlaceholder}"
+                                               ConcealWhen="{Binding IsBusy}"
+                                               ctl:BlurValidation.Command="{Binding ValidateFieldCommand}" ctl:BlurValidation.Parameter="Password"
+                                               AutomationProperties.LabeledBy="{Binding ElementName=PasswordLabel}"
+                                               AutomationProperties.Name="{DynamicResource Register.PasswordLabel}" />
+                            <TextBlock x:Name="PasswordMessage" Style="{StaticResource Text.FieldMessage}"
+                                       Tag="{Binding (Validation.HasError), ElementName=PasswordField}"
+                                       Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=PasswordField, FallbackValue={StaticResource Register.PasswordHint}}" />
+                        </StackPanel>
+
+                        <!-- Ulangi password (no hint) -->
+                        <StackPanel Grid.Row="1" Grid.Column="2" Style="{StaticResource StackPanel.Field}">
+                            <TextBlock x:Name="ConfirmLabel" Style="{StaticResource Text.AuthLabel}" Text="{DynamicResource Register.ConfirmLabel}" />
+                            <ctl:PasswordInput x:Name="ConfirmField" Style="{StaticResource PasswordInput.Register}"
+                                               Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                               Placeholder="{DynamicResource Register.ConfirmPlaceholder}"
+                                               ConcealWhen="{Binding IsBusy}"
+                                               ctl:BlurValidation.Command="{Binding ValidateFieldCommand}" ctl:BlurValidation.Parameter="ConfirmPassword"
+                                               AutomationProperties.LabeledBy="{Binding ElementName=ConfirmLabel}"
+                                               AutomationProperties.Name="{DynamicResource Register.ConfirmLabel}" />
+                            <TextBlock x:Name="ConfirmMessage" Style="{StaticResource Text.FieldMessage}"
+                                       Tag="{Binding (Validation.HasError), ElementName=ConfirmField}"
+                                       Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=ConfirmField, FallbackValue=''}" />
+                        </StackPanel>
+
+                        <!-- Kota domisili (.auth-city, full width) -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource StackPanel.Field}">
+                            <TextBlock x:Name="CityLabel" Style="{StaticResource Text.AuthLabel}" Text="{DynamicResource Register.CityLabel}" />
+                            <ComboBox x:Name="CityBox" Style="{StaticResource ComboBox.Register}"
+                                      ItemsSource="{Binding Cities}" SelectedItem="{Binding City, Mode=TwoWay}"
+                                      ctl:BlurValidation.Command="{Binding ValidateFieldCommand}" ctl:BlurValidation.Parameter="City"
+                                      AutomationProperties.LabeledBy="{Binding ElementName=CityLabel}"
+                                      AutomationProperties.Name="{DynamicResource Register.CityLabel}" />
+                            <TextBlock x:Name="CityMessage" Style="{StaticResource Text.FieldMessage}"
+                                       Tag="{Binding (Validation.HasError), ElementName=CityBox}"
+                                       Text="{Binding (Validation.Errors)[0].ErrorContent, ElementName=CityBox, FallbackValue={StaticResource Register.CityHint}}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Error that belongs to no field (e.g. NetworkError); collapsed otherwise -->
+                    <Border Style="{StaticResource Border.RegisterError}">
+                        <TextBlock Style="{StaticResource Text.Base}" Foreground="{StaticResource State.ErrorText}"
+                                   Text="{Binding ErrorMessage}" AutomationProperties.LiveSetting="Assertive" />
+                    </Border>
+
+                    <Button Style="{StaticResource Button.RegisterSubmit}" Command="{Binding RegisterCommand}" IsDefault="True" />
+
+                    <!-- .alt -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="{StaticResource Margin.RegisterAlt}">
+                        <TextBlock Style="{StaticResource Text.Base}" FontSize="13" Foreground="{StaticResource Text.Secondary}"
+                                   VerticalAlignment="Center" Text="{DynamicResource Register.HaveAccount}" />
+                        <Button Style="{StaticResource Button.AuthLink}" Command="{Binding GoToLoginCommand}"
+                                Content="{DynamicResource Register.LoginLink}"
+                                AutomationProperties.Name="{DynamicResource Register.ToLogin}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </Grid>
 </UserControl>
