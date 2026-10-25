@@ -30,6 +30,21 @@
     <sys:String x:Key="Register.VisualBody">Bangun kebiasaan baik, catat perjalananmu, dan lihat dampaknya dari hari ke hari.</sys:String>
     <sys:String x:Key="Register.CityHint">Untuk rekomendasi aktivitas berdasarkan prakiraan cuaca.</sys:String>
     <sys:String x:Key="Register.Submit">Buat akun</sys:String>
+    <sys:String x:Key="Register.UsernameLabel">Username</sys:String>
+    <sys:String x:Key="Register.UsernamePlaceholder">Nama pengguna</sys:String>
+    <sys:String x:Key="Register.UsernameHint">3–30 karakter: huruf, angka, titik, atau _</sys:String>
+    <sys:String x:Key="Register.EmailLabel">Email</sys:String>
+    <sys:String x:Key="Register.EmailPlaceholder">nama@email.com</sys:String>
+    <sys:String x:Key="Register.PasswordLabel">Password</sys:String>
+    <sys:String x:Key="Register.PasswordPlaceholder">Minimal 8 karakter</sys:String>
+    <sys:String x:Key="Register.PasswordHint">Gunakan huruf dan angka.</sys:String>
+    <sys:String x:Key="Register.ConfirmLabel">Ulangi password</sys:String>
+    <sys:String x:Key="Register.ConfirmPlaceholder">Konfirmasi password</sys:String>
+    <sys:String x:Key="Register.CityLabel">Kota domisili</sys:String>
+    <sys:String x:Key="Register.ToLogin">Sudah punya akun? Masuk</sys:String>
+    <!-- Register.ToLogin split into the plain text and the link (same wording), as Login.NoAccount / Login.CreateAccount. -->
+    <sys:String x:Key="Register.HaveAccount">Sudah punya akun?</sys:String>
+    <sys:String x:Key="Register.LoginLink">Masuk</sys:String>
     <sys:String x:Key="Review.Title">Evening Review</sys:String>
     <sys:String x:Key="Review.Subtitle">Isi yang benar-benar kamu lakukan hari ini. Biarkan kosong jika tidak.</sys:String>
     <sys:String x:Key="Review.Submit">Simpan refleksi hari ini</sys:String>

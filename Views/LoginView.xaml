@@ -15,37 +15,6 @@
         <conv:ShortHeightConverter x:Key="IsShortHeight" />
 
         <!-- Short-window variants. Each style reads the UserControl height, because StaticResource cannot switch at runtime. -->
-        <Style x:Key="Border.VisualPad" TargetType="Border">
-            <Setter Property="Padding" Value="{StaticResource Padding.AuthVisual}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
-                    <Setter Property="Padding" Value="{StaticResource Padding.AuthVisualShort}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="Text.BrandVisual" TargetType="TextBlock" BasedOn="{StaticResource Text.Brand}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
-                    <Setter Property="FontSize" Value="17" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="Text.VisualHeading" TargetType="TextBlock" BasedOn="{StaticResource Text.AuthVisualHeading}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
-                    <Setter Property="FontSize" Value="22" />
-                    <Setter Property="LineHeight" Value="25" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="Text.VisualBody" TargetType="TextBlock" BasedOn="{StaticResource Text.Auth.VisualBody}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource IsShortHeight}}" Value="True">
-                    <Setter Property="FontSize" Value="12" />
-                    <Setter Property="LineHeight" Value="18" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
         <Style x:Key="Border.FormPad" TargetType="Border">
             <Setter Property="Padding" Value="{StaticResource Padding.AuthForm}" />
             <Style.Triggers>
@@ -141,73 +110,8 @@
             <ColumnDefinition Width="0.94*" MinWidth="{StaticResource MinWidth.AuthForm}" />
         </Grid.ColumnDefinitions>
 
-        <!-- ===== Visual panel (.auth-visual) ===== -->
-        <Border Grid.Column="0" Background="{StaticResource Bg.AuthVisual}" ClipToBounds="True">
-            <Grid>
-                <!-- Base glow (.auth-visual::after) -->
-                <Grid IsHitTestVisible="False">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="74*" />
-                        <RowDefinition Height="26*" />
-                    </Grid.RowDefinitions>
-                    <Rectangle Grid.Row="1" Fill="{StaticResource Bg.AuthGlow}" />
-                </Grid>
-
-                <Border Style="{StaticResource Border.VisualPad}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <!-- .auth-visual-top: brand left, tagline right -->
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal">
-                                <ctl:IconView Data="{DynamicResource Icon.Leaf}" Foreground="{StaticResource Brand.Primary}"
-                                              Width="{StaticResource Size.BrandIcon}" Height="{StaticResource Size.BrandIcon}" />
-                                <TextBlock Style="{StaticResource Text.BrandVisual}" Text="{DynamicResource Brand.Name}"
-                                           Margin="{StaticResource Margin.BrandText}" VerticalAlignment="Center" />
-                            </StackPanel>
-                            <TextBlock Grid.Column="1" Style="{StaticResource Text.Auth.Tagline}" Text="{DynamicResource Auth.Tagline}"
-                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="16,0,0,0" />
-                        </Grid>
-
-                        <!-- .auth-art-stage: halo (min(76%,420), round) behind the island (min(100%,560) wide, max 570 high) -->
-                        <Grid Grid.Row="1" Margin="0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="12*" />
-                                <ColumnDefinition Width="76*" />
-                                <ColumnDefinition Width="12*" />
-                            </Grid.ColumnDefinitions>
-                            <Viewbox Grid.Column="1" Stretch="Uniform" MaxWidth="{StaticResource MaxWidth.AuthHalo}"
-                                     MaxHeight="{StaticResource MaxWidth.AuthHalo}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
-                                <Ellipse Width="100" Height="100" Fill="{StaticResource Bg.AuthHalo}" />
-                            </Viewbox>
-                            <Image Grid.ColumnSpan="3" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   MaxWidth="{StaticResource MaxWidth.AuthArt}" MaxHeight="{StaticResource MaxHeight.AuthArt}"
-                                   Effect="{StaticResource Effect.AuthArt}" RenderOptions.BitmapScalingMode="HighQuality"
-                                   AutomationProperties.Name="{DynamicResource Auth.ArtAlt}">
-                                <Image.Source>
-                                    <BitmapImage UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/floating_garden_island_waterfall.png" CacheOption="OnLoad" />
-                                </Image.Source>
-                            </Image>
-                        </Grid>
-
-                        <!-- .auth-copy (no card, transparent) -->
-                        <StackPanel Grid.Row="2" MaxWidth="{StaticResource MaxWidth.AuthCopy}" HorizontalAlignment="Left">
-                            <TextBlock Style="{StaticResource Text.Auth.Kicker}" Text="{DynamicResource Auth.VisualKicker}" />
-                            <TextBlock Style="{StaticResource Text.VisualHeading}" Text="{DynamicResource Login.VisualHeading}" />
-                            <TextBlock Style="{StaticResource Text.VisualBody}" Text="{DynamicResource Login.VisualBody}" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </Grid>
-        </Border>
+        <!-- ===== Visual panel (.auth-visual), shared with Register ===== -->
+        <ctl:AuthVisualPanel Grid.Column="0" Heading="{DynamicResource Login.VisualHeading}" Body="{DynamicResource Login.VisualBody}" />
 
         <!-- ===== Form panel (.auth-form-panel): scrolls on short windows, card centred when there is room ===== -->
         <ScrollViewer x:Name="FormScroll" Grid.Column="1" Focusable="False" FocusVisualStyle="{x:Null}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"

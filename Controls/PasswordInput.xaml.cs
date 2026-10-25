@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -30,12 +31,30 @@ public partial class PasswordInput : UserControl
     public static readonly DependencyProperty FocusRequestProperty = DependencyProperty.Register(
         nameof(FocusRequest), typeof(int), typeof(PasswordInput), new PropertyMetadata(0, OnFocusRequestChanged));
 
+    /// <summary>
+    /// Mirrors <c>Validation.HasError</c> of this control. The inner boxes are not binding targets, so their own HasError never turns
+    /// true; the red border is therefore drawn from this property.
+    /// </summary>
+    public static readonly DependencyProperty IsInvalidProperty = DependencyProperty.Register(
+        nameof(IsInvalid), typeof(bool), typeof(PasswordInput), new PropertyMetadata(false));
+
+    /// <summary>True removes the vertical padding of the boxes so the control can be as low as 36 px (Register: .input height clamp(36,4.7vh,44)).</summary>
+    public static readonly DependencyProperty IsCompactProperty = DependencyProperty.Register(
+        nameof(IsCompact), typeof(bool), typeof(PasswordInput), new PropertyMetadata(false));
+
     private readonly PasswordRevealState _state = new();
     private bool _userEditing;
 
     public PasswordInput()
     {
         InitializeComponent();
+
+        SetBinding(IsInvalidProperty, new Binding
+        {
+            Path = new PropertyPath("(0)", Validation.HasErrorProperty),
+            RelativeSource = RelativeSource.Self,
+            Mode = BindingMode.OneWay,
+        });
 
         // Typing marks the following Password change as "by the user" (see PasswordRevealState.OnPasswordChanged).
         HiddenBox.PreviewTextInput += (_, _) => _userEditing = true;
@@ -55,6 +74,18 @@ public partial class PasswordInput : UserControl
     {
         get => (string)GetValue(PlaceholderProperty);
         set => SetValue(PlaceholderProperty, value);
+    }
+
+    public bool IsInvalid
+    {
+        get => (bool)GetValue(IsInvalidProperty);
+        private set => SetValue(IsInvalidProperty, value);
+    }
+
+    public bool IsCompact
+    {
+        get => (bool)GetValue(IsCompactProperty);
+        set => SetValue(IsCompactProperty, value);
     }
 
     public bool IsRevealed
