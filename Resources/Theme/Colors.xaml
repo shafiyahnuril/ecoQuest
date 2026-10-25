@@ -146,6 +146,28 @@
     <SolidColorBrush x:Key="Badge.IconBg" Color="{StaticResource Color.Badge.IconBg}" po:Freeze="True" />
     <Color x:Key="Color.Avatar.ProfileBg">#E1F0DB</Color>
     <SolidColorBrush x:Key="Avatar.ProfileBg" Color="{StaticResource Color.Avatar.ProfileBg}" po:Freeze="True" />
+    <!-- Auth pages: outer page, form panel, heading and small-text colours. Small-text colours deviate from the HTML on purpose (D-15, contrast >= 4.5:1). -->
+    <Color x:Key="Color.Bg.AuthPage">#EEF3E9</Color>
+    <SolidColorBrush x:Key="Bg.AuthPage" Color="{StaticResource Color.Bg.AuthPage}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.AuthFormPanel">#FDFEFA</Color>
+    <SolidColorBrush x:Key="Bg.AuthFormPanel" Color="{StaticResource Color.Bg.AuthFormPanel}" po:Freeze="True" />
+    <Color x:Key="Color.Bg.AuthInput">#FFFFFF</Color>
+    <SolidColorBrush x:Key="Bg.AuthInput" Color="{StaticResource Color.Bg.AuthInput}" po:Freeze="True" />
+    <Color x:Key="Color.Text.AuthHeading">#173D2A</Color>
+    <SolidColorBrush x:Key="Text.AuthHeading" Color="{StaticResource Color.Text.AuthHeading}" po:Freeze="True" />
+    <Color x:Key="Color.Text.AuthPlaceholder">#6A7A6E</Color>
+    <SolidColorBrush x:Key="Text.AuthPlaceholder" Color="{StaticResource Color.Text.AuthPlaceholder}" po:Freeze="True" />
+    <Color x:Key="Color.Text.AuthKicker">#467359</Color>
+    <SolidColorBrush x:Key="Text.AuthKicker" Color="{StaticResource Color.Text.AuthKicker}" po:Freeze="True" />
+    <Color x:Key="Color.Text.AuthTagline">#577660</Color>
+    <SolidColorBrush x:Key="Text.AuthTagline" Color="{StaticResource Color.Text.AuthTagline}" po:Freeze="True" />
+    <Color x:Key="Color.Text.AuthWelcome">#627B6C</Color>
+    <SolidColorBrush x:Key="Text.AuthWelcome" Color="{StaticResource Color.Text.AuthWelcome}" po:Freeze="True" />
+    <Color x:Key="Color.Text.AuthVisualBody">#596E5F</Color>
+    <SolidColorBrush x:Key="Text.AuthVisualBody" Color="{StaticResource Color.Text.AuthVisualBody}" po:Freeze="True" />
+    <Color x:Key="Color.Shadow.AuthArt">#264F2C</Color>
+    <!-- .auth-main-art drop-shadow(0 17px 19px rgba(38,79,44,.12)); blur 19 px ~ BlurRadius 19. -->
+    <DropShadowEffect x:Key="Effect.AuthArt" Color="{StaticResource Color.Shadow.AuthArt}" Opacity="0.12" BlurRadius="19" ShadowDepth="17" Direction="270" po:Freeze="True" />
     <Color x:Key="Color.Onboard.DotInactive">#CAD8C8</Color>
     <SolidColorBrush x:Key="Onboard.DotInactive" Color="{StaticResource Color.Onboard.DotInactive}" po:Freeze="True" />
     <Color x:Key="Color.Auth.CopyBorder">#E0EBDC</Color>
@@ -165,9 +187,15 @@
     <LinearGradientBrush x:Key="Bg.Sidebar" StartPoint="0.2,0" EndPoint="0.8,1" po:Freeze="True">
         <GradientStop Color="#F7F9F3" Offset="0" /><GradientStop Color="#EFF5EC" Offset="1" />
     </LinearGradientBrush>
-    <LinearGradientBrush x:Key="Bg.AuthVisual" StartPoint="0.3,0" EndPoint="0.7,1" po:Freeze="True">
-        <GradientStop Color="#F1F8ED" Offset="0" /><GradientStop Color="#E5F0E3" Offset="0.62" /><GradientStop Color="#D9E9D6" Offset="1" />
-    </LinearGradientBrush>
+    <!-- Auth pages, effective rules of body.auth-mode (INVENTORY-v7): visual panel = radial ellipse at 50%/45%, farthest-corner radii (0.5*sqrt2, 0.55*sqrt2). -->
+    <RadialGradientBrush x:Key="Bg.AuthVisual" Center="0.5,0.45" GradientOrigin="0.5,0.45" RadiusX="0.7071" RadiusY="0.7778" po:Freeze="True">
+        <GradientStop Color="#FFFDF2" Offset="0" /><GradientStop Color="#EDF5E9" Offset="0.45" /><GradientStop Color="#E0EDE1" Offset="1" />
+    </RadialGradientBrush>
+    <!-- Base glow (.auth-visual::after, #C5DFBD75 = AARRGGBB #75C5DFBD): element is 120% wide, 46% tall, bottom -20%; only the visible
+         bottom 26% of the panel height is drawn, so centre/radii are re-expressed relative to that strip. Transparent at 70% of the farthest-corner radius. -->
+    <RadialGradientBrush x:Key="Bg.AuthGlow" Center="0.5,0.885" GradientOrigin="0.5,0.885" RadiusX="0.594" RadiusY="0.876" po:Freeze="True">
+        <GradientStop Color="#75C5DFBD" Offset="0" /><GradientStop Color="#00C5DFBD" Offset="1" />
+    </RadialGradientBrush>
     <RadialGradientBrush x:Key="Bg.AuthForm" GradientOrigin="1,0" Center="1,0" RadiusX="0.46" RadiusY="0.46" po:Freeze="True">
         <GradientStop Color="#EDF6E9" Offset="0" /><GradientStop Color="#00EDF6E9" Offset="1" />
     </RadialGradientBrush>

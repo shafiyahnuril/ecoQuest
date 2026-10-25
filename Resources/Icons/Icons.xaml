@@ -83,4 +83,14 @@
     </GeometryGroup>
     <PathGeometry x:Key="Icon.Wind" po:Freeze="True" Figures="M3 8h12a3 3 0 1 0-3-3M2 12h17a3 3 0 1 1-3 3M4 16h6a3 3 0 1 1-3 3" />
     <PathGeometry x:Key="Icon.Chevron" po:Freeze="True" Figures="m9 18 6-6-6-6" />
+    <!-- Own drawing (D-16): eye = almond outline + pupil; EyeOff = same eye struck by one diagonal. 24x24 viewBox, same stroke style as the other icons. -->
+    <GeometryGroup x:Key="Icon.Eye" po:Freeze="True">
+        <PathGeometry Figures="M2 12C4.5 7.5 8 5.5 12 5.5S19.5 7.5 22 12C19.5 16.5 16 18.5 12 18.5S4.5 16.5 2 12Z" />
+        <EllipseGeometry Center="12,12" RadiusX="3" RadiusY="3" />
+    </GeometryGroup>
+    <GeometryGroup x:Key="Icon.EyeOff" po:Freeze="True">
+        <PathGeometry Figures="M2 12C4.5 7.5 8 5.5 12 5.5S19.5 7.5 22 12C19.5 16.5 16 18.5 12 18.5S4.5 16.5 2 12Z" />
+        <EllipseGeometry Center="12,12" RadiusX="3" RadiusY="3" />
+        <PathGeometry Figures="M3.5 3.5 20.5 20.5" />
+    </GeometryGroup>
 </ResourceDictionary>
