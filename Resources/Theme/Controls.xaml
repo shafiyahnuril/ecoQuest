@@ -40,6 +40,12 @@
     <Style TargetType="RadioButton"><Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" /></Style>
     <Style TargetType="ListBoxItem"><Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" /></Style>
     <Style TargetType="TabItem"><Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" /></Style>
+    <!-- Scroll containers are not interaction targets: no WPF default dotted focus rectangle around the whole page area and not a Tab stop,
+         but still Focusable so the keyboard (arrows, PageUp/PageDown, Home/End) scrolls them. Buttons, inputs and chips keep the Brand.Primary ring. -->
+    <Style TargetType="ScrollViewer">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="IsTabStop" Value="False" />
+    </Style>
     <Style TargetType="Hyperlink"><Setter Property="Foreground" Value="{StaticResource Brand.Primary}" /></Style>
 
     <!-- ===================== Buttons ===================== -->
@@ -518,7 +524,11 @@
     </Style>
 
     <!-- Illustration of the empty states (eco_sprout_in_mossy_pot.png, shown at 85 px; decoded at 2x for 150% DPI). -->
-    <BitmapImage x:Key="Image.EmptySprout" UriSource="/Resources/Images/eco_sprout_in_mossy_pot.png" DecodePixelWidth="170"
+    <BitmapImage x:Key="Image.EmptySprout" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_sprout_in_mossy_pot.png" DecodePixelWidth="170"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
+    <!-- Dashboard hero illustration (floating_garden_island_waterfall.png, shown at <= 540 DIP; decoded at 2x for 200% DPI). -->
+    <BitmapImage x:Key="Image.HeroIsland" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/floating_garden_island_waterfall.png" DecodePixelWidth="1080"
                  CacheOption="OnLoad" po:Freeze="True" />
 
     <!-- StateHost (UIR-05): Idle/Loading -> LoadingContent, Error -> ErrorBanner, Loaded+IsEmpty -> EmptyContent, Loaded -> Content.

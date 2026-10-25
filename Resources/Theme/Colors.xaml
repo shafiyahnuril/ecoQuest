@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     mc:Ignorable="po">
     <!-- Garden Light colour tokens (UI-UX-Flow-Frontend 2.1). WPF colours are #AARRGGBB; CSS #RRGGBBAA values were converted. -->
@@ -232,4 +233,9 @@
     <LinearGradientBrush x:Key="Chart.Area" StartPoint="0,0" EndPoint="0,1" po:Freeze="True">
         <GradientStop Color="#389FCCA0" Offset="0" /><GradientStop Color="#009FCCA0" Offset="1" />
     </LinearGradientBrush>
+    <!-- Dashboard: insight row background (.insight-row #fcfdfb) and the hero illustration shadow (.hero-img drop-shadow #254c3027 -> colour 254C30, opacity 0x27/255). -->
+    <Color x:Key="Color.Bg.InsightRow">#FCFDFB</Color>
+    <SolidColorBrush x:Key="Bg.InsightRow" Color="{StaticResource Color.Bg.InsightRow}" po:Freeze="True" />
+    <Color x:Key="Color.Shadow.HeroImage">#254C30</Color>
+    <sys:Double x:Key="Opacity.Shadow.HeroImage">0.153</sys:Double>
 </ResourceDictionary>

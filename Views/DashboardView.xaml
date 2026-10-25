@@ -1,6 +1,451 @@
 <UserControl x:Class="EcoQuest.Views.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
-    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Nav.Dashboard}" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             xmlns:conv="clr-namespace:EcoQuest.Converters"
+             mc:Ignorable="d po"
+             IsTabStop="False" FocusVisualStyle="{x:Null}"
+             d:DataContext="{d:DesignInstance Type=vm:DashboardViewModel}">
+    <!-- S-04 Dashboard. Reference: design-reference/screens/04-dashboard-empty.png + 07-dashboard-filled.png, INVENTORY-v7 .pagehead .banner .hero
+         .stats .metric .grid .card .insight-card .forecast-card, @media(max-width:1160px). Deltas: D-02 (one primary button), D-08 (hero title), D-09 (sentence case).
+         Charts, insight and weather content are shells for later tasks; the account-without-reviews case uses this same layout (UIR-57). -->
+    <UserControl.Resources>
+        <conv:CompactWidthConverter x:Key="IsCompactWidth" />
+        <conv:RoundedRectClipConverter x:Key="RoundedRectClip" />
+        <conv:CategoryIdToBrushConverter x:Key="CategoryBrush" />
+
+
+        <Style x:Key="Text.CardTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Title}">
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <!-- .hero-img: width min(52%,540), height 116%, right 1%, top -7%; at window width <= 1160: width 58%, right -5%.
+             HeroIllustrationPanel computes this from its own size (no ElementName bindings: those do not resolve when the view is created from a DataTemplate). -->
+        <Style x:Key="HeroIllustrationPanel.Hero" TargetType="ctl:HeroIllustrationPanel">
+            <Setter Property="MaxChildWidth" Value="{StaticResource MaxWidth.HeroImage}" />
+            <Setter Property="WidthFraction" Value="0.52" />
+            <Setter Property="RightFraction" Value="0.01" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource IsCompactWidth}}" Value="True">
+                    <Setter Property="WidthFraction" Value="0.58" />
+                    <Setter Property="RightFraction" Value="-0.05" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- .stats: 4 across, 2x2 at window width <= 1160. -->
+        <Style x:Key="UniformGrid.Stats" TargetType="UniformGrid">
+            <Setter Property="Columns" Value="4" />
+            <Setter Property="Margin" Value="{StaticResource Margin.Stats}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource IsCompactWidth}}" Value="True">
+                    <Setter Property="Columns" Value="2" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Banner action: the only primary button of the screen while the review is open (D-02); a small secondary one once it is saved. -->
+        <Style x:Key="Button.BannerStart" TargetType="Button" BasedOn="{StaticResource Button.Primary}">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSubmitted}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="Button.BannerSummary" TargetType="Button" BasedOn="{StaticResource Button.Small}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSubmitted}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="IconView.Banner" TargetType="ctl:IconView">
+            <!-- D-18 (owner request, deliberate deviation from the HTML, which uses the moon): open book while the review is pending; the saved state keeps the check mark. -->
+            <Setter Property="Data" Value="{DynamicResource Icon.BookOpen}" />
+            <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
+            <Setter Property="Width" Value="{StaticResource Size.IconMd}" />
+            <Setter Property="Height" Value="{StaticResource Size.IconMd}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSubmitted}" Value="True">
+                    <Setter Property="Data" Value="{DynamicResource Icon.Check}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="Text.Kicker" TargetType="TextBlock" BasedOn="{StaticResource Text.Auth.Kicker}">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="FontFamily" Value="{StaticResource Font.ExtraBold}" />
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+
+        <Style x:Key="Text.InsightTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Label}">
+            <Setter Property="FontFamily" Value="{StaticResource Font.Bold}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{StaticResource Brand.Forest}" />
+            <Setter Property="Margin" Value="0,1,0,5" />
+        </Style>
+
+        <!-- Insight row (.insight-row): bordered, 11 radius, padding 13, min height 75. -->
+        <Style x:Key="Border.InsightRow" TargetType="Border" BasedOn="{StaticResource Border.Card}">
+            <Setter Property="Padding" Value="{StaticResource Padding.InsightRow}" />
+            <Setter Property="Background" Value="{StaticResource Bg.InsightRow}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.InsightRow}" />
+            <Setter Property="MinHeight" Value="{StaticResource MinHeight.InsightRow}" />
+        </Style>
+
+        <!-- Skeleton block used by the loading layout. -->
+        <Style x:Key="Border.Block" TargetType="Border" BasedOn="{StaticResource Border.Skeleton}" />
+    </UserControl.Resources>
+
+    <ctl:StateHost State="{Binding State}" IsEmpty="{Binding IsEmpty}" ErrorMessage="{Binding ErrorMessage}"
+                   RetryCommand="{Binding ReloadCommand}">
+        <!-- ===================== Loading: mirrors the layout below ===================== -->
+        <ctl:StateHost.LoadingContent>
+            <StackPanel>
+                <Border Style="{StaticResource Border.Block}" Width="320" Height="36" HorizontalAlignment="Left" />
+                <Border Style="{StaticResource Border.Block}" Width="260" Height="16" HorizontalAlignment="Left" Margin="0,10,0,23" />
+                <Border Style="{StaticResource Border.Block}" Height="64" Margin="{StaticResource Margin.DashBanner}" />
+                <Border Style="{StaticResource Border.Block}" MinHeight="{StaticResource MinHeight.Hero}" CornerRadius="{StaticResource Radius.Hero}" />
+                <UniformGrid Style="{StaticResource UniformGrid.Stats}">
+                    <Border Style="{StaticResource Border.Block}" Height="75" Margin="{StaticResource Margin.MetricCard}" CornerRadius="{StaticResource Radius.Card}" />
+                    <Border Style="{StaticResource Border.Block}" Height="75" Margin="{StaticResource Margin.MetricCard}" CornerRadius="{StaticResource Radius.Card}" />
+                    <Border Style="{StaticResource Border.Block}" Height="75" Margin="{StaticResource Margin.MetricCard}" CornerRadius="{StaticResource Radius.Card}" />
+                    <Border Style="{StaticResource Border.Block}" Height="75" Margin="{StaticResource Margin.MetricCard}" CornerRadius="{StaticResource Radius.Card}" />
+                </UniformGrid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.55*" />
+                        <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource Border.Block}" Height="265" CornerRadius="{StaticResource Radius.Card}" />
+                    <Border Grid.Column="2" Style="{StaticResource Border.Block}" Height="265" CornerRadius="{StaticResource Radius.Card}" />
+                </Grid>
+                <Grid Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource Border.Block}" Height="380" CornerRadius="{StaticResource Radius.Card}" />
+                    <Border Grid.Column="2" Style="{StaticResource Border.Block}" Height="380" CornerRadius="{StaticResource Radius.Card}" />
+                </Grid>
+            </StackPanel>
+        </ctl:StateHost.LoadingContent>
+
+        <!-- ===================== Normal ===================== -->
+        <ctl:StateHost.Content>
+            <StackPanel>
+                <!-- .pagehead: title + subtitle left, date right (12, muted, top-aligned) -->
+                <Grid Margin="{StaticResource Margin.PageHead}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.Header}" Margin="{StaticResource Margin.PageHeadTitle}"
+                                   TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Greeting}"
+                                   ToolTip="{Binding Greeting}" AutomationProperties.HeadingLevel="Level1" />
+                        <TextBlock Style="{StaticResource Text.BodyRelaxed}" Text="{DynamicResource Dashboard.Subtitle}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Style="{StaticResource Text.Small}" Margin="15,0,0,0" TextWrapping="NoWrap"
+                               VerticalAlignment="Top" Text="{Binding TodayText}" />
+                </Grid>
+
+                <!-- .banner: status of today's review (UIR-51). The amber sidebar dot is handled by ShellViewModel. -->
+                <Border Style="{StaticResource Border.Banner.Info}" Margin="{StaticResource Margin.DashBanner}"
+                        AutomationProperties.LiveSetting="Polite">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <ctl:IconView x:Name="BannerIcon" Style="{StaticResource IconView.Banner}" />
+                            <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.MetricText}" VerticalAlignment="Center"
+                                       Text="{Binding BannerText}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Style="{StaticResource Button.BannerStart}" Margin="{StaticResource Margin.BannerAction}"
+                                Command="{Binding StartReviewCommand}" Content="{DynamicResource Dashboard.Start}" />
+                        <Button Grid.Column="1" Style="{StaticResource Button.BannerSummary}" Margin="{StaticResource Margin.BannerAction}"
+                                Command="{Binding ViewSummaryCommand}" Content="{DynamicResource Dashboard.ViewSummary}" />
+                    </Grid>
+                </Border>
+
+                <!-- .hero: radial glow over a linear gradient, mountain silhouette at the base, copy left, island right (overflowing the top). -->
+                <Border x:Name="Hero" ClipToBounds="True" MinHeight="{StaticResource MinHeight.Hero}" CornerRadius="{StaticResource Radius.Hero}"
+                        BorderBrush="{StaticResource Hero.Border}" BorderThickness="1" Background="{StaticResource Bg.Hero}">
+                    <Grid>
+                        <Grid.Clip>
+                            <MultiBinding Converter="{StaticResource RoundedRectClip}" ConverterParameter="17">
+                                <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </Grid.Clip>
+                        <Rectangle Fill="{StaticResource Bg.HeroGlow}" IsHitTestVisible="False" />
+                        <!-- .hero:after: polygon (0,80%) (10,57) (19,72) (34,39) (50,71) (64,28) (78,58) (100,27) (100,100) (0,100); 85 high. The tiny first
+                             figure only makes the bounding box start at y=0 so the vertical gradient spans the whole 85 px like the CSS box. -->
+                        <Path Height="{StaticResource Height.HeroMountain}" VerticalAlignment="Bottom" Stretch="Fill" IsHitTestVisible="False"
+                              Fill="{StaticResource Bg.HeroMountain}"
+                              Data="M0,0 L0.001,0 L0,0.001 Z M0,80 L10,57 L19,72 L34,39 L50,71 L64,28 L78,58 L100,27 L100,100 L0,100 Z"
+                              AutomationProperties.IsOffscreenBehavior="Offscreen" />
+
+                        <!-- Illustration layer (no padding), the reference box for the percentage sizes of .hero-img. -->
+                        <Grid x:Name="HeroLayer" IsHitTestVisible="False">
+                            <ctl:HeroIllustrationPanel Style="{StaticResource HeroIllustrationPanel.Hero}">
+                                <Grid x:Name="HeroImageBox">
+                                    <Image x:Name="HeroImage" Stretch="Uniform" Source="{StaticResource Image.HeroIsland}"
+                                           AutomationProperties.IsOffscreenBehavior="Offscreen">
+                                        <Image.Effect>
+                                            <DropShadowEffect Color="{StaticResource Color.Shadow.HeroImage}" Opacity="{StaticResource Opacity.Shadow.HeroImage}"
+                                                              BlurRadius="17" ShadowDepth="20" Direction="270" />
+                                        </Image.Effect>
+                                    </Image>
+                                </Grid>
+                            </ctl:HeroIllustrationPanel>
+                        </Grid>
+
+                        <!-- .hero-copy: max 48% of the width -->
+                        <Grid Margin="{StaticResource Padding.Hero}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.48*" />
+                                <ColumnDefinition Width="0.52*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <TextBlock x:Name="HeroTitle" Style="{StaticResource Text.Hero}" MaxWidth="{StaticResource MaxWidth.HeroTitle}" Margin="{StaticResource Margin.PageHeadTitle}"
+                                           Text="{DynamicResource Dashboard.HeroTitle}" AutomationProperties.HeadingLevel="Level2" />
+                                <TextBlock x:Name="HeroBody" Style="{StaticResource Text.BodyRelaxed}" MaxWidth="{StaticResource MaxWidth.HeroBody}" Margin="0,0,0,16"
+                                           Text="{DynamicResource Dashboard.HeroBody}" />
+                                <!-- D-02: secondary, so the banner button stays the only primary one. Both commands open the Evening Review screen. -->
+                                <Button x:Name="HeroButton" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left"
+                                        Command="{Binding StartReviewCommand}" Content="{Binding HeroCtaText}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- .stats: 4 metric cards; 2x2 when the window is <= 1160 wide -->
+                <UniformGrid x:Name="Stats" Style="{StaticResource UniformGrid.Stats}">
+                    <ctl:MetricCard Margin="{StaticResource Margin.MetricCard}" IconData="{DynamicResource Icon.Leaf}"
+                                    BubbleBackground="{StaticResource Bubble.Green.Bg}" IconForeground="{StaticResource Bubble.Green.Fg}"
+                                    Value="{Binding TotalCo2Text}" Label="{DynamicResource Dashboard.Metric.Co2}"
+                                    Explanation="{Binding TotalCo2Explanation}" />
+                    <ctl:MetricCard Margin="{StaticResource Margin.MetricCard}" IconData="{DynamicResource Icon.Calendar}"
+                                    BubbleBackground="{StaticResource Bubble.Blue.Bg}" IconForeground="{StaticResource Bubble.Blue.Fg}"
+                                    Value="{Binding ReflectionDaysText}" Label="{DynamicResource Dashboard.Metric.Days}" />
+                    <ctl:MetricCard Margin="{StaticResource Margin.MetricCard}" IconData="{DynamicResource Icon.Flame}"
+                                    BubbleBackground="{StaticResource Bubble.Orange.Bg}" IconForeground="{StaticResource Bubble.Orange.Fg}"
+                                    Value="{Binding StreakText}" Label="{DynamicResource Dashboard.Metric.Streak}" />
+                    <ctl:MetricCard Margin="{StaticResource Margin.MetricCard}" IconData="{DynamicResource Icon.Star}"
+                                    BubbleBackground="{StaticResource Bubble.Amber.Bg}" IconForeground="{StaticResource Bubble.Amber.Fg}"
+                                    Value="{Binding LevelName}" Label="{DynamicResource Dashboard.Metric.Level}" />
+                </UniformGrid>
+
+                <!-- ===== Row 1 (.grid.two, 1.55fr : 1fr, gap 16): trend + breakdown. Shells only. ===== -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.55*" />
+                        <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- TODO(FE chart task): LiveCharts line chart; the Mingguan/Bulanan chips become live and bound to the selected range. -->
+                    <Border Style="{StaticResource Border.Card}">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Style="{StaticResource Text.CardTitle}" Margin="0,0,0,12" Text="{DynamicResource Dashboard.TrendTitle}"
+                                           ToolTip="{DynamicResource Dashboard.TrendTitle}" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" IsHitTestVisible="False" Focusable="False">
+                                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="TrendRangeShell" IsChecked="True" IsTabStop="False"
+                                                 Content="{DynamicResource Dashboard.Weekly}" />
+                                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="TrendRangeShell" IsTabStop="False" Margin="8,0,0,0"
+                                                 Content="{DynamicResource Dashboard.Monthly}" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel MinHeight="{StaticResource MinHeight.ChartEmpty}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Image Source="{StaticResource Image.EmptySprout}" Width="{StaticResource Size.EmptyImage}" Height="{StaticResource Size.EmptyImage}"
+                                       Stretch="Uniform" Margin="0,24,0,12" AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                                <TextBlock Style="{StaticResource Text.BodyRelaxed}" TextAlignment="Center" Text="{DynamicResource Dashboard.ChartEmpty}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- TODO(FE chart task): LiveCharts donut with the 4 category series and percentages. -->
+                    <Border Grid.Column="2" Style="{StaticResource Border.Card}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.CardTitle}" Margin="0,0,0,12" Text="{DynamicResource Dashboard.BreakdownTitle}"
+                                       ToolTip="{DynamicResource Dashboard.BreakdownTitle}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Width="{StaticResource Size.Donut}" Height="{StaticResource Size.Donut}" VerticalAlignment="Center"
+                                      AutomationProperties.Name="{DynamicResource Dashboard.BreakdownAutomation}">
+                                    <Ellipse Width="121" Height="121" Stroke="{StaticResource Bg.Track}" StrokeThickness="{StaticResource Thickness.DonutRing}" />
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.Subtitle}" FontSize="18" TextAlignment="Center" TextWrapping="NoWrap"
+                                                   Text="{DynamicResource Dashboard.DonutEmptyValue}" />
+                                        <TextBlock Style="{StaticResource Text.Tiny}" TextAlignment="Center" Text="{DynamicResource Dashboard.DonutUnit}" />
+                                    </StackPanel>
+                                </Grid>
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding BreakdownLegend}" IsTabStop="False" Margin="12,0,0,0" VerticalAlignment="Center"
+                                              Focusable="False">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:CategoryLegendItem}">
+                                            <Grid Margin="0,5.5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Ellipse Width="{StaticResource Size.CategoryDot}" Height="{StaticResource Size.CategoryDot}"
+                                                         Fill="{Binding CategoryId, Converter={StaticResource CategoryBrush}}" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" Style="{StaticResource Text.Label}" FontFamily="{StaticResource Font.Regular}" Margin="8,0,0,0"
+                                                           TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ===== Row 2 (.grid.equal): insight + weather. Shells only. ===== -->
+                <Grid Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- TODO(FE insight/weather task): bind the InsightDto list (max 3) and the personal empty state. -->
+                    <Border Style="{StaticResource Border.Card}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" MinHeight="16" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Text.CardTitle}" Margin="0,0,0,8" Text="{DynamicResource Dashboard.InsightTitle}" />
+                                    <TextBlock Style="{StaticResource Text.Small}" FontSize="13" LineHeight="20.8" MaxWidth="{StaticResource MaxWidth.InsightText}"
+                                               HorizontalAlignment="Left" Text="{DynamicResource Dashboard.InsightSubtitle}" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Width="{StaticResource Size.InsightIcon}" Height="{StaticResource Size.InsightIcon}" VerticalAlignment="Top"
+                                        Margin="14,0,0,0" Background="{StaticResource Bg.Banner}" CornerRadius="{StaticResource Radius.InsightIcon}">
+                                    <ctl:IconView Data="{DynamicResource Icon.Leaf}" Foreground="{StaticResource Brand.Forest}" Width="{StaticResource Size.IconMd}"
+                                                  Height="{StaticResource Size.IconMd}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2">
+                                <Border Style="{StaticResource Border.InsightRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Width="{StaticResource Size.BubbleInsightRow}" Height="{StaticResource Size.BubbleInsightRow}" VerticalAlignment="Top">
+                                            <Ellipse Fill="{StaticResource Bubble.Green.Bg}" />
+                                            <ctl:IconView Data="{DynamicResource Icon.Leaf}" Foreground="{StaticResource Bubble.Green.Fg}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                          Width="{StaticResource Size.IconBubbleInsightRow}" Height="{StaticResource Size.IconBubbleInsightRow}" />
+                                        </Grid>
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                            <TextBlock Style="{StaticResource Text.InsightTitle}" Text="{DynamicResource Dashboard.InsightEmptyTitle}" />
+                                            <TextBlock Style="{StaticResource Text.Small}" LineHeight="18" Text="{DynamicResource Dashboard.InsightEmptyBody}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <Border Style="{StaticResource Border.InsightRow}" Margin="0,10,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Width="{StaticResource Size.BubbleInsightRow}" Height="{StaticResource Size.BubbleInsightRow}" VerticalAlignment="Top">
+                                            <Ellipse Fill="{StaticResource Bubble.Amber.Bg}" />
+                                            <ctl:IconView Data="{DynamicResource Icon.Bulb}" Foreground="{StaticResource Bubble.Amber.Fg}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                          Width="{StaticResource Size.IconBubbleInsightRow}" Height="{StaticResource Size.IconBubbleInsightRow}" />
+                                        </Grid>
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                            <TextBlock Style="{StaticResource Text.InsightTitle}" Text="{DynamicResource Dashboard.InsightHabitTitle}" />
+                                            <TextBlock Style="{StaticResource Text.Small}" LineHeight="18" Text="{DynamicResource Dashboard.InsightHabitBody}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- TODO(FE insight/weather task): WeatherSuggestionDto (forecast, advice box, live attribution). Only the heading and the generic state here. -->
+                    <Border Grid.Column="2" Style="{StaticResource Border.Card}" Background="{StaticResource Bg.Forecast}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Text.Kicker}" Text="{DynamicResource Weather.Kicker}" />
+                                    <TextBlock Style="{StaticResource Text.CardTitle}" FontSize="18" Margin="0,5,0,5" Text="{DynamicResource Weather.Title}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <ctl:IconView Data="{DynamicResource Icon.History}" Foreground="{StaticResource Text.Secondary}" Width="13" Height="13" VerticalAlignment="Center" />
+                                        <TextBlock Style="{StaticResource Text.Small}" Margin="6,0,0,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                                   VerticalAlignment="Center" Text="{Binding CityLineText}" ToolTip="{Binding CityLineText}" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <Border Grid.Column="1" Width="{StaticResource Size.WeatherIcon}" Height="{StaticResource Size.WeatherIcon}" VerticalAlignment="Top"
+                                        Margin="15,0,0,0" CornerRadius="{StaticResource Radius.WeatherIcon}" Background="{StaticResource Weather.IconBg}">
+                                    <Grid>
+                                        <ctl:IconView Data="{DynamicResource Icon.Cloud}" Foreground="{StaticResource Weather.IconFg}" Width="29" Height="29"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <ctl:IconView Data="{DynamicResource Icon.Sun}" Foreground="{StaticResource Weather.IconFg}" Width="18" Height="18"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,9,0" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                            <Border Grid.Row="1" BorderBrush="{StaticResource Line.Subtle}" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,18"
+                                    MinHeight="{StaticResource MinHeight.ForecastContent}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ctl:IconView Data="{DynamicResource Icon.Cloud}" Foreground="{StaticResource Brand.Primary}" Width="22" Height="22" VerticalAlignment="Center" />
+                                    <TextBlock Style="{StaticResource Text.Subtitle}" FontSize="14" Foreground="{StaticResource Brand.Primary}" Margin="13,0,0,0"
+                                               VerticalAlignment="Center" Text="{DynamicResource Weather.FallbackTitle}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="2" BorderBrush="{StaticResource Line.Subtle}" BorderThickness="0,1,0,0" Margin="0,14,0,0" Padding="0,13,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <ctl:IconView Data="{DynamicResource Icon.Info}" Foreground="{StaticResource Text.Secondary}" Width="13" Height="13" VerticalAlignment="Center" />
+                                    <TextBlock Style="{StaticResource Text.Tiny}" FontSize="10" Margin="6,0,0,0" VerticalAlignment="Center"
+                                               Text="{DynamicResource Weather.FallbackFooter}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </ctl:StateHost.Content>
+    </ctl:StateHost>
 </UserControl>
