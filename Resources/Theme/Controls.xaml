@@ -512,6 +512,51 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Skeleton control: default corner radius = Radius.Input. -->
+    <Style TargetType="ctl:Skeleton">
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Input}" />
+    </Style>
+
+    <!-- Illustration of the empty states (eco_sprout_in_mossy_pot.png, shown at 85 px; decoded at 2x for 150% DPI). -->
+    <BitmapImage x:Key="Image.EmptySprout" UriSource="/Resources/Images/eco_sprout_in_mossy_pot.png" DecodePixelWidth="170"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
+    <!-- StateHost (UIR-05): Idle/Loading -> LoadingContent, Error -> ErrorBanner, Loaded+IsEmpty -> EmptyContent, Loaded -> Content.
+         Retry text uses DynamicResource because Strings.id.xaml is merged after this dictionary. -->
+    <Style TargetType="ctl:StateHost">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctl:StateHost">
+                    <Grid>
+                        <ContentPresenter x:Name="LoadingHost" Content="{TemplateBinding LoadingContent}" Visibility="Visible" />
+                        <ctl:ErrorBanner x:Name="ErrorHost" Message="{TemplateBinding ErrorMessage}" RetryCommand="{TemplateBinding RetryCommand}"
+                                         RetryText="{DynamicResource Common.Retry}" VerticalAlignment="Top" Visibility="Collapsed" />
+                        <ContentPresenter x:Name="EmptyHost" Content="{TemplateBinding EmptyContent}" Visibility="Collapsed" />
+                        <ContentPresenter x:Name="ContentHost" Content="{TemplateBinding Content}" Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="State" Value="Error">
+                            <Setter TargetName="LoadingHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ErrorHost" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="State" Value="Loaded">
+                            <Setter TargetName="LoadingHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="State" Value="Loaded" />
+                                <Condition Property="IsEmpty" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="EmptyHost" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Track and fill are clipped to a capsule so both ends are identical at every value (0%, tiny values, 100%). -->
     <Style x:Key="ProgressBar.Mini" TargetType="ProgressBar">
         <Setter Property="Height" Value="{StaticResource Height.Progress}" />
