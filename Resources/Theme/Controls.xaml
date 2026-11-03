@@ -36,6 +36,20 @@
     </Style>
 
     <!-- Implicit styles only add the focus ring to controls that have no dedicated style. -->
+    <!-- Sidebar items and "Keluar": outline 2 Brand.Primary, offset 2, radius concentric with the item (Focus.Visual above keeps its own geometry). -->
+    <Style x:Key="Focus.Visual.Nav">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Margin="{StaticResource Margin.FocusRingNav}" RadiusX="{StaticResource Radius.FocusRingNav}"
+                               RadiusY="{StaticResource Radius.FocusRingNav}"
+                               Stroke="{StaticResource Brand.Primary}" StrokeThickness="{StaticResource Stroke.Focus}"
+                               SnapsToDevicePixels="True" IsHitTestVisible="False" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="CheckBox"><Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" /></Style>
     <Style TargetType="RadioButton"><Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" /></Style>
     <Style TargetType="ListBoxItem"><Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" /></Style>

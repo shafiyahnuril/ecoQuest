@@ -22,7 +22,7 @@
 
         <!-- ===== Sidebar navigation item (.nav button): hover = Bg.NavHover, active = Bg.NavActive (wins over hover, as in the CSS) ===== -->
         <Style x:Key="Button.NavItem" TargetType="Button">
-            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual.Nav}" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="MinHeight" Value="{StaticResource Height.NavItem}" />
@@ -118,7 +118,7 @@
 
         <!-- ===== "Keluar" (.logout): text button, muted, icon 15 ===== -->
         <Style x:Key="Button.Logout" TargetType="Button">
-            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual.Nav}" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{StaticResource Text.Secondary}" />
@@ -208,8 +208,9 @@
                                    Margin="{StaticResource Margin.BrandText}" VerticalAlignment="Center" />
                     </StackPanel>
 
-                    <ItemsControl Grid.Row="1" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource NavItemTemplate}"
-                                  IsTabStop="False" AutomationProperties.Name="{DynamicResource Nav.Landmark}" />
+                    <!-- The list is only a container: no default dotted focus rectangle, not focusable, not a Tab stop (the buttons inside are). -->
+                    <ItemsControl x:Name="MenuList" Grid.Row="1" ItemsSource="{Binding MenuItems}" ItemTemplate="{StaticResource NavItemTemplate}"
+                                  Focusable="False" IsTabStop="False" FocusVisualStyle="{x:Null}" AutomationProperties.Name="{DynamicResource Nav.Landmark}" />
 
                     <!-- Account block (.account): avatar (photo or initial), user name (bold) and city, fed by the session (UIR-24/25). -->
                     <Border Grid.Row="2" BorderBrush="{StaticResource Line.Subtle}" BorderThickness="0,1,0,0"
@@ -235,7 +236,7 @@
                         </StackPanel>
                     </Border>
 
-                    <Button Grid.Row="3" Style="{StaticResource Button.Logout}" Command="{Binding LogoutCommand}"
+                    <Button x:Name="LogoutButton" Grid.Row="3" Style="{StaticResource Button.Logout}" Command="{Binding LogoutCommand}"
                             AutomationProperties.Name="{DynamicResource Nav.Logout}">
                         <StackPanel Orientation="Horizontal">
                             <ctl:IconView Data="{DynamicResource Icon.Logout}" Foreground="{StaticResource Text.Secondary}"

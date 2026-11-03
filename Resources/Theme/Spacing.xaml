@@ -72,6 +72,10 @@
     <sys:Double x:Key="Size.IconMd">22</sys:Double>
     <sys:Double x:Key="Stroke.Icon">1.75</sys:Double>
     <sys:Double x:Key="Stroke.Focus">2</sys:Double>
+    <!-- Sidebar focus ring (outline 2, offset 2): the stroke is centred on the rectangle edge, so the rectangle sits offset + stroke/2 = 3 outside the item;
+         its corner radius is Radius.Button (9) + 3 so the ring stays concentric with the item. -->
+    <Thickness x:Key="Margin.FocusRingNav">-3</Thickness>
+    <sys:Double x:Key="Radius.FocusRingNav">12</sys:Double>
     <sys:Double x:Key="Stroke.Border">1</sys:Double>
     <sys:Double x:Key="Window.MinWidth">1100</sys:Double>
     <sys:Double x:Key="Window.MinHeight">700</sys:Double>
