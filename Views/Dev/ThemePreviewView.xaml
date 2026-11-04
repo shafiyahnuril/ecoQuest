@@ -426,6 +426,32 @@
                 <TextBlock Style="{StaticResource Text.Small}" Text="Fokus keyboard: tekan Tab untuk berpindah antar kontrol di halaman ini; cincin 2 px Brand.Primary harus tampil." />
             </StackPanel>
 
+            <TextBlock Style="{StaticResource Text.Title}" Text="Kontrol Evening Review" Margin="0,16,0,10" />
+            <StackPanel MaxWidth="430" HorizontalAlignment="Left">
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper desimal (kosong)" Margin="0,0,0,6" />
+                <ctl:NumericStepper x:Name="StepperEmpty" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper desimal (terisi)" Margin="0,0,0,6" />
+                <ctl:NumericStepper Value="3.5" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper bulat (terisi)" Margin="0,0,0,6" />
+                <ctl:NumericStepper IsInteger="True" Value="2" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jumlah" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper (nonaktif)" Margin="0,0,0,6" />
+                <ctl:NumericStepper Value="1" IsEnabled="False" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper (error)" Margin="0,0,0,6" />
+                <ctl:NumericStepper x:Name="StepperError" HorizontalAlignment="Left" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.FieldError}" Text="Jarak melebihi batas wajar per hari." Margin="0,5,0,15" />
+
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (kosong)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeEmpty" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (terisi, melewati tengah malam)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeFilled" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (nonaktif)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeDisabled" IsEnabled="False" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (error)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeError" />
+                <TextBlock Style="{StaticResource Text.FieldError}" Text="Waktu selesai harus berbeda dari waktu mulai." Margin="0,5,0,15" />
+                <TextBlock Style="{StaticResource Text.Small}" Text="Uji manual: ketik 3,5 / 3.5; panah atas-bawah; kosongkan; ketik 2100 atau 930; tombol Hapus waktu." />
+            </StackPanel>
+
             <TextBlock Style="{StaticResource Text.Title}" Text="Tinggi terukur (DIP)" Margin="0,16,0,10" />
             <Border Style="{StaticResource Border.Card}" MaxWidth="430" HorizontalAlignment="Left">
                 <StackPanel>
@@ -443,10 +469,10 @@
             <TextBlock Style="{StaticResource Text.Title}" Text="Saklar, chip, segmented, pill" Margin="0,16,0,10" />
             <StackPanel HorizontalAlignment="Left">
                 <WrapPanel Margin="0,0,0,10">
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Ya" IsChecked="True" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Tidak" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Ya (nonaktif)" IsChecked="True" IsEnabled="False" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Tidak (nonaktif)" IsEnabled="False" VerticalAlignment="Center" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Aktif" IsChecked="True" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Mati" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Aktif nonaktif" IsChecked="True" IsEnabled="False" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Mati nonaktif" IsEnabled="False" VerticalAlignment="Center" />
                 </WrapPanel>
                 <WrapPanel Margin="0,0,0,10">
                     <ToggleButton Style="{StaticResource ToggleButton.Chip}" Content="7 hari" IsChecked="True" VerticalAlignment="Top" Margin="0,0,7,7" />

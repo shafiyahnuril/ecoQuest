@@ -70,6 +70,9 @@
     </GeometryGroup>
     <PathGeometry x:Key="Icon.Logout" po:Freeze="True" Figures="M10 3H5v18h5m4-4 5-5-5-5m5 5H9" />
     <PathGeometry x:Key="Icon.Plus" po:Freeze="True" Figures="M12 4v16M4 12h16" />
+    <!-- Drawn for the stepper and the clear-time button; the prototype's stepper uses the glyph "−". -->
+    <PathGeometry x:Key="Icon.Minus" po:Freeze="True" Figures="M4 12h16" />
+    <PathGeometry x:Key="Icon.Close" po:Freeze="True" Figures="M6 6l12 12M18 6L6 18" />
     <PathGeometry x:Key="Icon.Arrow" po:Freeze="True" Figures="M5 12h14m-6-6 6 6-6 6" />
     <GeometryGroup x:Key="Icon.Settings" po:Freeze="True">
         <EllipseGeometry Center="12,12" RadiusX="3" RadiusY="3" />
