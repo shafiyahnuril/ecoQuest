@@ -71,6 +71,7 @@
     <sys:Double x:Key="Size.SwitchThumb">18</sys:Double>
     <Thickness x:Key="Margin.SwitchThumb">2,0</Thickness>
     <Thickness x:Key="Margin.StepperInput">6,0</Thickness>
+    <Thickness x:Key="Margin.UnitLabel">6,0,0,0</Thickness>
     <Thickness x:Key="Margin.TimeField">7,0,0,0</Thickness>
     <Thickness x:Key="Margin.TimeLabel">0,0,0,2</Thickness>
     <Thickness x:Key="Margin.TimeClear">4,0,0,3</Thickness>

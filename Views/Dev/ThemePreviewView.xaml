@@ -4,6 +4,13 @@
              xmlns:ctl="clr-namespace:EcoQuest.Controls"
              xmlns:local="clr-namespace:ecoQuest.Views.Dev"
              UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Templates/ActivityInputTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <!-- TEMPORARY (FE-01): shows every theme token, component, state, icon and illustration. Delete in FE-21. -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{StaticResource Bg.App}">
         <StackPanel Margin="{StaticResource Padding.Page}">
@@ -451,6 +458,38 @@
                 <TextBlock Style="{StaticResource Text.FieldError}" Text="Waktu selesai harus berbeda dari waktu mulai." Margin="0,5,0,15" />
                 <TextBlock Style="{StaticResource Text.Small}" Text="Uji manual: ketik 3,5 / 3.5; panah atas-bawah; kosongkan; ketik 2100 atau 930; tombol Hapus waktu." />
             </StackPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Item aktivitas (template per jenis kontrol)" Margin="0,16,0,10" />
+            <ItemsControl x:Name="ActivityItems" MaxWidth="430" HorizontalAlignment="Left" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,0,0,15">
+                            <TextBlock Style="{StaticResource Text.Label}" Text="{Binding TypeName}" Margin="0,0,0,6" />
+                            <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource ActivityInput.Selector}" Focusable="False" />
+                            <TextBlock Style="{StaticResource Text.FieldError}" Text="{Binding ErrorText}" Margin="0,5,0,0">
+                                <TextBlock.Visibility>
+                                    <Binding Path="HasError">
+                                        <Binding.Converter>
+                                            <BooleanToVisibilityConverter />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding WarningText}" Margin="0,5,0,0">
+                                <TextBlock.Visibility>
+                                    <Binding Path="HasWarning">
+                                        <Binding.Converter>
+                                            <BooleanToVisibilityConverter />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding ImpactText}" ToolTip="{Binding FormulaExplanation}" Margin="0,5,0,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Style="{StaticResource Text.Small}" Text="Uji manual: isi tiap jenis; kosong tampil 0 kg CO₂; jarak 500 km → error; 2 jam lampu → dampak; Tumbler Ya → dampak." />
 
             <TextBlock Style="{StaticResource Text.Title}" Text="Tinggi terukur (DIP)" Margin="0,16,0,10" />
             <Border Style="{StaticResource Border.Card}" MaxWidth="430" HorizontalAlignment="Left">

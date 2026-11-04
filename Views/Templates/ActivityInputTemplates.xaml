@@ -1,0 +1,35 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ctl="clr-namespace:EcoQuest.Controls"
+                    xmlns:items="clr-namespace:EcoQuest.ViewModels.Items"
+                    xmlns:sel="clr-namespace:EcoQuest.Selectors">
+
+    <DataTemplate x:Key="ActivityInput.Numeric" DataType="{x:Type items:NumericItemViewModel}">
+        <StackPanel Orientation="Horizontal">
+            <ctl:NumericStepper Value="{Binding Quantity, Mode=TwoWay}" AutomationProperties.Name="{Binding TypeName}" />
+            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding UnitLabel}" Margin="{StaticResource Margin.UnitLabel}" VerticalAlignment="Center" />
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ActivityInput.Count" DataType="{x:Type items:CountItemViewModel}">
+        <StackPanel Orientation="Horizontal">
+            <ctl:NumericStepper IsInteger="True" Value="{Binding Quantity, Mode=TwoWay}" AutomationProperties.Name="{Binding TypeName}" />
+            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding UnitLabel}" Margin="{StaticResource Margin.UnitLabel}" VerticalAlignment="Center" />
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ActivityInput.TimeRange" DataType="{x:Type items:TimeRangeItemViewModel}">
+        <ctl:TimeRangePicker StartTime="{Binding StartTime, Mode=TwoWay}" EndTime="{Binding EndTime, Mode=TwoWay}" AutomationProperties.Name="{Binding TypeName}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="ActivityInput.Toggle" DataType="{x:Type items:ToggleItemViewModel}">
+        <ToggleButton Style="{StaticResource ToggleButton.Switch}" IsChecked="{Binding IsYes, Mode=TwoWay}"
+                      HorizontalAlignment="Left" AutomationProperties.Name="{Binding TypeName}" />
+    </DataTemplate>
+
+    <sel:ActivityInputTemplateSelector x:Key="ActivityInput.Selector"
+                                       NumericTemplate="{StaticResource ActivityInput.Numeric}"
+                                       CountTemplate="{StaticResource ActivityInput.Count}"
+                                       TimeRangeTemplate="{StaticResource ActivityInput.TimeRange}"
+                                       ToggleTemplate="{StaticResource ActivityInput.Toggle}" />
+</ResourceDictionary>
