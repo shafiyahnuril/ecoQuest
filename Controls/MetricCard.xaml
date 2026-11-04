@@ -1,0 +1,33 @@
+<UserControl x:Class="EcoQuest.Controls.MetricCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             x:Name="Self" Focusable="False" IsTabStop="False">
+    <!-- Dashboard metric card (.metric): card, padding 15, round icon bubble 43 (icon 22) + value (19 ExtraBold) over a label (11, muted).
+         Bubble colours are passed in as theme brushes. Explanation (optional) becomes the tooltip and the automation help text (UIR-50). -->
+    <Border Style="{StaticResource Border.Card}" Padding="{StaticResource Padding.Metric}"
+            AutomationProperties.HelpText="{Binding Explanation, ElementName=Self}"
+            ToolTipService.InitialShowDelay="300">
+        <Border.ToolTip>
+            <ToolTip Style="{StaticResource ToolTip.Default}" Content="{Binding Explanation, ElementName=Self}" />
+        </Border.ToolTip>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Width="{StaticResource Size.BubbleMetric}" Height="{StaticResource Size.BubbleMetric}" VerticalAlignment="Center">
+                <Ellipse Fill="{Binding BubbleBackground, ElementName=Self}" />
+                <ctl:IconView Data="{Binding IconData, ElementName=Self}" Foreground="{Binding IconForeground, ElementName=Self}"
+                              Width="{StaticResource Size.IconBubbleMetric}" Height="{StaticResource Size.IconBubbleMetric}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+            <StackPanel Grid.Column="1" Margin="{StaticResource Margin.MetricText}" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource Text.Number}" LineHeight="23" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                           Text="{Binding Value, ElementName=Self}" />
+                <TextBlock Style="{StaticResource Text.Tiny}" LineHeight="14" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                           Margin="{StaticResource Margin.MetricLabel}" Text="{Binding Label, ElementName=Self}" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

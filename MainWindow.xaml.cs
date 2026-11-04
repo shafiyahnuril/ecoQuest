@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +19,9 @@ namespace ecoQuest
         public MainWindow()
         {
             InitializeComponent();
+
+            // Trigger only (UIR-56): the view model decides whether and how to refresh.
+            Activated += (_, _) => (DataContext as EcoQuest.ViewModels.ShellViewModel)?.RefreshPendingCommand.Execute(null);
         }
     }
 }

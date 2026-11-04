@@ -1,0 +1,11 @@
+<UserControl x:Class="EcoQuest.Controls.Skeleton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False" IsTabStop="False" IsHitTestVisible="False" SnapsToDevicePixels="True"
+             AutomationProperties.IsOffscreenBehavior="Offscreen">
+    <!-- Placeholder block shown while data loads (UI-UX-Flow-Frontend 2.4). Width/Height come from the caller, CornerRadius from the
+         CornerRadius property (default Radius.Input via the implicit style in Controls.xaml). The pulse lives in Border.Skeleton and is
+         off when SystemParameters.ClientAreaAnimation is false. Hidden from UI Automation (the loading state is announced by the host). -->
+    <Border Style="{StaticResource Border.Skeleton}"
+            CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+</UserControl>
