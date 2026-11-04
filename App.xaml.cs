@@ -45,25 +45,6 @@ namespace ecoQuest
             try 
             {
                 await SupabaseService.Instance.InitializeAsync();
-                
-                // --- TEST SEED DATA KE SUPABASE ---
-                var testUser = new ecoQuest.Models.UserModel
-                {
-                    UserName = "BagasTester " + new Random().Next(1000),
-                    Email = "bagas" + new Random().Next(1000) + "@tester.com",
-                    PasswordHash = "rahasia123",
-                    City = "Yogyakarta",
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                var insertResult = await SupabaseService.Instance.Client.From<ecoQuest.Models.UserModel>().Insert(testUser);
-                var inserted = insertResult.Models.FirstOrDefault();
-
-                if (inserted != null)
-                {
-                    MessageBox.Show($"Koneksi Valid! Data Dummy (User: {inserted.UserName}) berhasil masuk ke Supabase.", "Sukses Seed Data");
-                }
-                // ----------------------------------
             }
             catch (Exception ex)
             {
@@ -72,4 +53,3 @@ namespace ecoQuest
         }
     }
 }
-
