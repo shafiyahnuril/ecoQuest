@@ -1,0 +1,21 @@
+<UserControl x:Class="EcoQuest.Controls.NumericStepper"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             Focusable="False" Validation.ErrorTemplate="{x:Null}">
+    <StackPanel Orientation="Horizontal">
+        <Button x:Name="DecreaseButton" Style="{StaticResource Button.Stepper}" Click="OnDecreaseClick"
+                AutomationProperties.Name="{DynamicResource Stepper.Decrease}" ToolTip="{DynamicResource Stepper.Decrease}">
+            <ctl:IconView Data="{DynamicResource Icon.Minus}" Foreground="{StaticResource Brand.Forest}"
+                          Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}" />
+        </Button>
+        <TextBox x:Name="Box" Style="{StaticResource TextBox.Stepper}" Margin="{StaticResource Margin.StepperInput}"
+                 ctl:InputState.IsInvalid="{Binding IsInvalid, RelativeSource={RelativeSource AncestorType=ctl:NumericStepper}}"
+                 AutomationProperties.Name="{Binding (AutomationProperties.Name), RelativeSource={RelativeSource AncestorType=ctl:NumericStepper}}" />
+        <Button x:Name="IncreaseButton" Style="{StaticResource Button.Stepper}" Click="OnIncreaseClick"
+                AutomationProperties.Name="{DynamicResource Stepper.Increase}" ToolTip="{DynamicResource Stepper.Increase}">
+            <ctl:IconView Data="{DynamicResource Icon.Plus}" Foreground="{StaticResource Brand.Forest}"
+                          Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}" />
+        </Button>
+    </StackPanel>
+</UserControl>
