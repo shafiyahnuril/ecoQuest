@@ -67,6 +67,14 @@
     <sys:Double x:Key="Width.HistoryDetail">330</sys:Double>
     <sys:Double x:Key="Width.Onboarding">590</sys:Double>
     <sys:Double x:Key="Width.StepperInput">84</sys:Double>
+    <sys:Double x:Key="MinWidth.TimeInput">110</sys:Double>
+    <sys:Double x:Key="Size.SwitchThumb">18</sys:Double>
+    <Thickness x:Key="Margin.SwitchThumb">2,0</Thickness>
+    <Thickness x:Key="Margin.StepperInput">6,0</Thickness>
+    <Thickness x:Key="Margin.UnitLabel">6,0,0,0</Thickness>
+    <Thickness x:Key="Margin.TimeField">7,0,0,0</Thickness>
+    <Thickness x:Key="Margin.TimeLabel">0,0,0,2</Thickness>
+    <Thickness x:Key="Margin.TimeClear">4,0,0,3</Thickness>
     <sys:Double x:Key="MaxWidth.Tooltip">320</sys:Double>
     <sys:Double x:Key="Size.IconSm">18</sys:Double>
     <sys:Double x:Key="Size.IconMd">22</sys:Double>

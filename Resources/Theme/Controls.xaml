@@ -191,6 +191,43 @@
                         <Trigger Property="Validation.HasError" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource State.Error}" />
                         </Trigger>
+                        <Trigger Property="ctl:InputState.IsInvalid" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource State.Error}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="{StaticResource Opacity.Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TextBox.Stepper" TargetType="TextBox" BasedOn="{StaticResource TextBox.Default}">
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Width" Value="{StaticResource Width.StepperInput}" />
+    </Style>
+
+    <Style x:Key="TextBox.Time" TargetType="TextBox" BasedOn="{StaticResource TextBox.Default}">
+        <Setter Property="MinWidth" Value="{StaticResource MinWidth.TimeInput}" />
+    </Style>
+
+    <Style x:Key="Button.Stepper" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Width" Value="{StaticResource Width.StepperButton}" />
+        <Setter Property="Height" Value="{StaticResource Height.StepperButton}" />
+        <Setter Property="Background" Value="{StaticResource Bg.Stepper}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Line.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Radius.Stepper}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="{StaticResource Opacity.Disabled}" />
                         </Trigger>
@@ -358,10 +395,10 @@
                         <Border x:Name="Track" Width="{StaticResource Width.Switch}" Height="{StaticResource Height.Switch}"
                                 CornerRadius="{StaticResource Radius.Switch}" Background="{StaticResource Bg.Track}" BorderBrush="{StaticResource Line.Input}"
                                 BorderThickness="1">
-                            <Ellipse x:Name="Thumb" Width="18" Height="18" Margin="2,0" HorizontalAlignment="Left"
-                                     Fill="{StaticResource Line.Input}" />
+                            <Ellipse x:Name="Thumb" Width="{StaticResource Size.SwitchThumb}" Height="{StaticResource Size.SwitchThumb}"
+                                     Margin="{StaticResource Margin.SwitchThumb}" HorizontalAlignment="Left" Fill="{StaticResource Line.Input}" />
                         </Border>
-                        <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                        <TextBlock x:Name="Label" Margin="8,0,0,0" VerticalAlignment="Center" Text="{DynamicResource Switch.No}" />
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
@@ -369,6 +406,7 @@
                             <Setter TargetName="Track" Property="BorderBrush" Value="{StaticResource Brand.Primary}" />
                             <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
                             <Setter TargetName="Thumb" Property="Fill" Value="{StaticResource Bg.Surface}" />
+                            <Setter TargetName="Label" Property="Text" Value="{DynamicResource Switch.Yes}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="{StaticResource Opacity.Disabled}" />

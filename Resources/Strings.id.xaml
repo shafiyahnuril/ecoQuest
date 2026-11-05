@@ -143,4 +143,17 @@
     <sys:String x:Key="Dashboard.DonutEmptyValue">0 kg</sys:String>
     <sys:String x:Key="Dashboard.DonutUnit">CO₂</sys:String>
     <sys:String x:Key="Dashboard.BreakdownAutomation">Kontribusi per kategori, belum ada data</sys:String>
+    <sys:String x:Key="Stepper.Decrease">Kurangi</sys:String>
+    <sys:String x:Key="Stepper.Increase">Tambah</sys:String>
+    <sys:String x:Key="Time.Start">Mulai</sys:String>
+    <sys:String x:Key="Time.End">Selesai</sys:String>
+    <sys:String x:Key="Time.Clear">Hapus waktu</sys:String>
+    <sys:String x:Key="Switch.Yes">Ya</sys:String>
+    <sys:String x:Key="Switch.No">Tidak</sys:String>
+    <sys:String x:Key="Activity.Desc.1">Jarak yang ditempuh tanpa kendaraan bermotor.</sys:String>
+    <sys:String x:Key="Activity.Desc.2">Jarak dengan bus, kereta, atau angkutan umum.</sys:String>
+    <sys:String x:Key="Activity.Desc.3">Rentang waktu lampu dimatikan saat tak diperlukan.</sys:String>
+    <sys:String x:Key="Activity.Desc.4">Jumlah kegiatan memilah sampah.</sys:String>
+    <sys:String x:Key="Activity.Desc.5">Apakah kamu membawa tumbler hari ini?</sys:String>
+    <sys:String x:Key="Activity.Desc.6">Berapa kali membawa kantong sendiri?</sys:String>
 </ResourceDictionary>

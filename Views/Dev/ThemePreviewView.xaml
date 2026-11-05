@@ -4,6 +4,13 @@
              xmlns:ctl="clr-namespace:EcoQuest.Controls"
              xmlns:local="clr-namespace:ecoQuest.Views.Dev"
              UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Templates/ActivityInputTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <!-- TEMPORARY (FE-01): shows every theme token, component, state, icon and illustration. Delete in FE-21. -->
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{StaticResource Bg.App}">
         <StackPanel Margin="{StaticResource Padding.Page}">
@@ -426,6 +433,64 @@
                 <TextBlock Style="{StaticResource Text.Small}" Text="Fokus keyboard: tekan Tab untuk berpindah antar kontrol di halaman ini; cincin 2 px Brand.Primary harus tampil." />
             </StackPanel>
 
+            <TextBlock Style="{StaticResource Text.Title}" Text="Kontrol Evening Review" Margin="0,16,0,10" />
+            <StackPanel MaxWidth="430" HorizontalAlignment="Left">
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper desimal (kosong)" Margin="0,0,0,6" />
+                <ctl:NumericStepper x:Name="StepperEmpty" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper desimal (terisi)" Margin="0,0,0,6" />
+                <ctl:NumericStepper Value="3.5" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper bulat (terisi)" Margin="0,0,0,6" />
+                <ctl:NumericStepper IsInteger="True" Value="2" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jumlah" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper (nonaktif)" Margin="0,0,0,6" />
+                <ctl:NumericStepper Value="1" IsEnabled="False" HorizontalAlignment="Left" Margin="0,0,0,15" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="NumericStepper (error)" Margin="0,0,0,6" />
+                <ctl:NumericStepper x:Name="StepperError" HorizontalAlignment="Left" AutomationProperties.Name="Jarak" />
+                <TextBlock Style="{StaticResource Text.FieldError}" Text="Jarak melebihi batas wajar per hari." Margin="0,5,0,15" />
+
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (kosong)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeEmpty" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (terisi, melewati tengah malam)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeFilled" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (nonaktif)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeDisabled" IsEnabled="False" Margin="0,0,0,15" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="TimeRangePicker (error)" Margin="0,0,0,6" />
+                <ctl:TimeRangePicker x:Name="TimeError" />
+                <TextBlock Style="{StaticResource Text.FieldError}" Text="Waktu selesai harus berbeda dari waktu mulai." Margin="0,5,0,15" />
+                <TextBlock Style="{StaticResource Text.Small}" Text="Uji manual: ketik 3,5 / 3.5; panah atas-bawah; kosongkan; ketik 2100 atau 930; tombol Hapus waktu." />
+            </StackPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Item aktivitas (template per jenis kontrol)" Margin="0,16,0,10" />
+            <ItemsControl x:Name="ActivityItems" MaxWidth="430" HorizontalAlignment="Left" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,0,0,15">
+                            <TextBlock Style="{StaticResource Text.Label}" Text="{Binding TypeName}" Margin="0,0,0,6" />
+                            <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource ActivityInput.Selector}" Focusable="False" />
+                            <TextBlock Style="{StaticResource Text.FieldError}" Text="{Binding ErrorText}" Margin="0,5,0,0">
+                                <TextBlock.Visibility>
+                                    <Binding Path="HasError">
+                                        <Binding.Converter>
+                                            <BooleanToVisibilityConverter />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding WarningText}" Margin="0,5,0,0">
+                                <TextBlock.Visibility>
+                                    <Binding Path="HasWarning">
+                                        <Binding.Converter>
+                                            <BooleanToVisibilityConverter />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding ImpactText}" ToolTip="{Binding FormulaExplanation}" Margin="0,5,0,0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Style="{StaticResource Text.Small}" Text="Uji manual: isi tiap jenis; kosong tampil 0 kg CO₂; jarak 500 km → error; 2 jam lampu → dampak; Tumbler Ya → dampak." />
+
             <TextBlock Style="{StaticResource Text.Title}" Text="Tinggi terukur (DIP)" Margin="0,16,0,10" />
             <Border Style="{StaticResource Border.Card}" MaxWidth="430" HorizontalAlignment="Left">
                 <StackPanel>
@@ -443,10 +508,10 @@
             <TextBlock Style="{StaticResource Text.Title}" Text="Saklar, chip, segmented, pill" Margin="0,16,0,10" />
             <StackPanel HorizontalAlignment="Left">
                 <WrapPanel Margin="0,0,0,10">
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Ya" IsChecked="True" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Tidak" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Ya (nonaktif)" IsChecked="True" IsEnabled="False" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" Content="Tidak (nonaktif)" IsEnabled="False" VerticalAlignment="Center" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Aktif" IsChecked="True" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Mati" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Aktif nonaktif" IsChecked="True" IsEnabled="False" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleButton Style="{StaticResource ToggleButton.Switch}" AutomationProperties.Name="Mati nonaktif" IsEnabled="False" VerticalAlignment="Center" />
                 </WrapPanel>
                 <WrapPanel Margin="0,0,0,10">
                     <ToggleButton Style="{StaticResource ToggleButton.Chip}" Content="7 hari" IsChecked="True" VerticalAlignment="Top" Margin="0,0,7,7" />
