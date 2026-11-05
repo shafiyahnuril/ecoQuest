@@ -16,9 +16,19 @@
                   VerticalAlignment="Center" AutomationProperties.IsOffscreenBehavior="Offscreen" />
             <TextBlock x:Name="MessageText" Grid.Column="1" Style="{StaticResource Text.Body}" Foreground="{StaticResource State.ErrorText}"
                        TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding Message, ElementName=Self}" />
-            <Button x:Name="RetryButton" Grid.Column="2" Style="{StaticResource Button.Small}" Margin="{StaticResource Margin.BannerAction}"
+            <Button x:Name="RetryButton" Grid.Column="2" Margin="{StaticResource Margin.BannerAction}"
                     VerticalAlignment="Center" Content="{Binding RetryText, ElementName=Self}"
-                    Command="{Binding RetryCommand, ElementName=Self}" />
+                    Command="{Binding RetryCommand, ElementName=Self}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource Button.Small}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RetryCommand, ElementName=Self}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </Border>
 </UserControl>

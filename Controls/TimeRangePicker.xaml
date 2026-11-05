@@ -18,6 +18,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="{StaticResource Width.TimeGap}" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
@@ -26,12 +27,12 @@
             <TextBox x:Name="StartBox" Style="{StaticResource TextBox.Time}" AutomationProperties.Name="{DynamicResource Time.Start}"
                      ctl:InputState.IsInvalid="{Binding IsInvalid, RelativeSource={RelativeSource AncestorType=ctl:TimeRangePicker}}" />
         </StackPanel>
-        <StackPanel Grid.Column="1" Margin="{StaticResource Margin.TimeField}">
+        <StackPanel Grid.Column="2">
             <TextBlock Style="{StaticResource Text.Tiny}" Text="{DynamicResource Time.End}" Margin="{StaticResource Margin.TimeLabel}" />
             <TextBox x:Name="EndBox" Style="{StaticResource TextBox.Time}" AutomationProperties.Name="{DynamicResource Time.End}"
                      ctl:InputState.IsInvalid="{Binding IsInvalid, RelativeSource={RelativeSource AncestorType=ctl:TimeRangePicker}}" />
         </StackPanel>
-        <Button x:Name="ClearButton" Grid.Column="2" Style="{StaticResource Button.ClearTime}" Click="OnClearClick"
+        <Button x:Name="ClearButton" Grid.Column="3" Style="{StaticResource Button.ClearTime}" Click="OnClearClick"
                 AutomationProperties.Name="{DynamicResource Time.Clear}" ToolTip="{DynamicResource Time.Clear}">
             <ctl:IconView Data="{DynamicResource Icon.Close}" Foreground="{StaticResource Brand.Forest}"
                           Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}" />

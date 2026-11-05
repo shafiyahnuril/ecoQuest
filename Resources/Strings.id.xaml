@@ -115,6 +115,14 @@
     <sys:String x:Key="Logout.Title">Keluar dari EcoQuest?</sys:String>
     <sys:String x:Key="Logout.Body">Kamu dapat kembali kapan saja untuk mengisi refleksi.</sys:String>
     <sys:String x:Key="Dialog.Warning.Title">Periksa angka ini</sys:String>
+    <sys:String x:Key="Dialog.Warning.Cancel">Periksa lagi</sys:String>
+    <sys:String x:Key="Dialog.Warning.Confirm">Ya, benar</sys:String>
+    <sys:String x:Key="Dialog.Empty.Title">Refleksi tanpa aktivitas</sys:String>
+    <sys:String x:Key="Dialog.Empty.Confirm">Tetap simpan</sys:String>
+    <sys:String x:Key="Dialog.Save.Title">Simpan refleksi hari ini?</sys:String>
+    <sys:String x:Key="Dialog.Save.Confirm">Simpan</sys:String>
+    <sys:String x:Key="Review.ConfirmTotal">Total sementara: {0} dari {1} aktivitas.</sys:String>
+    <sys:String x:Key="Review.FormulaInfo">Asal estimasi CO₂</sys:String>
     <sys:String x:Key="Onboarding.1.Title">Selamat datang di EcoQuest</sys:String>
     <sys:String x:Key="Onboarding.1.Body">EcoQuest adalah jurnal edukatif, bukan aplikasi hadiah. Poin hanya penanda progres dan tidak dapat ditukar.</sys:String>
     <sys:String x:Key="Onboarding.2.Title">Satu refleksi setiap malam</sys:String>

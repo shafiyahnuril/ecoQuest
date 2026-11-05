@@ -1,8 +1,9 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:conv="clr-namespace:ecoQuest.Converters"
+                    xmlns:econv="clr-namespace:EcoQuest.Converters"
                     xmlns:ctl="clr-namespace:EcoQuest.Controls"
                     mc:Ignorable="po">
     <!--
@@ -12,6 +13,7 @@
 
     <conv:HalfHeightToCornerRadiusConverter x:Key="HalfHeightToCornerRadius" />
     <conv:RoundedClipConverter x:Key="RoundedClip" />
+    <econv:CompactWidthConverter x:Key="IsCompactWidth" />
 
     <!-- Base window style: crisp edges at fractional DPI. Assign with Style="{StaticResource Window.Base}". -->
     <Style x:Key="Window.Base" TargetType="Window">
@@ -179,7 +181,7 @@
                     <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Radius.Input}"
                             SnapsToDevicePixels="True">
-                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                       Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -210,6 +212,12 @@
 
     <Style x:Key="TextBox.Time" TargetType="TextBox" BasedOn="{StaticResource TextBox.Default}">
         <Setter Property="MinWidth" Value="{StaticResource MinWidth.TimeInput}" />
+        <Style.Triggers>
+            <!-- Owner decision (FE-09): the 220 px control column of @media(max-width:1160px) only fits two time boxes of 84. -->
+            <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource IsCompactWidth}}" Value="True">
+                <Setter Property="MinWidth" Value="{StaticResource MinWidth.TimeInputCompact}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="Button.Stepper" TargetType="Button">
@@ -383,6 +391,7 @@
 
     <!-- ===================== Switch / Chip / Segmented ===================== -->
     <Style x:Key="ToggleButton.Switch" TargetType="ToggleButton">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontFamily" Value="{StaticResource Font.SemiBold}" />

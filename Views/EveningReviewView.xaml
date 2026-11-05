@@ -1,6 +1,292 @@
 <UserControl x:Class="EcoQuest.Views.EveningReviewView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
-    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Review.Title}" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:items="clr-namespace:EcoQuest.ViewModels.Items"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             xmlns:conv="clr-namespace:EcoQuest.Converters"
+             mc:Ignorable="d"
+             IsTabStop="False" FocusVisualStyle="{x:Null}"
+             d:DataContext="{d:DesignInstance Type=vm:EveningReviewViewModel}">
+    <!-- S-05 Evening Review (form) and placeholder of S-06. Reference: design-reference/screens/05-review-form.png, 15-review-error.png, INVENTORY-v7
+         .group-title .dot .activity .activity-head .activity-foot .activity.is-error .impact .icon-btn .form-error .sticky-footer .extras,
+         @media(max-width:1160px) .activity. Deltas: D-02 (one primary button), D-06 (controls), D-07 (empty start), D-12 (short descriptions). -->
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Templates/ActivityInputTemplates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+            <conv:ResourceKeyConverter x:Key="ResourceKey" />
+            <conv:CategoryIdToBrushConverter x:Key="CategoryBrush" />
+            <conv:CompactWidthConverter x:Key="IsCompactWidth" />
+            <conv:FirstNonEmptyConverter x:Key="FirstNonEmpty" />
+            <conv:NoteCounterConverter x:Key="NoteCounter" />
+
+            <Style x:Key="Border.SkeletonRow" TargetType="Border" BasedOn="{StaticResource Border.Skeleton}">
+                <Setter Property="Height" Value="{StaticResource Height.SkeletonActivityRow}" />
+                <Setter Property="Margin" Value="{StaticResource Margin.ActivityRow}" />
+                <Setter Property="CornerRadius" Value="{StaticResource Radius.Activity}" />
+            </Style>
+
+            <!-- .activity.is-error. In the CSS .activity:hover is declared after it and wins, so the hover trigger is repeated after the error one. -->
+            <Style x:Key="Border.ReviewRow" TargetType="Border" BasedOn="{StaticResource Border.ActivityRow}">
+                <Setter Property="Margin" Value="{StaticResource Margin.ActivityRow}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding HasError}" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource State.Error}" />
+                    </DataTrigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource Line.ActivityHover}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Control column: minmax(180px,270px), 220 at window width <= 1160. -->
+            <Style x:Key="Border.ActivityControl" TargetType="Border">
+                <Setter Property="Width" Value="{StaticResource Width.ActivityControl}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource IsCompactWidth}}" Value="True">
+                        <Setter Property="Width" Value="{StaticResource Width.ActivityControlCompact}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="Text.FieldWarning" TargetType="TextBlock" BasedOn="{StaticResource Text.FieldError}">
+                <Setter Property="Foreground" Value="{StaticResource State.WarningFg}" />
+                <Setter Property="Margin" Value="{StaticResource Margin.WarningText}" />
+            </Style>
+
+            <Style x:Key="Button.NoteToggle" TargetType="Button" BasedOn="{StaticResource Button.Ghost}">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="MinHeight" Value="{StaticResource Height.ButtonSmall}" />
+                <Setter Property="Padding" Value="{StaticResource Padding.ButtonSmall}" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="Margin" Value="{StaticResource Margin.ActivityNoteToggle}" />
+            </Style>
+
+            <Style x:Key="ItemsControl.Container" TargetType="ItemsControl">
+                <Setter Property="Focusable" Value="False" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+
+            <!-- All inputs are disabled while the review is being saved (UIR-36). -->
+            <!-- The impact column is shared by all rows, so every row starts its control at the same x (the widest impact text wins). -->
+            <Style x:Key="ItemsControl.Groups" TargetType="ItemsControl" BasedOn="{StaticResource ItemsControl.Container}">
+                <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                        <Setter Property="IsEnabled" Value="False" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <DataTemplate x:Key="ReviewRow" DataType="{x:Type items:ActivityInputItemViewModel}">
+                <Border Style="{StaticResource Border.ReviewRow}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                            <ColumnDefinition Width="Auto" MinWidth="{StaticResource MinWidth.ActivityImpact}" SharedSizeGroup="ReviewImpact" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="{StaticResource Size.BubbleActivity}" Height="{StaticResource Size.BubbleActivity}"
+                                  AutomationProperties.IsOffscreenBehavior="Offscreen">
+                                <Ellipse Fill="{Binding BubbleBackgroundKey, Converter={StaticResource ResourceKey}}" />
+                                <ctl:IconView Data="{Binding IconKey, Converter={StaticResource ResourceKey}}"
+                                              Foreground="{Binding BubbleForegroundKey, Converter={StaticResource ResourceKey}}"
+                                              Width="{StaticResource Size.IconMd}" Height="{StaticResource Size.IconMd}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
+                            <StackPanel Grid.Column="1" Margin="{StaticResource Margin.ActivityInfo}" VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource Text.ActivityName}" Text="{Binding TypeName}" />
+                                <TextBlock Style="{StaticResource Text.ActivityDesc}" Margin="{StaticResource Margin.ActivityDesc}"
+                                           Text="{Binding DescriptionKey, Converter={StaticResource ResourceKey}}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Grid.Column="2" Style="{StaticResource Border.ActivityControl}" VerticalAlignment="Center">
+                            <StackPanel>
+                                <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource ActivityInput.Selector}"
+                                                Focusable="False" IsTabStop="False" />
+                                <TextBlock Style="{StaticResource Text.FieldError}" Text="{Binding ErrorText}"
+                                           Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}" />
+                                <Grid Visibility="{Binding HasWarning, Converter={StaticResource BoolToVisibility}}" Margin="{StaticResource Margin.FieldMessage}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ctl:IconView Data="{DynamicResource Icon.Alert}" Foreground="{StaticResource State.WarningFg}"
+                                                  Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}" VerticalAlignment="Top"
+                                                  AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource Text.FieldWarning}" Text="{Binding WarningText}" />
+                                </Grid>
+                                <Button Style="{StaticResource Button.NoteToggle}" Command="{Binding ToggleExtrasCommand}"
+                                        Content="{DynamicResource Review.NoteToggle}"
+                                        Visibility="{Binding IsFilled, Converter={StaticResource BoolToVisibility}}" />
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource Text.Impact}" TextWrapping="NoWrap" VerticalAlignment="Center"
+                                       Margin="{StaticResource Margin.ActivityImpactGap}" Text="{Binding ImpactText}" />
+                            <Button Style="{StaticResource Button.Icon}" AutomationProperties.Name="{DynamicResource Review.FormulaInfo}"
+                                    ToolTipService.InitialShowDelay="300">
+                                <Button.ToolTip>
+                                    <ToolTip Style="{StaticResource ToolTip.Default}">
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource FirstNonEmpty}">
+                                                    <Binding Path="FormulaExplanation" />
+                                                    <Binding Path="Description" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                                <ctl:IconView Data="{DynamicResource Icon.Info}" Foreground="{StaticResource Brand.Forest}"
+                                              Width="{StaticResource Size.IconInfo}" Height="{StaticResource Size.IconInfo}" />
+                            </Button>
+                        </StackPanel>
+
+                        <!-- .extras: dashed top border, note box and photo column (2 equal columns). -->
+                        <StackPanel Grid.Row="1" Grid.ColumnSpan="5" Margin="{StaticResource Margin.ActivityExtrasRow}"
+                                    Visibility="{Binding ShowExtras, Converter={StaticResource BoolToVisibility}}">
+                            <Line X1="0" X2="1" Height="1" Stretch="Fill" Stroke="{StaticResource Line.Dashed}" StrokeDashArray="3 3"
+                                  AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                            <Grid Margin="{StaticResource Margin.ActivityExtras}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Text.Small}" Margin="0,0,0,6" Text="{DynamicResource Review.NoteLabel}" />
+                                    <TextBox Style="{StaticResource TextBox.Default}" MinHeight="{StaticResource MinHeight.NoteBox}" VerticalContentAlignment="Top"
+                                             MaxLength="{x:Static conv:NoteCounterConverter.MaxLength}" AcceptsReturn="True" TextWrapping="Wrap"
+                                             AutomationProperties.Name="{DynamicResource Review.NoteLabel}"
+                                             ctl:InputState.IsInvalid="{Binding HasNoteError}"
+                                             Text="{Binding Note, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=False}" />
+                                    <TextBlock Style="{StaticResource Text.Tiny}" Margin="{StaticResource Margin.NoteCounter}"
+                                               Text="{Binding Note, Converter={StaticResource NoteCounter}}" />
+                                    <TextBlock Style="{StaticResource Text.FieldError}" Text="{Binding NoteErrorText}"
+                                               Visibility="{Binding HasNoteError, Converter={StaticResource BoolToVisibility}}" />
+                                </StackPanel>
+                                <!-- TODO(photo task): photo picker column; empty on purpose so it adds no height. -->
+                                <Border Grid.Column="2" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+            <DataTemplate x:Key="ReviewGroup" DataType="{x:Type items:ActivityGroupViewModel}">
+                <StackPanel>
+                    <Grid Margin="{StaticResource Margin.GroupTitle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Ellipse Width="{StaticResource Size.GroupDot}" Height="{StaticResource Size.GroupDot}"
+                                 Fill="{Binding CategoryId, Converter={StaticResource CategoryBrush}}"
+                                 AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource Text.GroupTitle}" Margin="{StaticResource Margin.GroupTitleText}"
+                                   Text="{Binding Name}" AutomationProperties.HeadingLevel="Level2" />
+                        <Rectangle Grid.Column="2" Height="1" Fill="{StaticResource Line.Subtle}" VerticalAlignment="Center"
+                                   AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                    </Grid>
+                    <ItemsControl Style="{StaticResource ItemsControl.Container}" ItemsSource="{Binding Items}"
+                                  ItemTemplate="{StaticResource ReviewRow}" />
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <ctl:StateHost State="{Binding State}" IsEmpty="{Binding IsEmpty}" ErrorMessage="{Binding ErrorMessage}"
+                   RetryCommand="{Binding ReloadCommand}">
+        <ctl:StateHost.LoadingContent>
+            <StackPanel>
+                <Border Style="{StaticResource Border.Skeleton}" Width="320" Height="36" HorizontalAlignment="Left" />
+                <Border Style="{StaticResource Border.Skeleton}" Width="260" Height="16" HorizontalAlignment="Left" Margin="0,10,0,23" />
+                <Border Style="{StaticResource Border.SkeletonRow}" />
+                <Border Style="{StaticResource Border.SkeletonRow}" />
+                <Border Style="{StaticResource Border.SkeletonRow}" />
+                <Border Style="{StaticResource Border.SkeletonRow}" />
+                <Border Style="{StaticResource Border.SkeletonRow}" />
+                <Border Style="{StaticResource Border.SkeletonRow}" />
+            </StackPanel>
+        </ctl:StateHost.LoadingContent>
+
+        <ctl:StateHost.Content>
+            <Grid>
+                <StackPanel>
+                    <Grid Margin="{StaticResource Margin.PageHead}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Text.Header}" Margin="{StaticResource Margin.PageHeadTitle}" TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" Text="{Binding Title}" AutomationProperties.HeadingLevel="Level1" />
+                            <TextBlock Style="{StaticResource Text.BodyRelaxed}" Text="{Binding Subtitle}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Style="{StaticResource Text.Small}" Margin="15,0,0,0" TextWrapping="NoWrap"
+                                   VerticalAlignment="Top" Text="{Binding TodayText}" />
+                    </Grid>
+
+                    <ctl:ErrorBanner Message="{Binding BannerMessage}" RetryText="{DynamicResource Common.Retry}"
+                                     RetryCommand="{Binding BannerRetryCommand}" Margin="{StaticResource Margin.DashBanner}"
+                                     Visibility="{Binding HasBanner, Converter={StaticResource BoolToVisibility}}" />
+
+                    <StackPanel Visibility="{Binding IsForm, Converter={StaticResource BoolToVisibility}}">
+                        <ItemsControl Style="{StaticResource ItemsControl.Groups}" ItemsSource="{Binding Groups}"
+                                      ItemTemplate="{StaticResource ReviewGroup}" />
+
+                        <!-- .sticky-footer: the placeholder keeps the natural space, StickyBottom floats the footer 14 px above the viewport bottom. -->
+                        <Grid>
+                            <Border Style="{StaticResource Border.StickyFooter}" ctl:StickyBottom.Offset="{StaticResource Offset.StickyFooter}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.Small}" Text="{Binding RunningTotalText}" />
+                                        <TextBlock Style="{StaticResource Text.FooterTotal}" Text="{Binding TotalText}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Style="{StaticResource Button.Primary}" Margin="{StaticResource Margin.FooterAction}"
+                                            VerticalAlignment="Center" Command="{Binding SubmitCommand}" Content="{DynamicResource Review.Submit}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- TODO(FE summary task): replace with the full summary (S-06). -->
+                    <Button Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left" Command="{Binding BackHomeCommand}"
+                            Content="{DynamicResource Review.BackHome}"
+                            Visibility="{Binding IsSummary, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+
+                <Canvas>
+                    <ctl:BusyOverlay ctl:ViewportOverlay.Pin="True" IsActive="{Binding IsBusy}" Text="{DynamicResource Review.Submitting}" />
+                </Canvas>
+            </Grid>
+        </ctl:StateHost.Content>
+    </ctl:StateHost>
 </UserControl>

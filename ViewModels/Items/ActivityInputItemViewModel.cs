@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Dtos;
 using EcoQuest.Core.Domain;
@@ -22,7 +23,8 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     [ObservableProperty] private string? _formulaExplanation;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasError), nameof(HasWarning))] private string? _errorText;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasWarning))] private string? _warningText;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasNoteError))] private string? _noteErrorText;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasNoteError), nameof(ShowExtras))] private string? _noteErrorText;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowExtras))] private bool _isExtrasExpanded;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasPhotoError))] private string? _photoErrorText;
 
     protected ActivityInputItemViewModel(ActivityTypeDto type)
@@ -63,6 +65,9 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
 
     public bool HasPhotoError => PhotoErrorText is not null;
 
+    /// <summary>The note area opens on request once the row is filled; a note error always shows it so the message is never hidden.</summary>
+    public bool ShowExtras => (IsFilled && IsExtrasExpanded) || HasNoteError;
+
     public abstract bool IsFilled { get; }
 
     protected abstract IReadOnlyCollection<string> ControlFields { get; }
@@ -88,8 +93,12 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     protected void NotifyInputChanged()
     {
         OnPropertyChanged(nameof(IsFilled));
+        OnPropertyChanged(nameof(ShowExtras));
         Changed?.Invoke(this, EventArgs.Empty);
     }
+
+    [RelayCommand]
+    private void ToggleExtras() => IsExtrasExpanded = !IsExtrasExpanded;
 
     partial void OnNoteChanged(string? value) => NotifyInputChanged();
 
