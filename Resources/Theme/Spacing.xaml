@@ -72,7 +72,7 @@
     <Thickness x:Key="Margin.SwitchThumb">2,0</Thickness>
     <Thickness x:Key="Margin.StepperInput">6,0</Thickness>
     <Thickness x:Key="Margin.UnitLabel">6,0,0,0</Thickness>
-    <Thickness x:Key="Margin.TimeField">7,0,0,0</Thickness>
+    <GridLength x:Key="Width.TimeGap">7</GridLength>
     <Thickness x:Key="Margin.TimeLabel">0,0,0,2</Thickness>
     <Thickness x:Key="Margin.TimeClear">4,0,0,3</Thickness>
     <sys:Double x:Key="MaxWidth.Tooltip">320</sys:Double>
@@ -221,4 +221,27 @@
     <sys:Double x:Key="Size.WeatherIcon">60</sys:Double>
     <CornerRadius x:Key="Radius.WeatherIcon">18</CornerRadius>
     <sys:Double x:Key="MinHeight.ForecastContent">96</sys:Double>
+    <!-- Evening Review (S-05). Sources: INVENTORY-v7 .group-title .activity .activity-head .activity-foot .extras .sticky-footer; @media(max-width:1160px) .activity. -->
+    <Thickness x:Key="Margin.GroupTitle">0,26,0,10</Thickness>
+    <sys:Double x:Key="Size.GroupDot">10</sys:Double>
+    <Thickness x:Key="Margin.GroupTitleText">9,0</Thickness>
+    <Thickness x:Key="Margin.ActivityRow">0,0,0,9</Thickness>
+    <Thickness x:Key="Margin.ActivityInfo">13,0,0,0</Thickness>
+    <Thickness x:Key="Margin.ActivityDesc">0,4,0,0</Thickness>
+    <sys:Double x:Key="Width.ActivityControl">270</sys:Double>
+    <sys:Double x:Key="Width.ActivityControlCompact">220</sys:Double>
+    <sys:Double x:Key="MinWidth.ActivityImpact">130</sys:Double>
+    <sys:Double x:Key="MinWidth.TimeInputCompact">84</sys:Double>
+    <Thickness x:Key="Margin.ActivityImpactGap">0,0,8,0</Thickness>
+    <Thickness x:Key="Margin.ActivityNoteToggle">0,7,0,0</Thickness>
+    <Thickness x:Key="Margin.ActivityExtrasRow">0,16,0,0</Thickness><!-- .activity grid row gap 16 -->
+    <Thickness x:Key="Margin.ActivityExtras">0,9,0,0</Thickness>
+    <sys:Double x:Key="Size.IconInfo">16</sys:Double>
+    <Thickness x:Key="Margin.FooterAction">13,0,0,0</Thickness>
+    <Thickness x:Key="Margin.WarningText">6,0,0,0</Thickness>
+    <Thickness x:Key="Margin.FieldMessage">0,5,0,0</Thickness>
+    <sys:Double x:Key="MinHeight.NoteBox">62</sys:Double>
+    <Thickness x:Key="Margin.NoteCounter">0,4,0,0</Thickness>
+    <sys:Double x:Key="Offset.StickyFooter">14</sys:Double>
+    <sys:Double x:Key="Height.SkeletonActivityRow">80</sys:Double>
 </ResourceDictionary>
