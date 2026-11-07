@@ -4,6 +4,7 @@
         xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ctl="clr-namespace:EcoQuest.Controls"
+        xmlns:conv="clr-namespace:EcoQuest.Converters"
         mc:Ignorable="po"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
         ShowInTaskbar="False" UseLayoutRounding="True" SnapsToDevicePixels="True"
@@ -15,6 +16,7 @@
          Esc and a click outside the card cancel; the first button (Batal) gets the initial focus (UI-UX-Flow-Frontend 2.8). -->
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:ResourceKeyConverter x:Key="ResourceKey" />
         <DropShadowEffect x:Key="Effect.Dialog" BlurRadius="40" ShadowDepth="12" Direction="270" Opacity="0.34"
                           Color="{StaticResource Color.Shadow.Dialog}" po:Freeze="True" />
     </Window.Resources>
@@ -35,15 +37,50 @@
                 Padding="{StaticResource Padding.Dialog}" Effect="{StaticResource Effect.Dialog}">
             <StackPanel>
                 <Grid Width="{StaticResource Size.BubbleModal}" Height="{StaticResource Size.BubbleModal}"
-                      HorizontalAlignment="Left" Margin="{StaticResource Margin.DialogIcon}">
+                      HorizontalAlignment="Left" Margin="{StaticResource Margin.DialogIcon}" RenderTransformOrigin="0.5,0.5"
+                      AutomationProperties.IsOffscreenBehavior="Offscreen">
+                    <Grid.RenderTransform>
+                        <ScaleTransform />
+                    </Grid.RenderTransform>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding AnimatesIcon}" Value="True" />
+                                        <Condition Binding="{Binding Source={x:Static SystemParameters.ClientAreaAnimation}, Mode=OneWay}" Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <MultiDataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1"
+                                                                 From="{StaticResource Scale.DialogIconFrom}" Duration="{StaticResource Duration.DialogIcon}">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1"
+                                                                 From="{StaticResource Scale.DialogIconFrom}" Duration="{StaticResource Duration.DialogIcon}">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </MultiDataTrigger.EnterActions>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
                     <Ellipse Fill="{StaticResource Bubble.Modal.Bg}" />
-                    <ctl:IconView Data="{DynamicResource Icon.Info}" Foreground="{StaticResource Bubble.Default.Fg}"
+                    <ctl:IconView Data="{Binding IconKey, Converter={StaticResource ResourceKey}}" Foreground="{StaticResource Bubble.Default.Fg}"
                                   Width="{StaticResource Size.IconModal}" Height="{StaticResource Size.IconModal}"
                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Grid>
                 <TextBlock Style="{StaticResource Text.Title}" Text="{Binding Title}"
                            Margin="{StaticResource Margin.DialogTitle}" />
-                <TextBlock Style="{StaticResource Text.BodyRelaxed}" Text="{Binding Message}" />
+                <TextBlock Style="{StaticResource Text.BodyRelaxed}" Text="{Binding Message}"
+                           Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibility}}" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="{StaticResource Margin.DialogActions}">
                     <Button x:Name="CancelButton" Style="{StaticResource Button.Secondary}" Content="{Binding CancelText}"
                             Command="{Binding CancelCommand}" MinWidth="{StaticResource MinWidth.DialogButton}"

@@ -194,6 +194,7 @@ public class ShellViewModelTests
             _nav.NavigateTo<LoginViewModel>(Arg.Any<object?>());
         });
         Assert.False(shell.HasPendingReview);
+        _ = _dialogs.Received(1).ConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), DialogIcon.Info);
     }
 
     [Fact]

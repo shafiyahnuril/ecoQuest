@@ -1,0 +1,150 @@
+<UserControl x:Class="EcoQuest.Views.ReviewSummaryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:items="clr-namespace:EcoQuest.ViewModels.Items"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             xmlns:conv="clr-namespace:EcoQuest.Converters"
+             mc:Ignorable="d" IsTabStop="False" FocusVisualStyle="{x:Null}"
+             d:DataContext="{d:DesignInstance Type=vm:ReviewSummaryViewModel}">
+    <!-- S-06 summary (read-only). Reference: design-reference/screens/08-summary.png, INVENTORY-v7
+         .pill .summary-hero .summary-copy .big .grid.equal .card .forecast-card .summary-return. Deltas: D-02 (one primary button),
+         UIR-39 (formula tooltip, points disclaimer). The prototype's summary() markup puts the quantity under the activity name. -->
+    <UserControl.Resources>
+        <conv:ResourceKeyConverter x:Key="ResourceKey" />
+
+        <Style x:Key="ItemsControl.SummaryRows" TargetType="ItemsControl">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+        </Style>
+
+        <Style x:Key="Text.SummaryEmpty" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+            <Setter Property="Margin" Value="{StaticResource Margin.SummaryRow}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasItems}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="Border.SummaryRow" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{StaticResource Line.Subtle}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="{StaticResource Padding.SummaryRow}" />
+            <Setter Property="Margin" Value="{StaticResource Margin.SummaryRow}" />
+        </Style>
+
+        <DataTemplate x:Key="SummaryRow" DataType="{x:Type items:SummaryActivityItem}">
+            <Border Style="{StaticResource Border.SummaryRow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="SummaryImpact" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="SummaryInfo" />
+                    </Grid.ColumnDefinitions>
+                    <ctl:IconView Data="{Binding IconKey, Converter={StaticResource ResourceKey}}" Foreground="{StaticResource Text.Primary}"
+                                  Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}" VerticalAlignment="Center"
+                                  AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                    <StackPanel Grid.Column="1" Margin="{StaticResource Margin.SummaryRowText}" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource Text.SummaryActivityName}" TextWrapping="Wrap" Text="{Binding Name}" />
+                        <TextBlock Style="{StaticResource Text.Tiny}" TextWrapping="NoWrap" Text="{Binding QuantityText}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Style="{StaticResource Text.Impact}" TextWrapping="NoWrap" TextAlignment="Right"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Text="{Binding ImpactText}" />
+                    <Button Grid.Column="3" Style="{StaticResource Button.Icon}" VerticalAlignment="Center"
+                            AutomationProperties.Name="{DynamicResource Review.FormulaInfo}" ToolTipService.InitialShowDelay="300">
+                        <Button.ToolTip>
+                            <ToolTip Style="{StaticResource ToolTip.Default}">
+                                <TextBlock Text="{Binding FormulaText}" />
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <ctl:IconView Data="{DynamicResource Icon.Info}" Foreground="{StaticResource Brand.Forest}"
+                                      Width="{StaticResource Size.IconInfo}" Height="{StaticResource Size.IconInfo}" />
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Border Style="{StaticResource Border.Pill}" Margin="{StaticResource Margin.SummaryPillRow}">
+            <StackPanel Orientation="Horizontal">
+                <ctl:IconView Data="{DynamicResource Icon.Lock}" Foreground="{StaticResource Brand.Forest}" Margin="{StaticResource Margin.PillIcon}"
+                              Width="{StaticResource Size.IconPill}" Height="{StaticResource Size.IconPill}" VerticalAlignment="Center"
+                              AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                <TextBlock Style="{StaticResource Text.Pill}" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding LockedText}" />
+            </StackPanel>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource Border.Card}">
+                <Border Background="{StaticResource Bg.SummaryHero}" CornerRadius="{StaticResource Radius.SummaryHero}"
+                        Padding="{StaticResource Padding.Card}" MinHeight="{StaticResource MinHeight.SummaryHero}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="67*" />
+                            <ColumnDefinition Width="33*" MinWidth="{StaticResource MinWidth.SummaryImage}" MaxWidth="{StaticResource MaxWidth.SummaryImage}" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="{StaticResource Margin.SummaryCopy}" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{DynamicResource Summary.TotalLabel}" />
+                            <TextBlock Style="{StaticResource Text.Display}" Margin="{StaticResource Margin.SummaryBig}" TextWrapping="Wrap"
+                                       Text="{Binding TotalText}" />
+                            <TextBlock Style="{StaticResource Text.BodyStrong}" Margin="{StaticResource Margin.SummaryLine}" Text="{Binding PointsText}" />
+                            <TextBlock Style="{StaticResource Text.BodyRelaxed}" Text="{Binding StreakText}" />
+                        </StackPanel>
+                        <Image Grid.Column="1" Height="{StaticResource Height.SummaryImage}" Stretch="Uniform" Opacity="0.9" VerticalAlignment="Center"
+                               Source="{StaticResource Image.SummarySuccess}" Effect="{StaticResource Effect.SummaryImage}"
+                               AutomationProperties.IsOffscreenBehavior="Offscreen" IsHitTestVisible="False" />
+                    </Grid>
+                </Border>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource Border.Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Title}" Margin="{StaticResource Margin.SummaryCardTitle}"
+                               Text="{DynamicResource Summary.Contribution}" AutomationProperties.HeadingLevel="Level2" />
+                    <TextBlock Style="{StaticResource Text.BodyRelaxed}" TextWrapping="Wrap" Text="{Binding Insight}" />
+                    <Image Width="{StaticResource Size.SummarySprout}" HorizontalAlignment="Left" Margin="{StaticResource Margin.SummarySprout}"
+                           Stretch="Uniform" Source="{StaticResource Image.EmptySprout}"
+                           AutomationProperties.IsOffscreenBehavior="Offscreen" IsHitTestVisible="False" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.SummaryActivities}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.Title}" Margin="{StaticResource Margin.SummaryCardTitle}"
+                           Text="{DynamicResource Summary.Activities}" AutomationProperties.HeadingLevel="Level2" />
+                <ItemsControl Style="{StaticResource ItemsControl.SummaryRows}" ItemsSource="{Binding Items}" ItemTemplate="{StaticResource SummaryRow}" />
+                <TextBlock Style="{StaticResource Text.SummaryEmpty}" Text="{Binding EmptyText}" />
+                <TextBlock Style="{StaticResource Text.Tiny}" TextWrapping="Wrap" Margin="{StaticResource Margin.SummaryDisclaimer}"
+                           Text="{DynamicResource Points.Disclaimer}" />
+            </StackPanel>
+        </Border>
+
+        <ctl:WeatherSuggestionCard Compact="True" DataContext="{Binding Weather}" Margin="{StaticResource Margin.SummaryWeather}" />
+
+        <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Right" Margin="{StaticResource Margin.SummaryReturn}"
+                MinWidth="{StaticResource MinWidth.SummaryReturn}" MinHeight="{StaticResource MinHeight.SummaryReturn}"
+                Padding="{StaticResource Padding.SummaryReturn}" Command="{Binding BackHomeCommand}"
+                AutomationProperties.Name="{DynamicResource Review.BackHome}">
+            <StackPanel Orientation="Horizontal">
+                <ctl:IconView Data="{DynamicResource Icon.Home}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              Margin="{StaticResource Margin.SummaryReturnIcon}" Width="{StaticResource Size.IconReturn}"
+                              Height="{StaticResource Size.IconReturn}" VerticalAlignment="Center" AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                <TextBlock VerticalAlignment="Center" Text="{DynamicResource Review.BackHome}" />
+            </StackPanel>
+        </Button>
+    </StackPanel>
+</UserControl>

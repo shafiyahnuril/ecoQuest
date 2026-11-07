@@ -238,4 +238,14 @@
     <SolidColorBrush x:Key="Bg.InsightRow" Color="{StaticResource Color.Bg.InsightRow}" po:Freeze="True" />
     <Color x:Key="Color.Shadow.HeroImage">#254C30</Color>
     <sys:Double x:Key="Opacity.Shadow.HeroImage">0.153</sys:Double>
+    <Color x:Key="Color.Shadow.SummaryImage">#205B3A</Color>
+    <sys:Double x:Key="Opacity.Shadow.SummaryImage">0.10</sys:Double>
+    <DropShadowEffect x:Key="Effect.SummaryImage" Color="{StaticResource Color.Shadow.SummaryImage}" Opacity="{StaticResource Opacity.Shadow.SummaryImage}"
+                      BlurRadius="11" ShadowDepth="10" Direction="270" po:Freeze="True" />
+    <Color x:Key="Color.Text.ForecastAdvice">#365543</Color>
+    <SolidColorBrush x:Key="Fg.ForecastAdvice" Color="{StaticResource Color.Text.ForecastAdvice}" po:Freeze="True" />
+    <Color x:Key="Color.Text.ForecastAdviceHeading">#225638</Color>
+    <SolidColorBrush x:Key="Fg.ForecastAdviceHeading" Color="{StaticResource Color.Text.ForecastAdviceHeading}" po:Freeze="True" />
+    <Color x:Key="Color.Text.ForecastImpact">#28633D</Color>
+    <SolidColorBrush x:Key="Fg.ForecastImpact" Color="{StaticResource Color.Text.ForecastImpact}" po:Freeze="True" />
 </ResourceDictionary>
