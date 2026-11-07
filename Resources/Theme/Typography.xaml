@@ -171,4 +171,48 @@
         <Setter Property="FontSize" Value="22" />
         <Setter Property="TextWrapping" Value="NoWrap" />
     </Style>
+    <Style x:Key="Text.SummaryActivityName" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <!-- Prototype row name: 14 px with the browser's normal line height, not Text.Body's 20 px. -->
+        <Setter Property="FontFamily" Value="{StaticResource Font.Regular}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style x:Key="Text.ForecastKicker" TargetType="TextBlock" BasedOn="{StaticResource Text.Auth.Kicker}">
+        <!-- Same look as the Dashboard's local Text.Kicker (.forecast-kicker). -->
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.ExtraBold}" />
+        <Setter Property="FontSize" Value="10" />
+    </Style>
+    <Style x:Key="Text.ForecastTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Title}">
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+    <Style x:Key="Text.ForecastContentTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Subtitle}">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource Brand.Primary}" />
+    </Style>
+    <Style x:Key="Text.ForecastContentSub" TargetType="TextBlock" BasedOn="{StaticResource Text.Small}">
+        <!-- .forecast-unavailable span: 12 px, line-height 1.55 -->
+        <Setter Property="LineHeight" Value="18.6" />
+    </Style>
+    <Style x:Key="Text.ForecastAdviceHeading" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Bold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource Fg.ForecastAdviceHeading}" />
+    </Style>
+    <Style x:Key="Text.ForecastAdviceBody" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <!-- .forecast-advice p: 12 px, line-height 1.58 -->
+        <Setter Property="FontFamily" Value="{StaticResource Font.Regular}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="18.96" />
+        <Setter Property="Foreground" Value="{StaticResource Fg.ForecastAdvice}" />
+    </Style>
+    <Style x:Key="Text.ForecastImpact" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Bold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{StaticResource Fg.ForecastImpact}" />
+    </Style>
+    <Style x:Key="Text.ForecastFooter" TargetType="TextBlock" BasedOn="{StaticResource Text.Tiny}">
+        <Setter Property="FontSize" Value="10" />
+    </Style>
 </ResourceDictionary>

@@ -56,7 +56,8 @@ public class EveningReviewLayoutTests(ITestOutputHelper output)
         var dialogs = Substitute.For<IDialogService>();
         var text = new ResourceUiText();
         var shell = new ShellViewModel(nav, dialogs, text, new ToastViewModel(), world.Session, world.Auth, world.Review);
-        var vm = new EveningReviewViewModel(world.Review, world.Reference, dialogs, text, world.Clock, nav, shell, TimeSpan.Zero);
+        var weather = new WeatherSuggestionViewModel(world.Weather, world.Session, world.Clock, text);
+        var vm = new EveningReviewViewModel(world.Review, world.Reference, dialogs, text, world.Clock, nav, shell, weather, TimeSpan.Zero);
         vm.OnNavigatedToAsync(null).GetAwaiter().GetResult();
 
         if (fill)

@@ -592,6 +592,10 @@
     <BitmapImage x:Key="Image.HeroIsland" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/floating_garden_island_waterfall.png" DecodePixelWidth="1080"
                  CacheOption="OnLoad" po:Freeze="True" />
 
+    <!-- Summary success illustration (eco_island_success_badge.png, shown at <= 205 DIP; decoded at 2x). -->
+    <BitmapImage x:Key="Image.SummarySuccess" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_island_success_badge.png" DecodePixelWidth="410"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
     <!-- StateHost (UIR-05): Idle/Loading -> LoadingContent, Error -> ErrorBanner, Loaded+IsEmpty -> EmptyContent, Loaded -> Content.
          Retry text uses DynamicResource because Strings.id.xaml is merged after this dictionary. -->
     <Style TargetType="ctl:StateHost">

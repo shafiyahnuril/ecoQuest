@@ -7,10 +7,11 @@
              xmlns:items="clr-namespace:EcoQuest.ViewModels.Items"
              xmlns:ctl="clr-namespace:EcoQuest.Controls"
              xmlns:conv="clr-namespace:EcoQuest.Converters"
+             xmlns:local="clr-namespace:EcoQuest.Views"
              mc:Ignorable="d"
              IsTabStop="False" FocusVisualStyle="{x:Null}"
              d:DataContext="{d:DesignInstance Type=vm:EveningReviewViewModel}">
-    <!-- S-05 Evening Review (form) and placeholder of S-06. Reference: design-reference/screens/05-review-form.png, 15-review-error.png, INVENTORY-v7
+    <!-- S-05 Evening Review (form); the summary (S-06) lives in ReviewSummaryView. Reference: design-reference/screens/05-review-form.png, 15-review-error.png, INVENTORY-v7
          .group-title .dot .activity .activity-head .activity-foot .activity.is-error .impact .icon-btn .form-error .sticky-footer .extras,
          @media(max-width:1160px) .activity. Deltas: D-02 (one primary button), D-06 (controls), D-07 (empty start), D-12 (short descriptions). -->
     <UserControl.Resources>
@@ -195,6 +196,10 @@
                 </Border>
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type vm:ReviewSummaryViewModel}">
+                <local:ReviewSummaryView />
+            </DataTemplate>
+
             <DataTemplate x:Key="ReviewGroup" DataType="{x:Type items:ActivityGroupViewModel}">
                 <StackPanel>
                     <Grid Margin="{StaticResource Margin.GroupTitle}">
@@ -277,10 +282,7 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- TODO(FE summary task): replace with the full summary (S-06). -->
-                    <Button Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left" Command="{Binding BackHomeCommand}"
-                            Content="{DynamicResource Review.BackHome}"
-                            Visibility="{Binding IsSummary, Converter={StaticResource BoolToVisibility}}" />
+                    <ContentControl Content="{Binding Summary}" Focusable="False" IsTabStop="False" />
                 </StackPanel>
 
                 <Canvas>

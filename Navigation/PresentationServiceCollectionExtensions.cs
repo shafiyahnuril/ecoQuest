@@ -22,6 +22,7 @@ public static class PresentationServiceCollectionExtensions
         services.AddTransient<RegisterViewModel>();
         services.AddTransient<OnboardingViewModel>();
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<WeatherSuggestionViewModel>();
         services.AddTransient<EveningReviewViewModel>();
         services.AddTransient<HistoryViewModel>();
         services.AddTransient<AchievementsViewModel>();

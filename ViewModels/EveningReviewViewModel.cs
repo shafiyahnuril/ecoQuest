@@ -28,6 +28,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
     private readonly INavigationService _navigation;
     private readonly ShellViewModel _shell;
     private readonly TimeSpan _debounceDelay;
+    private bool _justSaved;
     private readonly Dictionary<int, ActivityImpactDto> _impacts = [];
     private readonly HashSet<ActivityInputItemViewModel> _changed = [];
     private IReadOnlyList<ActivityInputItemViewModel> _items = [];
@@ -40,7 +41,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
 
     public EveningReviewViewModel(
         IEveningReviewService review, IReferenceDataService reference, IDialogService dialogs, IUiText text,
-        IClock clock, INavigationService navigation, ShellViewModel shell, TimeSpan? debounce = null)
+        IClock clock, INavigationService navigation, ShellViewModel shell, WeatherSuggestionViewModel weather, TimeSpan? debounce = null)
     {
         _review = review;
         _reference = reference;
@@ -49,6 +50,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
         _clock = clock;
         _navigation = navigation;
         _shell = shell;
+        Weather = weather;
         _debounceDelay = debounce ?? DefaultDebounce;
         _todayText = UiFormat.LongDate(_clock.Today);
         _totalText = ImpactText(0m);
@@ -67,8 +69,9 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasBanner))] private string? _bannerMessage;
     [ObservableProperty] private IAsyncRelayCommand? _bannerRetryCommand;
 
-    // TODO(FE summary task): render the full summary (S-06) from this DTO; the form only needs it to know the day is locked.
-    [ObservableProperty] private ReviewSummaryDto? _summary;
+    [ObservableProperty] private ReviewSummaryViewModel? _summary;
+
+    public WeatherSuggestionViewModel Weather { get; }
 
     public bool IsForm => Mode == ReviewMode.Form;
 
@@ -76,7 +79,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
 
     public bool HasBanner => BannerMessage is not null;
 
-    public string Title => _text.Get(IsForm ? "Review.Title" : "Review.Saved");
+    public string Title => _text.Get(IsForm ? "Review.Title" : _justSaved ? "Review.Saved" : "Review.SavedAgain");
 
     public string Subtitle => _text.Get(IsForm ? "Review.Subtitle" : "Review.SavedSubtitle");
 
@@ -93,6 +96,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
     {
         _loading?.Cancel();
         _debounce?.Cancel();
+        Weather.Cancel();
     }
 
     [RelayCommand]
@@ -158,7 +162,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
         TodayText = UiFormat.LongDate(data.Today.Today);
         if (data.Today.State == TodayReviewState.Submitted)
         {
-            ShowSummary(data.Today.Summary);
+            ShowSummary(data.Today.Summary, justSaved: false);
             return;
         }
 
@@ -167,10 +171,13 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
         Mode = ReviewMode.Form;
     }
 
-    private void ShowSummary(ReviewSummaryDto? summary)
+    private void ShowSummary(ReviewSummaryDto? summary, bool justSaved)
     {
-        Summary = summary;
+        _justSaved = justSaved;
+        Summary = summary is null ? null : new ReviewSummaryViewModel(summary, _clock, _text, Weather, BackHomeCommand);
         Mode = ReviewMode.Summary;
+        OnPropertyChanged(nameof(Title));
+        Weather.StartLoading();
     }
 
     private void BuildForm(IReadOnlyList<ActivityTypeDto> types)
@@ -265,11 +272,11 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
 
         return (warnings.Count == 0 || await _dialogs.ConfirmAsync(
                 _text.Get("Dialog.Warning.Title"), string.Join(Environment.NewLine, warnings),
-                _text.Get("Dialog.Warning.Confirm"), _text.Get("Dialog.Warning.Cancel")))
+                _text.Get("Dialog.Warning.Confirm"), _text.Get("Dialog.Warning.Cancel"), DialogIcon.Warning))
             && (!_validation.IsEmpty || await _dialogs.ConfirmAsync(
                 _text.Get("Dialog.Empty.Title"), _text.Get("Review.EmptyConfirm"), _text.Get("Dialog.Empty.Confirm")))
             && await _dialogs.ConfirmAsync(
-                _text.Get("Dialog.Save.Title"), SaveConfirmationText(), _text.Get("Dialog.Save.Confirm"));
+                _text.Get("Dialog.Save.Title"), SaveConfirmationText(), _text.Get("Dialog.Save.Confirm"), icon: DialogIcon.Leaf);
     }
 
     private string SaveConfirmationText()
@@ -297,12 +304,29 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
 
         if (summary is not null)
         {
-            ShowSummary(summary);
+            ShowSummary(summary, justSaved: true);
             await _shell.RefreshPendingAsync();
+            await ShowMilestonesAsync(summary);
         }
         else if (failure is not null)
         {
             await HandleFailureAsync(failure);
+        }
+    }
+
+    private async Task ShowMilestonesAsync(ReviewSummaryDto summary)
+    {
+        var lines = new List<string>();
+        if (summary.LevelUp is { } levelUp)
+        {
+            lines.Add(string.Format(CultureInfo.CurrentCulture, _text.Get("Dialog.LevelUp"), levelUp.NewLevelName));
+        }
+
+        lines.AddRange(summary.NewBadges.Select(b => string.Format(CultureInfo.CurrentCulture, _text.Get("Dialog.NewBadge"), b.Name)));
+        if (lines.Count > 0)
+        {
+            var icon = summary.LevelUp is null ? DialogIcon.Badge : DialogIcon.Level;
+            await _dialogs.ShowInfoAsync(lines[0], string.Join(Environment.NewLine, lines.Skip(1)), icon: icon);
         }
     }
 

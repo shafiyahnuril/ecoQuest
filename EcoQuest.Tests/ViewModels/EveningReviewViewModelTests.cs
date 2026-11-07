@@ -24,6 +24,12 @@ public class EveningReviewViewModelTests
         ["Review.ConfirmTotal"] = "Total sementara: {0} dari {1} aktivitas.",
         ["Review.Title"] = "Evening Review",
         ["Review.Saved"] = "Refleksi hari ini tersimpan",
+        ["Review.SavedAgain"] = "Refleksi hari ini sudah tersimpan",
+        ["Dialog.LevelUp"] = "Kamu kini {0}",
+        ["Dialog.NewBadge"] = "Milestone baru: {0}",
+        ["Weather.FallbackTitle"] = "Saran umum",
+        ["Weather.TomorrowIn"] = "Besok di {0}",
+        ["Weather.CityLine"] = "{0} · Saran berdasarkan kota domisili",
     };
 
     private readonly IEveningReviewService _review = Substitute.For<IEveningReviewService>();
@@ -31,6 +37,7 @@ public class EveningReviewViewModelTests
     private readonly IDialogService _dialogs = Substitute.For<IDialogService>();
     private readonly INavigationService _nav = Substitute.For<INavigationService>();
     private readonly IUiText _text = Substitute.For<IUiText>();
+    private readonly IWeatherSuggestionService _weather = Substitute.For<IWeatherSuggestionService>();
     private readonly FakeWorld _world = new(FakeScenario.Normal);
     private readonly List<string> _dialogTitles = [];
 
@@ -43,13 +50,14 @@ public class EveningReviewViewModelTests
             .Returns(call => _world.Review.Validate(call.ArgAt<IReadOnlyList<ActivityInput>>(0), call.ArgAt<IReadOnlyList<ActivityTypeDto>>(1)));
         _review.Preview(Arg.Any<ActivityInput>(), Arg.Any<ActivityTypeDto>())
             .Returns(call => _world.Review.Preview(call.ArgAt<ActivityInput>(0), call.ArgAt<ActivityTypeDto>(1)));
-        _dialogs.ConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>())
+        _dialogs.ConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<DialogIcon>())
             .Returns(call =>
             {
                 _dialogTitles.Add(call.ArgAt<string>(0));
                 return true;
             });
         _world.Session.Start(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null));
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(_ => _world.Weather.GetTomorrowSuggestionAsync());
         GetTodayReturns(TodayReviewState.NotSubmitted);
     }
 
@@ -63,14 +71,18 @@ public class EveningReviewViewModelTests
     private void SubmitReturns(Result<ReviewSummaryDto> result) =>
         _review.SubmitAsync(Arg.Any<SubmitReviewRequest>(), Arg.Any<CancellationToken>()).Returns(result);
 
+    private WeatherSuggestionViewModel CreateWeather(TimeSpan? timeout = null) =>
+        new(_weather, _world.Session, _world.Clock, _text, timeout);
+
     private ShellViewModel CreateShell() =>
         new(_nav, _dialogs, _text, new ToastViewModel(), _world.Session, Substitute.For<IAuthService>(), _review);
 
-    private async Task<(EveningReviewViewModel Vm, ShellViewModel Shell)> StartAsync(TimeSpan? debounce = null)
+    private async Task<(EveningReviewViewModel Vm, ShellViewModel Shell)> StartAsync(TimeSpan? debounce = null, TimeSpan? weatherTimeout = null)
     {
         var shell = CreateShell();
         shell.HasPendingReview = true;
-        var vm = new EveningReviewViewModel(_review, _reference, _dialogs, _text, _world.Clock, _nav, shell, debounce ?? TimeSpan.Zero);
+        var vm = new EveningReviewViewModel(
+            _review, _reference, _dialogs, _text, _world.Clock, _nav, shell, CreateWeather(weatherTimeout), debounce ?? TimeSpan.Zero);
         await vm.OnNavigatedToAsync(null);
         return (vm, shell);
     }
@@ -204,7 +216,7 @@ public class EveningReviewViewModelTests
         _ = _dialogs.Received(1).ConfirmAsync(
             "Dialog.Save.Title",
             "Setelah disimpan, refleksi hari ini tidak bisa diubah." + Environment.NewLine + "Total sementara: 0,45 kg CO₂ dari 1 aktivitas.",
-            "Dialog.Save.Confirm", Arg.Any<string?>());
+            "Dialog.Save.Confirm", Arg.Any<string?>(), DialogIcon.Leaf);
     }
 
     [Fact]
@@ -218,7 +230,7 @@ public class EveningReviewViewModelTests
 
         Assert.Equal(["Dialog.Warning.Title", "Dialog.Save.Title"], _dialogTitles);
         _ = _dialogs.Received(1).ConfirmAsync(
-            "Dialog.Warning.Title", Arg.Is<string>(m => m.StartsWith("Jalan Kaki / Bersepeda: 40 km")), "Dialog.Warning.Confirm", "Dialog.Warning.Cancel");
+            "Dialog.Warning.Title", Arg.Is<string>(m => m.StartsWith("Jalan Kaki / Bersepeda: 40 km")), "Dialog.Warning.Confirm", "Dialog.Warning.Cancel", DialogIcon.Warning);
         _ = _review.Received(1).SubmitAsync(Arg.Is<SubmitReviewRequest>(r => r.WarningsAcknowledged), Arg.Any<CancellationToken>());
     }
 
@@ -231,6 +243,7 @@ public class EveningReviewViewModelTests
         await vm.SubmitCommand.ExecuteAsync(null);
 
         Assert.Equal(["Dialog.Empty.Title", "Dialog.Save.Title"], _dialogTitles);
+        _ = _dialogs.Received(1).ConfirmAsync("Dialog.Empty.Title", Arg.Any<string>(), "Dialog.Empty.Confirm", Arg.Any<string?>(), DialogIcon.Info);
         _ = _review.Received(1).SubmitAsync(Arg.Is<SubmitReviewRequest>(r => !r.WarningsAcknowledged), Arg.Any<CancellationToken>());
     }
 
@@ -246,7 +259,7 @@ public class EveningReviewViewModelTests
             Fill(vm, 1, cancelledTitle == "Dialog.Warning.Title" ? 40m : 3m);
         }
 
-        _dialogs.ConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>())
+        _dialogs.ConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<DialogIcon>())
             .Returns(call => call.ArgAt<string>(0) != cancelledTitle);
 
         await vm.SubmitCommand.ExecuteAsync(null);
@@ -381,5 +394,143 @@ public class EveningReviewViewModelTests
         await vm.BackHomeCommand.ExecuteAsync(null);
 
         _ = _nav.Received(1).NavigateTo<DashboardViewModel>(Arg.Any<object?>());
+    }
+
+    // ---------- summary (S-06, UIR-39, UIR-40) ----------
+
+    private static ReviewSummaryDto SummaryWith(LevelChangeDto? levelUp, params BadgeDto[] badges) =>
+        new(Guid.NewGuid(), Today, DateTimeOffset.UtcNow, 0.45m, 9, [], "Insight.", 1, levelUp, badges);
+
+    private static BadgeDto Badge(string name) => new(1, name, "Deskripsi", CriteriaType.StreakDays, 7, true, null, 7);
+
+    private async Task<(EveningReviewViewModel Vm, List<(string Title, string Message, DialogIcon Icon, ReviewMode Mode)> Dialogs)> SaveAsync(ReviewSummaryDto summary)
+    {
+        var (vm, _) = await StartAsync();
+        var dialogs = new List<(string, string, DialogIcon, ReviewMode)>();
+        _dialogs.ShowInfoAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<DialogIcon>()).Returns(call =>
+        {
+            dialogs.Add((call.ArgAt<string>(0), call.ArgAt<string>(1), call.ArgAt<DialogIcon>(3), vm.Mode));
+            return Task.CompletedTask;
+        });
+        Fill(vm, 1, 3m);
+        SubmitReturns(Result<ReviewSummaryDto>.Success(summary));
+
+        await vm.SubmitCommand.ExecuteAsync(null);
+        return (vm, dialogs);
+    }
+
+    [Fact]
+    public async Task The_summary_is_built_from_the_submitted_dto_and_titled_saved()
+    {
+        var (vm, _) = await SaveAsync(SummaryWith(null));
+
+        Assert.Equal(ReviewMode.Summary, vm.Mode);
+        Assert.Equal("0,45 kg", vm.Summary!.TotalText);
+        Assert.Equal("Refleksi hari ini tersimpan", vm.Title);
+    }
+
+    [Fact]
+    public async Task Reopening_the_same_day_says_already_saved_and_never_opens_the_milestone_dialog()
+    {
+        GetTodayReturns(TodayReviewState.Submitted);
+        var summary = SummaryWith(new LevelChangeDto("Eco Starter", "Eco Explorer"), Badge("7 Hari"));
+        _review.GetTodayAsync(Arg.Any<CancellationToken>())
+            .Returns(Result<TodayReviewDto>.Success(new TodayReviewDto(TodayReviewState.Submitted, Today, summary)));
+
+        var (vm, _) = await StartAsync();
+
+        Assert.Equal("Refleksi hari ini sudah tersimpan", vm.Title);
+        Assert.NotNull(vm.Summary);
+        _ = _dialogs.DidNotReceive().ShowInfoAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<DialogIcon>());
+    }
+
+    [Fact]
+    public async Task No_level_up_and_no_badge_opens_no_dialog()
+    {
+        var (_, dialogs) = await SaveAsync(SummaryWith(null));
+
+        Assert.Empty(dialogs);
+    }
+
+    [Fact]
+    public async Task A_level_up_opens_one_dialog_with_the_trophy_after_the_summary_is_shown()
+    {
+        var (_, dialogs) = await SaveAsync(SummaryWith(new LevelChangeDto("Eco Starter", "Eco Explorer")));
+
+        var dialog = Assert.Single(dialogs);
+        Assert.Equal("Kamu kini Eco Explorer", dialog.Title);
+        Assert.Equal(DialogIcon.Level, dialog.Icon);
+        Assert.Equal(ReviewMode.Summary, dialog.Mode);
+    }
+
+    [Fact]
+    public async Task New_badges_open_one_dialog_with_the_award_icon()
+    {
+        var (_, dialogs) = await SaveAsync(SummaryWith(null, Badge("7 Hari Refleksi Berturut-turut")));
+
+        var dialog = Assert.Single(dialogs);
+        Assert.Equal("Milestone baru: 7 Hari Refleksi Berturut-turut", dialog.Title);
+        Assert.Equal(DialogIcon.Badge, dialog.Icon);
+    }
+
+    [Fact]
+    public async Task A_level_up_together_with_badges_is_still_one_dialog()
+    {
+        var (_, dialogs) = await SaveAsync(SummaryWith(new LevelChangeDto("Eco Starter", "Eco Explorer"), Badge("A"), Badge("B")));
+
+        var dialog = Assert.Single(dialogs);
+        Assert.Equal("Kamu kini Eco Explorer", dialog.Title);
+        Assert.Equal("Milestone baru: A" + Environment.NewLine + "Milestone baru: B", dialog.Message);
+        Assert.Equal(DialogIcon.Level, dialog.Icon);
+    }
+
+    [Fact]
+    public async Task The_weather_card_loads_after_the_summary_shows_and_a_slow_answer_does_not_block_it()
+    {
+        var pending = new TaskCompletionSource<WeatherSuggestionDto>();
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(pending.Task);
+
+        var (vm, _) = await SaveAsync(SummaryWith(null));
+
+        Assert.Equal(ReviewMode.Summary, vm.Mode);
+        Assert.True(vm.Weather.IsLoading);
+        pending.SetResult(await _world.Weather.GetTomorrowSuggestionAsync());
+        await vm.Weather.LoadTask;
+        Assert.False(vm.Weather.IsLoading);
+        Assert.Equal("Besok di Yogyakarta", vm.Weather.ContentTitle);
+    }
+
+    [Fact]
+    public async Task A_weather_timeout_ends_on_Saran_umum_without_dialog_or_banner()
+    {
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(new TaskCompletionSource<WeatherSuggestionDto>().Task);
+        var (vm, _) = await StartAsync(weatherTimeout: TimeSpan.FromMilliseconds(30));
+        Fill(vm, 1, 3m);
+        SubmitReturns(Result<ReviewSummaryDto>.Success(SummaryWith(null)));
+
+        await vm.SubmitCommand.ExecuteAsync(null);
+        await vm.Weather.LoadTask;
+
+        Assert.Equal("Saran umum", vm.Weather.ContentTitle);
+        Assert.False(vm.HasBanner);
+        Assert.Equal(ReviewMode.Summary, vm.Mode);
+        _ = _dialogs.DidNotReceive().ShowInfoAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<DialogIcon>());
+    }
+
+    [Fact]
+    public async Task Leaving_the_screen_cancels_the_weather_load()
+    {
+        CancellationToken seen = default;
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            seen = call.Arg<CancellationToken>();
+            return new TaskCompletionSource<WeatherSuggestionDto>().Task;
+        });
+        var (vm, _) = await SaveAsync(SummaryWith(null));
+
+        vm.OnNavigatedFrom();
+
+        Assert.True(seen.IsCancellationRequested);
+        Assert.False(vm.Weather.IsLoading);
     }
 }
