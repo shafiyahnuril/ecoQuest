@@ -14,6 +14,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <None Remove="Resources\Fonts\*.ttf" />
     <None Remove="Resources\Images\*.png" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.5" />
     <Resource Include="Resources\Fonts\*.ttf" />
     <Resource Include="Resources\Images\*.png" />
   </ItemGroup>
