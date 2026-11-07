@@ -14,3 +14,9 @@ Anggota 3: Alya Luqyana Nasywa - 24/545645/TK/60716
 ## Entity Relationship Diagram (ERD)
 
 ![ERD EcoQuest](docs/erd/erd_ecoQuest.png) 
+
+## Dokumentasi tim
+Dokumen perencanaan (PRD, SRS, SDD, ADR, kontrak, skema DB, test plan) dibagikan terpisah
+kepada anggota tim dan tidak disimpan di repo. Folder `docs/erd` dan `docs/class-diagram`
+berisi diagram yang dipakai untuk laporan.
+
