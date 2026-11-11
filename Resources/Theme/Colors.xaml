@@ -231,7 +231,7 @@
         <GradientStop Color="#94C89A" Offset="0" /><GradientStop Color="#E2F3DA" Offset="1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="Chart.Area" StartPoint="0,0" EndPoint="0,1" po:Freeze="True">
-        <GradientStop Color="#389FCCA0" Offset="0" /><GradientStop Color="#009FCCA0" Offset="1" />
+        <GradientStop Color="#619FCCA0" Offset="0" /><GradientStop Color="#009FCCA0" Offset="1" />
     </LinearGradientBrush>
     <!-- Dashboard: insight row background (.insight-row #fcfdfb) and the hero illustration shadow (.hero-img drop-shadow #254c3027 -> colour 254C30, opacity 0x27/255). -->
     <Color x:Key="Color.Bg.InsightRow">#FCFDFB</Color>

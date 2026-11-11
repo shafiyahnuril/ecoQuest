@@ -7,16 +7,21 @@
              xmlns:vm="clr-namespace:EcoQuest.ViewModels"
              xmlns:ctl="clr-namespace:EcoQuest.Controls"
              xmlns:conv="clr-namespace:EcoQuest.Converters"
+             xmlns:charts="clr-namespace:EcoQuest.Controls.Charts"
+             xmlns:dom="clr-namespace:EcoQuest.Core.Domain"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d po"
              IsTabStop="False" FocusVisualStyle="{x:Null}"
              d:DataContext="{d:DesignInstance Type=vm:DashboardViewModel}">
     <!-- S-04 Dashboard. Reference: design-reference/screens/04-dashboard-empty.png + 07-dashboard-filled.png, INVENTORY-v7 .pagehead .banner .hero
          .stats .metric .grid .card .insight-card .forecast-card, @media(max-width:1160px). Deltas: D-02 (one primary button), D-08 (hero title), D-09 (sentence case).
-         Charts, insight and weather content are shells for later tasks; the account-without-reviews case uses this same layout (UIR-57). -->
+         Insight and weather content are shells for later tasks; the account-without-reviews case uses this same layout (UIR-57). -->
     <UserControl.Resources>
         <conv:CompactWidthConverter x:Key="IsCompactWidth" />
         <conv:RoundedRectClipConverter x:Key="RoundedRectClip" />
         <conv:CategoryIdToBrushConverter x:Key="CategoryBrush" />
+        <conv:EnumEqualsConverter x:Key="EnumEquals" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
 
 
         <Style x:Key="Text.CardTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Title}">
@@ -250,7 +255,7 @@
                                     Value="{Binding LevelName}" Label="{DynamicResource Dashboard.Metric.Level}" />
                 </UniformGrid>
 
-                <!-- ===== Row 1 (.grid.two, 1.55fr : 1fr, gap 16): trend + breakdown. Shells only. ===== -->
+                <!-- ===== Row 1 (.grid.two, 1.55fr : 1fr, gap 16): trend line + category donut (LiveCharts2). ===== -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.55*" />
@@ -258,7 +263,6 @@
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- TODO(FE chart task): LiveCharts line chart; the Mingguan/Bulanan chips become live and bound to the selected range. -->
                     <Border Style="{StaticResource Border.Card}">
                         <StackPanel>
                             <Grid>
@@ -268,14 +272,42 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Style="{StaticResource Text.CardTitle}" Margin="0,0,0,12" Text="{DynamicResource Dashboard.TrendTitle}"
                                            ToolTip="{DynamicResource Dashboard.TrendTitle}" />
-                                <StackPanel Grid.Column="1" Orientation="Horizontal" IsHitTestVisible="False" Focusable="False">
-                                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="TrendRangeShell" IsChecked="True" IsTabStop="False"
-                                                 Content="{DynamicResource Dashboard.Weekly}" />
-                                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="TrendRangeShell" IsTabStop="False" Margin="8,0,0,0"
-                                                 Content="{DynamicResource Dashboard.Monthly}" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="TrendRange" Content="{DynamicResource Dashboard.Weekly}"
+                                                 IsChecked="{Binding SelectedRange, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Weekly}"
+                                                 Command="{Binding SetTrendRangeCommand}" CommandParameter="{x:Static dom:TrendRange.Weekly}" />
+                                    <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="TrendRange" Margin="8,0,0,0" Content="{DynamicResource Dashboard.Monthly}"
+                                                 IsChecked="{Binding SelectedRange, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Monthly}"
+                                                 Command="{Binding SetTrendRangeCommand}" CommandParameter="{x:Static dom:TrendRange.Monthly}" />
                                 </StackPanel>
                             </Grid>
+                            <ctl:ErrorBanner Message="{Binding TrendErrorMessage}" Margin="0,0,0,12">
+                                <ctl:ErrorBanner.Style>
+                                    <Style TargetType="ctl:ErrorBanner">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TrendErrorMessage}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ctl:ErrorBanner.Style>
+                            </ctl:ErrorBanner>
+                            <lvc:CartesianChart Height="{StaticResource Height.Chart}" IsTabStop="False" Focusable="False"
+                                                Series="{Binding TrendSeries}" XAxes="{Binding TrendXAxes}" YAxes="{Binding TrendYAxes}"
+                                                TooltipPosition="Top" TooltipFindingStrategy="CompareOnlyXTakeClosest"
+                                                AnimationsSpeed="{x:Static charts:ChartMotion.Speed}"
+                                                AutomationProperties.Name="{Binding TrendAutomationText}"
+                                                Visibility="{Binding HasTrendData, Converter={StaticResource BoolToVisibility}}" />
                             <StackPanel MinHeight="{StaticResource MinHeight.ChartEmpty}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasTrendData}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
                                 <Image Source="{StaticResource Image.EmptySprout}" Width="{StaticResource Size.EmptyImage}" Height="{StaticResource Size.EmptyImage}"
                                        Stretch="Uniform" Margin="0,24,0,12" AutomationProperties.IsOffscreenBehavior="Offscreen" />
                                 <TextBlock Style="{StaticResource Text.BodyRelaxed}" TextAlignment="Center" Text="{DynamicResource Dashboard.ChartEmpty}" />
@@ -283,7 +315,6 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- TODO(FE chart task): LiveCharts donut with the 4 category series and percentages. -->
                     <Border Grid.Column="2" Style="{StaticResource Border.Card}">
                         <StackPanel>
                             <TextBlock Style="{StaticResource Text.CardTitle}" Margin="0,0,0,12" Text="{DynamicResource Dashboard.BreakdownTitle}"
@@ -294,11 +325,24 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid Width="{StaticResource Size.Donut}" Height="{StaticResource Size.Donut}" VerticalAlignment="Center"
-                                      AutomationProperties.Name="{DynamicResource Dashboard.BreakdownAutomation}">
-                                    <Ellipse Width="121" Height="121" Stroke="{StaticResource Bg.Track}" StrokeThickness="{StaticResource Thickness.DonutRing}" />
-                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                      AutomationProperties.Name="{Binding BreakdownAutomationText}">
+                                    <Ellipse Width="{StaticResource Size.Donut}" Height="{StaticResource Size.Donut}" Stroke="{StaticResource Bg.Track}" StrokeThickness="{StaticResource Thickness.DonutRing}">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasBreakdownData}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <lvc:PieChart IsTabStop="False" Focusable="False" InitialRotation="-90" Series="{Binding BreakdownSeries}" DrawMargin="{x:Static charts:ChartFactory.NoDrawMargin}"
+                                                  AnimationsSpeed="{x:Static charts:ChartMotion.Speed}"
+                                                  Visibility="{Binding HasBreakdownData, Converter={StaticResource BoolToVisibility}}" />
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False">
                                         <TextBlock Style="{StaticResource Text.Subtitle}" FontSize="18" TextAlignment="Center" TextWrapping="NoWrap"
-                                                   Text="{DynamicResource Dashboard.DonutEmptyValue}" />
+                                                   Text="{Binding TotalCo2Text}" />
                                         <TextBlock Style="{StaticResource Text.Tiny}" TextAlignment="Center" Text="{DynamicResource Dashboard.DonutUnit}" />
                                     </StackPanel>
                                 </Grid>
@@ -310,11 +354,14 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <Ellipse Width="{StaticResource Size.CategoryDot}" Height="{StaticResource Size.CategoryDot}"
                                                          Fill="{Binding CategoryId, Converter={StaticResource CategoryBrush}}" VerticalAlignment="Center" />
                                                 <TextBlock Grid.Column="1" Style="{StaticResource Text.Label}" FontFamily="{StaticResource Font.Regular}" Margin="8,0,0,0"
                                                            TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}" />
+                                                <TextBlock Grid.Column="2" Style="{StaticResource Text.Label}" FontFamily="{StaticResource Font.Bold}" FontWeight="Bold"
+                                                           Margin="8,0,0,0" TextWrapping="NoWrap" Text="{Binding PercentText}" />
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

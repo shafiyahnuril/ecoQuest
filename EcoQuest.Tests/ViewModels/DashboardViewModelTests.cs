@@ -26,6 +26,7 @@ public class DashboardViewModelTests
         ["Dashboard.HeroCta.Fill"] = "Isi jurnal hari ini",
         ["Dashboard.HeroCta.View"] = "Lihat jurnal hari ini",
         ["Weather.CityLine"] = "{0} · Saran berdasarkan kota domisili",
+        ["Dashboard.TrendNoReview"] = "tidak ada refleksi",
     };
 
     private readonly IDashboardService _dashboard = Substitute.For<IDashboardService>();
@@ -238,5 +239,137 @@ public class DashboardViewModelTests
         await vm.ViewSummaryCommand.ExecuteAsync(null);
 
         await _nav.Received(2).NavigateTo<EveningReviewViewModel>(Arg.Any<object?>());
+    }
+
+    // ---------- charts: trend range toggle, donut, legend (UIR-52, UIR-53, UIR-57) ----------
+
+    private static IReadOnlyList<TrendPointDto> Days(int count, params int[] reviewedOffsets) =>
+        Enumerable.Range(0, count)
+            .Select(i => new TrendPointDto(Today.AddDays(i - (count - 1)), 0.5m, reviewedOffsets.Contains(count - 1 - i)))
+            .ToList();
+
+    private static IReadOnlyList<CategoryBreakdownDto> FilledBreakdown() =>
+    [
+        new(1, "Transportasi", 4.5m, 47.6m, ""), new(2, "Energi", 1m, 10.6m, ""),
+        new(3, "Sampah/Daur Ulang", 2.75m, 29.1m, ""), new(4, "Konsumsi", 1.2m, 12.7m, ""),
+    ];
+
+    private static DashboardDto ChartDto(TrendRange range, IReadOnlyList<TrendPointDto> trend, IReadOnlyList<CategoryBreakdownDto>? breakdown = null) =>
+        new(9.45m, "", 212, 4, Level(), TodayReviewState.NotSubmitted, range, trend, breakdown ?? FilledBreakdown(), []);
+
+    [Fact]
+    public async Task Charts_get_series_and_legend_percentages_with_one_decimal()
+    {
+        ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7, 0, 1, 3)));
+
+        var vm = await LoadedAsync();
+
+        Assert.True(vm.HasTrendData);
+        Assert.Single(vm.TrendSeries);
+        Assert.True(vm.HasBreakdownData);
+        Assert.Equal(4, vm.BreakdownSeries.Length);
+        Assert.Equal(["47,6%", "10,6%", "29,1%", "12,7%"], vm.BreakdownLegend.Select(l => l.PercentText));
+        Assert.Contains("Transportasi 47,6%", vm.BreakdownAutomationText);
+        Assert.Contains("tidak ada refleksi", vm.TrendAutomationText);
+    }
+
+    [Fact]
+    public async Task Without_reviews_both_charts_are_empty_and_the_legend_shows_names_only()
+    {
+        ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7), Breakdown()));
+
+        var vm = await LoadedAsync();
+
+        Assert.False(vm.HasTrendData);
+        Assert.False(vm.HasBreakdownData);
+        Assert.Empty(vm.BreakdownSeries);
+        Assert.Equal(4, vm.BreakdownLegend.Count);
+        Assert.All(vm.BreakdownLegend, l => Assert.Equal("", l.PercentText));
+        Assert.Equal(LoadState.Loaded, vm.State);
+        Assert.False(vm.IsEmpty);
+    }
+
+    [Fact]
+    public async Task Switching_the_range_reloads_only_the_trend_and_keeps_the_screen_visible()
+    {
+        ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7, 0)));
+        var vm = await LoadedAsync();
+        var donut = vm.BreakdownSeries;
+        var gate = new TaskCompletionSource<Result<DashboardDto>>();
+        _dashboard.GetDashboardAsync(TrendRange.Monthly, Arg.Any<CancellationToken>()).Returns(gate.Task);
+
+        var switching = vm.SetTrendRangeCommand.ExecuteAsync(TrendRange.Monthly);
+
+        Assert.Equal(LoadState.Loaded, vm.State);
+        gate.SetResult(Result<DashboardDto>.Success(ChartDto(TrendRange.Monthly, Days(30, 0, 5), Breakdown())));
+        await switching;
+
+        Assert.Equal(TrendRange.Monthly, vm.SelectedRange);
+        Assert.Equal(30, ((IEnumerable<double?>)((LiveChartsCore.SkiaSharpView.LineSeries<double?>)vm.TrendSeries[0]).Values!).Count());
+        Assert.Same(donut, vm.BreakdownSeries);
+        Assert.Equal(LoadState.Loaded, vm.State);
+        Assert.Null(vm.TrendErrorMessage);
+    }
+
+    [Fact]
+    public async Task Choosing_the_current_range_again_does_not_call_the_service()
+    {
+        var vm = await LoadedAsync();
+        _dashboard.ClearReceivedCalls();
+
+        await vm.SetTrendRangeCommand.ExecuteAsync(TrendRange.Weekly);
+
+        await _dashboard.DidNotReceiveWithAnyArgs().GetDashboardAsync(default, default);
+    }
+
+    [Fact]
+    public async Task A_failing_range_switch_shows_a_banner_in_the_trend_card_and_leaves_the_rest_intact()
+    {
+        ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7, 0, 2)));
+        var vm = await LoadedAsync();
+        var trend = vm.TrendSeries;
+        var rangeChanged = new List<string?>();
+        vm.PropertyChanged += (_, e) => rangeChanged.Add(e.PropertyName);
+        _dashboard.GetDashboardAsync(TrendRange.Monthly, Arg.Any<CancellationToken>())
+            .Returns(Result<DashboardDto>.Failure(ErrorCode.NetworkError, "Tidak dapat terhubung ke server."));
+
+        await vm.SetTrendRangeCommand.ExecuteAsync(TrendRange.Monthly);
+
+        Assert.Equal("Tidak dapat terhubung ke server.", vm.TrendErrorMessage);
+        Assert.Equal(LoadState.Loaded, vm.State);
+        Assert.Null(vm.ErrorMessage);
+        Assert.Equal(TrendRange.Weekly, vm.SelectedRange);
+        Assert.Contains(nameof(DashboardViewModel.SelectedRange), rangeChanged);
+        Assert.Same(trend, vm.TrendSeries);
+        Assert.Equal("9,45 kg", vm.TotalCo2Text);
+    }
+
+    [Fact]
+    public async Task A_later_successful_switch_clears_the_trend_banner()
+    {
+        var vm = await LoadedAsync();
+        _dashboard.GetDashboardAsync(TrendRange.Monthly, Arg.Any<CancellationToken>())
+            .Returns(Result<DashboardDto>.Failure(ErrorCode.NetworkError, "Gagal."),
+                     Result<DashboardDto>.Success(ChartDto(TrendRange.Monthly, Days(30, 0))));
+
+        await vm.SetTrendRangeCommand.ExecuteAsync(TrendRange.Monthly);
+        await vm.SetTrendRangeCommand.ExecuteAsync(TrendRange.Monthly);
+
+        Assert.Null(vm.TrendErrorMessage);
+        Assert.Equal(TrendRange.Monthly, vm.SelectedRange);
+    }
+
+    [Fact]
+    public async Task A_full_reload_keeps_the_selected_range()
+    {
+        var vm = await LoadedAsync();
+        _dashboard.GetDashboardAsync(TrendRange.Monthly, Arg.Any<CancellationToken>())
+            .Returns(Result<DashboardDto>.Success(ChartDto(TrendRange.Monthly, Days(30, 0))));
+        await vm.SetTrendRangeCommand.ExecuteAsync(TrendRange.Monthly);
+        _dashboard.ClearReceivedCalls();
+
+        await vm.ReloadCommand.ExecuteAsync(null);
+
+        await _dashboard.Received(1).GetDashboardAsync(TrendRange.Monthly, Arg.Any<CancellationToken>());
     }
 }
