@@ -208,6 +208,7 @@
     <Thickness x:Key="Margin.MetricText">12,0,0,0</Thickness>
     <Thickness x:Key="Margin.MetricLabel">0,4,0,0</Thickness>
     <sys:Double x:Key="MinHeight.ChartEmpty">165</sys:Double>
+    <sys:Double x:Key="Height.Chart">200</sys:Double>
     <sys:Double x:Key="Size.Donut">150</sys:Double>
     <sys:Double x:Key="Thickness.DonutRing">29</sys:Double>
     <sys:Double x:Key="Size.InsightIcon">40</sys:Double>

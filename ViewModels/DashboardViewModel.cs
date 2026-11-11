@@ -1,17 +1,20 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EcoQuest.Controls.Charts;
 using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Dtos;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Core.Domain;
 using EcoQuest.Navigation;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace EcoQuest.ViewModels;
 
 /// <summary>
 /// Dashboard / Beranda (S-04, SDD-Frontend 3.4). Text only: all numbers come from <see cref="IDashboardService"/> and are formatted
-/// with <see cref="UiFormat"/>. Charts, insights and weather are filled by later tasks.
+/// with <see cref="UiFormat"/>; chart series come from <see cref="ChartFactory"/>. Insights and weather are filled by later tasks.
 /// The view model is transient, so every navigation to the screen starts with the skeleton; "silent" only applies to
 /// <see cref="ReloadCommand"/> on the same instance (UIR-56), where the old content stays visible while the new data loads.
 /// </summary>
@@ -19,6 +22,8 @@ public sealed partial class DashboardViewModel : ViewModelBase
 {
     /// <summary>Shown in the "Hari refleksi" card when the profile call failed (the dashboard itself still loads).</summary>
     public const string UnknownValue = "—";
+
+    private static readonly CultureInfo PercentCulture = CultureInfo.GetCultureInfo("id-ID");
 
     private readonly IDashboardService _dashboard;
     private readonly IProfileService _profile;
@@ -71,9 +76,22 @@ public sealed partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private string _streakText;
     [ObservableProperty] private string _levelName;
 
-    /// <summary>Four category names (from the service, never hardcoded) for the legend of the not-yet-filled donut shell.</summary>
-    // TODO(FE chart task): replace by the real legend with percentages and the donut series.
     [ObservableProperty] private IReadOnlyList<CategoryLegendItem> _breakdownLegend = [];
+    [ObservableProperty] private ISeries[] _breakdownSeries = [];
+    [ObservableProperty] private bool _hasBreakdownData;
+    [ObservableProperty] private string _breakdownAutomationText = "";
+
+    /// <summary>Range of the trend line only; the donut always shows the cumulative breakdown.</summary>
+    [ObservableProperty] private TrendRange _selectedRange = TrendRange.Weekly;
+
+    [ObservableProperty] private ISeries[] _trendSeries = [];
+    [ObservableProperty] private Axis[] _trendXAxes = [];
+    [ObservableProperty] private Axis[] _trendYAxes = [];
+    [ObservableProperty] private bool _hasTrendData;
+    [ObservableProperty] private string _trendAutomationText = "";
+
+    /// <summary>Set when reloading the trend failed; the rest of the dashboard stays visible.</summary>
+    [ObservableProperty] private string? _trendErrorMessage;
 
     /// <summary>"{kota} · Saran berdasarkan kota domisili": heading line of the weather card, from the signed-in user's city.</summary>
     // TODO(FE insight/weather task): replaced by the city of the real WeatherSuggestionDto.
@@ -106,6 +124,32 @@ public sealed partial class DashboardViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task SetTrendRangeAsync(TrendRange range)
+    {
+        if (range == SelectedRange || State != LoadState.Loaded)
+        {
+            return;
+        }
+
+        var data = await RunAsync(token => _dashboard.GetDashboardAsync(range, token), (_cts ??= new CancellationTokenSource()).Token, silent: true);
+        if (data is not null)
+        {
+            SelectedRange = range;
+            TrendErrorMessage = null;
+            ApplyTrend(data.Trend, range);
+            return;
+        }
+
+        if (State == LoadState.Error)
+        {
+            TrendErrorMessage = ErrorMessage;
+            ErrorMessage = null;
+            State = LoadState.Loaded;
+            OnPropertyChanged(nameof(SelectedRange));   // puts the chips back on the range that is still drawn
+        }
+    }
+
+    [RelayCommand]
     private Task StartReviewAsync() => _navigation.NavigateTo<EveningReviewViewModel>();
 
     [RelayCommand]
@@ -119,7 +163,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
         var data = await RunAsync(async token =>
         {
             // Both calls start together; a failing profile call must not fail the dashboard.
-            var dashboardTask = _dashboard.GetDashboardAsync(TrendRange.Weekly, token);
+            var dashboardTask = _dashboard.GetDashboardAsync(SelectedRange, token);
             var profileTask = _profile.GetProfileAsync(token);
             var result = await dashboardTask;
             if (result.IsSuccess)
@@ -152,7 +196,10 @@ public sealed partial class DashboardViewModel : ViewModelBase
         TotalCo2Explanation = data.TotalCo2Explanation;
         StreakText = UiFormat.Count(data.CurrentStreak);
         LevelName = data.Level.LevelName;
-        BreakdownLegend = data.Breakdown.Select(b => new CategoryLegendItem(b.CategoryId, b.CategoryName)).ToList();
+        TrendErrorMessage = null;
+        SelectedRange = data.Range;
+        ApplyTrend(data.Trend, data.Range);
+        ApplyBreakdown(data.Breakdown);
         ReflectionDaysText = profile is { IsSuccess: true, Value: not null }
             ? UiFormat.Count(profile.Value.TotalReviewCount)
             : UnknownValue;
@@ -160,6 +207,31 @@ public sealed partial class DashboardViewModel : ViewModelBase
         // An account without reviews is a normal, loaded screen with zeros (UIR-57), never a separate empty screen.
         IsEmpty = false;
     }
+
+    private void ApplyTrend(IReadOnlyList<TrendPointDto> trend, TrendRange range)
+    {
+        HasTrendData = trend.Any(p => p.HasReview);
+        TrendSeries = ChartFactory.Trend(trend);
+        TrendXAxes = ChartFactory.TrendXAxes(trend, range);
+        TrendYAxes = ChartFactory.TrendYAxes(trend);
+        TrendAutomationText = _text.Get("Dashboard.TrendTitle") + ": " + string.Join("; ", trend.Select(DescribeTrendPoint));
+    }
+
+    private string DescribeTrendPoint(TrendPointDto point) =>
+        UiFormat.Date(point.Date) + " " + (point.HasReview ? UiFormat.Co2(point.Co2Kg) : _text.Get("Dashboard.TrendNoReview"));
+
+    private void ApplyBreakdown(IReadOnlyList<CategoryBreakdownDto> breakdown)
+    {
+        HasBreakdownData = breakdown.Any(b => b.Co2Kg > 0);
+        BreakdownLegend = breakdown
+            .Select(b => new CategoryLegendItem(b.CategoryId, b.CategoryName, HasBreakdownData ? FormatPercent(b.Percentage) : ""))
+            .ToList();
+        BreakdownSeries = HasBreakdownData ? ChartFactory.Breakdown(breakdown) : [];
+        BreakdownAutomationText = _text.Get(HasBreakdownData ? "Dashboard.BreakdownTitle" : "Dashboard.BreakdownAutomation")
+            + (HasBreakdownData ? ": " + string.Join("; ", BreakdownLegend.Select(l => $"{l.Name} {l.PercentText}")) : "");
+    }
+
+    private static string FormatPercent(decimal percentage) => percentage.ToString("0.0", PercentCulture) + "%";
 
     private string BuildGreeting() =>
         string.Format(CultureInfo.CurrentCulture, _text.Get("Dashboard.Greeting"), _session.Current?.UserName ?? "");
@@ -177,5 +249,5 @@ public sealed partial class DashboardViewModel : ViewModelBase
     }
 }
 
-/// <summary>One legend row: colour comes from <see cref="CategoryId"/> (CategoryIdToBrushConverter), always next to the name (NFR-12).</summary>
-public sealed record CategoryLegendItem(int CategoryId, string Name);
+/// <summary>One legend row: colour comes from <see cref="CategoryId"/> (CategoryIdToBrushConverter), always next to the name (NFR-12); <see cref="PercentText"/> is empty while there is no data.</summary>
+public sealed record CategoryLegendItem(int CategoryId, string Name, string PercentText);
