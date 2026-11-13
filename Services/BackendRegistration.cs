@@ -1,6 +1,7 @@
 using EcoQuest.Core.Contracts.Repositories;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Data.Repositories;
+using EcoQuest.Data.Rpc;
 using EcoQuest.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,10 +12,13 @@ public static class BackendRegistration
     public static IServiceCollection AddEcoQuestBackend(this IServiceCollection s)
     {
         s.AddSingleton<SupabaseClientProvider>();
+        s.AddSingleton<RpcClient>();
         s.AddSingleton<SupabaseActivityTypeRepository>();
         s.AddSingleton<IActivityTypeRepository>(sp =>
             new CachedActivityTypeRepository(sp.GetRequiredService<SupabaseActivityTypeRepository>()));
         s.AddSingleton<IActivityCategoryRepository, SupabaseActivityCategoryRepository>();
+        s.AddSingleton<ILevelRepository, SupabaseLevelRepository>();
+        s.AddSingleton<IBadgeRepository, SupabaseBadgeRepository>();
         s.AddSingleton<IReferenceDataService, ReferenceDataService>();
         return s;
     }

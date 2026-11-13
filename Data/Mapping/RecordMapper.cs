@@ -4,6 +4,7 @@ using EcoQuest.Core.Common;
 using EcoQuest.Core.Domain;
 using EcoQuest.Data.Errors;
 using EcoQuest.Data.Records;
+using EcoQuest.Data.Rpc;
 
 namespace EcoQuest.Data.Mapping;
 
@@ -46,6 +47,11 @@ public static class RecordMapper
         r.ForecastSummary,
         r.RawResponse,
         r.RetrievedAt);
+
+    public static UserBadge ToDomain(UserBadgeJson j, Guid userId) => new(
+        userId,
+        j.BadgeId,
+        j.EarnedAt);
 
     public static InputControlType ParseControl(string value)
         => ParseEnum<InputControlType>(value, "inputcontroltype");
