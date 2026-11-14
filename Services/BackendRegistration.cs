@@ -13,13 +13,18 @@ public static class BackendRegistration
     {
         s.AddSingleton<SupabaseClientProvider>();
         s.AddSingleton<RpcClient>();
+        s.AddSingleton<CityCatalog>();
+        s.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         s.AddSingleton<SupabaseActivityTypeRepository>();
         s.AddSingleton<IActivityTypeRepository>(sp =>
             new CachedActivityTypeRepository(sp.GetRequiredService<SupabaseActivityTypeRepository>()));
         s.AddSingleton<IActivityCategoryRepository, SupabaseActivityCategoryRepository>();
         s.AddSingleton<ILevelRepository, SupabaseLevelRepository>();
         s.AddSingleton<IBadgeRepository, SupabaseBadgeRepository>();
+        s.AddSingleton<IUserRepository, SupabaseUserRepository>();
         s.AddSingleton<IReferenceDataService, ReferenceDataService>();
+        s.AddSingleton<ISessionService, SessionService>();
+        s.AddSingleton<IAuthService, AuthService>();
         return s;
     }
 }

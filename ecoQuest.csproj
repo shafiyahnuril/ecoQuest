@@ -16,6 +16,7 @@
     <None Remove="Resources\Images\*.png" />
     <Resource Include="Resources\Fonts\*.ttf" />
     <Resource Include="Resources\Images\*.png" />
+    <Content Include="Resources\Data\cities.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
