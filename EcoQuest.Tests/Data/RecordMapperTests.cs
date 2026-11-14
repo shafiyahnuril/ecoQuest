@@ -100,7 +100,7 @@ public class RecordMapperTests
         {
             CacheId = 12,
             City = "Yogyakarta",
-            ForDate = "2026-11-13",
+            ForDate = new DateTime(2026, 11, 13, 0, 0, 0, DateTimeKind.Unspecified),
             ForecastSummary = "Cerah berawan, 24–31°C",
             RawResponse = "{\"Headline\":\"Sunny\"}",
             RetrievedAt = retrievedAt
