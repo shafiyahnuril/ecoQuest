@@ -27,10 +27,39 @@ public static class RecordMapper
         r.CategoryName,
         r.Description);
 
-    public static InputControlType ParseControl(string value) =>
-        Enum.TryParse<InputControlType>(value, ignoreCase: false, out var t) && Enum.IsDefined(t)
-            ? t
-            : throw new DataAccessException(ErrorCode.Unknown, $"inputcontroltype '{value}' tidak dikenal");
+    public static Level ToDomain(LevelRecord r) => new(
+        r.LevelId,
+        r.LevelName,
+        r.MinPoints,
+        r.MaxPoints);
+
+    public static Badge ToDomain(BadgeRecord r) => new(
+        r.BadgeId,
+        r.Name,
+        r.Description ?? string.Empty,
+        ParseCriteria(r.CriteriaType),
+        r.CriteriaValue);
+
+    public static WeatherCache ToDomain(WeatherCacheRecord r) => WeatherCache.Create(
+        r.City,
+        DateOnly.FromDateTime(r.ForDate),
+        r.ForecastSummary,
+        r.RawResponse,
+        r.RetrievedAt);
+
+    public static InputControlType ParseControl(string value)
+        => ParseEnum<InputControlType>(value, "inputcontroltype");
+
+    public static CriteriaType ParseCriteria(string value)
+        => ParseEnum<CriteriaType>(value, "criteriatype");
+
+    private static TEnum ParseEnum<TEnum>(string value, string columnName) where TEnum : struct, Enum =>
+        !string.IsNullOrEmpty(value)
+        && Enum.TryParse<TEnum>(value, ignoreCase: false, out var parsed)
+        && Enum.IsDefined(parsed)
+        && string.Equals(parsed.ToString(), value, StringComparison.Ordinal)
+            ? parsed
+            : throw new DataAccessException(ErrorCode.Unknown, $"{columnName} '{value}' tidak dikenal");
 
     public static DateOnly ParseDate(string s) => DateOnly.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
