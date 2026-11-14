@@ -19,6 +19,8 @@ public static class BackendRegistration
         s.AddSingleton<IActivityTypeRepository>(sp =>
             new CachedActivityTypeRepository(sp.GetRequiredService<SupabaseActivityTypeRepository>()));
         s.AddSingleton<IActivityCategoryRepository, SupabaseActivityCategoryRepository>();
+        s.AddSingleton<ILevelRepository, SupabaseLevelRepository>();
+        s.AddSingleton<IBadgeRepository, SupabaseBadgeRepository>();
         s.AddSingleton<IUserRepository, SupabaseUserRepository>();
         s.AddSingleton<IReferenceDataService, ReferenceDataService>();
         s.AddSingleton<ISessionService, SessionService>();
