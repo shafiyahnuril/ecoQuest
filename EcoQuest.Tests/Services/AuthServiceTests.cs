@@ -23,8 +23,8 @@ public class AuthServiceTests
     private readonly ISessionService _session = Substitute.For<ISessionService>();
     private readonly CityCatalog _cities = new();
 
-    private AuthService CreateSut(IPasswordHasher? hasher = null)
-        => new(_users, hasher ?? _hasher, _session, _cities);
+    private AuthService CreateSut()
+        => new(_users, _hasher, _session, _cities);
 
     [Fact]
     public async Task Register_hashes_password_never_sends_plain()
