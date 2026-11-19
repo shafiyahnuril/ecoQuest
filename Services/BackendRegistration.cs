@@ -27,6 +27,7 @@ public static class BackendRegistration
         s.AddSingleton<ILevelRepository, SupabaseLevelRepository>();
         s.AddSingleton<IBadgeRepository, SupabaseBadgeRepository>();
         s.AddSingleton<IUserRepository, SupabaseUserRepository>();
+        s.AddSingleton<IDailyReviewRepository, SupabaseDailyReviewRepository>();
         s.AddSingleton<IReferenceDataService, ReferenceDataService>();
         s.AddSingleton<ISessionService, SessionService>();
         s.AddSingleton<IAuthService, AuthService>();
