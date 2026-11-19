@@ -52,7 +52,8 @@ public sealed class FakeDashboardService : IDashboardService
                 : $"Total dari {_store.TotalReviewCount} refleksi: jumlah kuantitas × koefisien emisi tiap aktivitas (estimasi indikatif).",
             _store.TotalPoints, _store.CurrentStreak, _store.LevelProgress(),
             _store.TodaySummary is null ? TodayReviewState.NotSubmitted : TodayReviewState.Submitted,
-            range, trend, breakdown, BuildInsights(breakdown, total)));
+            range, trend, breakdown, BuildInsights(breakdown, total),
+            _store.TotalReviewCount));
     }
 
     private IReadOnlyList<InsightDto> BuildInsights(List<CategoryBreakdownDto> breakdown, decimal total)
