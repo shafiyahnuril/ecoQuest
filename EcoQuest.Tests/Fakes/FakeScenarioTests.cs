@@ -54,6 +54,15 @@ public class FakeScenarioTests
         Assert.Equal(4, weekly.Breakdown.Count);
         Assert.InRange(weekly.Insights.Count, 1, 3);
         Assert.True(weekly.TotalCo2Kg > 0);
+        Assert.Equal(w.Store.TotalReviewCount, weekly.TotalReviewCount);
+        Assert.All(weekly.Breakdown, category =>
+            Assert.InRange(category.Percentage, 0m, 100m));
+        var totalPercentage = weekly.Breakdown.Sum(
+            category => category.Percentage);
+
+        Assert.InRange(totalPercentage, 99.9m, 100.1m);
+
+
     }
 
     [Fact]
