@@ -17,6 +17,7 @@
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.5" />
     <Resource Include="Resources\Fonts\*.ttf" />
     <Resource Include="Resources\Images\*.png" />
+    <Content Include="Resources\Data\cities.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
