@@ -25,6 +25,23 @@ public static class BackendRegistration
         s.AddSingleton<IReferenceDataService, ReferenceDataService>();
         s.AddSingleton<ISessionService, SessionService>();
         s.AddSingleton<IAuthService, AuthService>();
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.DistanceImpactCalculator>();
+
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.DurationImpactCalculator>();
+
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.CountImpactCalculator>();
+
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.ToggleImpactCalculator>();
+
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculatorFactory,
+            EcoQuest.Core.Calculation.ImpactCalculatorFactory>();
+
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculationService,
+            EcoQuest.Core.Calculation.ImpactCalculationService>();
         return s;
     }
 }
