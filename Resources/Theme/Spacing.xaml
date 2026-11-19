@@ -306,6 +306,51 @@
     <sys:Double x:Key="Width.SkeletonLine">180</sys:Double>
     <sys:Double x:Key="Height.SkeletonAdvice">93</sys:Double>
     <Thickness x:Key="Margin.SkeletonAdvice">0,14,0,0</Thickness>
+    <!-- Riwayat (S-07): .history-day padding 13 radius 10 margin-bottom 10; .history-line margin-top 11 gap 10; .filters gap 7; detail photo width 180 radius 9. -->
+    <Thickness x:Key="Margin.HistoryFilterCard">0,0,0,15</Thickness>
+    <Thickness x:Key="Margin.HistoryFilterRow">0,14,0,0</Thickness>
+    <Thickness x:Key="Margin.FilterChip">0,0,7,0</Thickness>
+    <Thickness x:Key="Margin.HistoryDates">20,0,0,0</Thickness>
+    <Thickness x:Key="Margin.HistoryDateLabel">0,0,8,0</Thickness>
+    <Thickness x:Key="Margin.HistoryDateGap">14,0,8,0</Thickness>
+    <sys:Double x:Key="Width.HistoryDate">136</sys:Double>
+    <GridLength x:Key="Width.HistoryGap">15</GridLength>
+    <GridLength x:Key="Column.HistoryDetail">330</GridLength><!-- = Width.HistoryDetail as a column width -->
+    <Thickness x:Key="Padding.HistoryDay">13</Thickness>
+    <CornerRadius x:Key="Radius.HistoryDay">10</CornerRadius>
+    <Thickness x:Key="Margin.HistoryDay">0,0,0,10</Thickness>
+    <Thickness x:Key="Margin.HistoryLine">0,11,0,0</Thickness>
+    <sys:Double x:Key="MinHeight.HistoryLine">18</sys:Double><!-- reference line pitch is 29: margin 11 + a 15 px icon on an 18 px inline line box -->
+    <Thickness x:Key="Margin.HistoryNoActivity">0,0,0,12</Thickness><!-- p.small: margin-top 0 (reset), margin-bottom 1em of 12 px -->
+
+    <Thickness x:Key="Margin.HistoryLineGap">10,0,0,0</Thickness>
+    <Thickness x:Key="Margin.HistoryLineName">6,0,0,0</Thickness>
+    <!-- Fixed widths of the right-hand columns so they line up across virtualized cards. Measured with the embedded Inter 12 px, tabular digits:
+         "22:10–01:10 (3 j 30 m)" 116, "12,50 kg" 44.8, "999 poin" 46.5; two 14 px icons 28. Each is rounded up to a whole DIP. -->
+    <sys:Double x:Key="Width.HistoryQuantity">138</sys:Double>
+    <sys:Double x:Key="Width.HistoryExtras">30</sys:Double>
+    <sys:Double x:Key="Width.HistoryCo2">56</sys:Double>
+    <sys:Double x:Key="Width.HistoryPoints">56</sys:Double>
+    <sys:Double x:Key="Size.IconHistoryLine">15</sys:Double>
+    <sys:Double x:Key="Size.IconHistoryExtra">14</sys:Double>
+    <sys:Double x:Key="MinHeight.HistoryList">240</sys:Double>
+    <Thickness x:Key="Margin.HistoryDetailTitle">0,0,0,12</Thickness>
+    <Thickness x:Key="Margin.HistoryDetailTotal">0,6,0,0</Thickness>
+    <Thickness x:Key="Margin.HistoryDetailPoints">0,8,0,16</Thickness>
+    <Thickness x:Key="Margin.HistoryDetailQuantity">0,6,0,0</Thickness>
+    <Thickness x:Key="Margin.HistoryDetailImpact">0,2,0,0</Thickness>
+    <sys:Double x:Key="Height.HistoryDetailTitleLine">20</sys:Double>
+    <sys:Double x:Key="Height.HistoryDetailFormulaLine">18</sys:Double>
+    <sys:Double x:Key="Size.HistoryInfoHit">28</sys:Double>
+    <Thickness x:Key="Margin.HistoryInfoHit">4,-4,-6,-4</Thickness><!-- hit area 28x28 around the 16 icon; layout = 10 gap + 16 wide x 20 tall (one title line), icon right edge = content edge -->
+    <Thickness x:Key="Padding.HistoryDetailItem">0,12</Thickness>
+    <Thickness x:Key="Margin.HistoryDetailFormula">0,10,0,0</Thickness>
+    <Thickness x:Key="Margin.HistoryDetailNote">0,4,0,0</Thickness>
+    <sys:Double x:Key="Width.HistoryPhoto">180</sys:Double>
+    <CornerRadius x:Key="Radius.HistoryPhoto">9</CornerRadius>
+    <Thickness x:Key="Margin.HistoryPhoto">0,9,0,0</Thickness>
+    <Thickness x:Key="Padding.HistoryPhotoMissing">10,12</Thickness>
+    <sys:Double x:Key="Height.SkeletonHistoryDay">120</sys:Double>
     <!-- Dialog icon pop (D-04): one light scale animation as the answer to the user's action. -->
     <sys:Double x:Key="Scale.DialogIconFrom">0.82</sys:Double>
     <Duration x:Key="Duration.DialogIcon">0:0:0.24</Duration>

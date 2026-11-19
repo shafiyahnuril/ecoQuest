@@ -843,6 +843,25 @@
                 <ContentControl x:Name="PreviewConfigError" Height="640" Margin="8,0,0,0" IsTabStop="False" />
             </UniformGrid>
 
+            <TextBlock Style="{StaticResource Text.Title}" Text="Riwayat: daftar hari + panel detail terisi, filter dengan error rentang, empty state" Margin="0,16,0,10" />
+            <StackPanel Margin="0,0,0,12">
+                <Border Height="620" Margin="0,0,0,12" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ContentControl x:Name="PreviewHistoryFilled" IsTabStop="False" />
+                    </ScrollViewer>
+                </Border>
+                <Border Height="300" Margin="0,0,0,12" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ContentControl x:Name="PreviewHistoryRangeError" IsTabStop="False" />
+                    </ScrollViewer>
+                </Border>
+                <Border Height="620" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ContentControl x:Name="PreviewHistoryEmpty" IsTabStop="False" />
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+
             <TextBlock Style="{StaticResource Text.Title}" Text="State umum: skeleton, empty, error, busy" Margin="0,16,0,10" />
             <StackPanel>
                 <StackPanel.DataContext>

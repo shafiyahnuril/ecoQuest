@@ -23,6 +23,7 @@ public partial class ThemePreviewView : UserControl
         ActivityItems.ItemsSource = FakeData.ActivityTypes.Select(CreateActivityItem).ToList();
         ShowConnectionErrorVariants();
         ShowDashboardPanelVariants();
+        ShowHistoryVariants();
     }
 
     private void ShowDashboardPanelVariants()
@@ -57,6 +58,30 @@ public partial class ThemePreviewView : UserControl
         var weather = new WeatherSuggestionViewModel(new PreviewWeatherService(answer), session, clock, text, TimeSpan.FromDays(1));
         weather.StartLoading();
         return weather;
+    }
+
+    private void ShowHistoryVariants()
+    {
+        PreviewHistoryFilled.Content = StartHistory(FakeScenario.Normal, null);
+        PreviewHistoryRangeError.Content = StartHistory(FakeScenario.Normal, vm => vm.From = vm.To!.Value.AddDays(1));
+        PreviewHistoryEmpty.Content = StartHistory(FakeScenario.Empty, null);
+    }
+
+    private static HistoryViewModel StartHistory(FakeScenario scenario, Action<HistoryViewModel>? afterLoad)
+    {
+        var clock = new SystemClock();
+        var context = new FakeContext(scenario, clock);
+        var viewModel = new HistoryViewModel(
+            new FakeHistoryService(context, new FakeStore(context)), new FakeReferenceDataService(context), new FakePhotoStorageService(),
+            clock, new PreviewNavigation(), new ResourceUiText());
+        _ = LoadHistoryAsync(viewModel, afterLoad);
+        return viewModel;
+    }
+
+    private static async Task LoadHistoryAsync(HistoryViewModel viewModel, Action<HistoryViewModel>? afterLoad)
+    {
+        await viewModel.OnNavigatedToAsync(null);
+        afterLoad?.Invoke(viewModel);
     }
 
     private sealed record InsightPanelSample(string InsightSubtitle, IReadOnlyList<InsightRowItem> InsightRows);
