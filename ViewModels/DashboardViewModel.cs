@@ -7,6 +7,7 @@ using EcoQuest.Core.Contracts.Dtos;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Core.Domain;
 using EcoQuest.Navigation;
+using EcoQuest.ViewModels.Items;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 
@@ -14,7 +15,8 @@ namespace EcoQuest.ViewModels;
 
 /// <summary>
 /// Dashboard / Beranda (S-04, SDD-Frontend 3.4). Text only: all numbers come from <see cref="IDashboardService"/> and are formatted
-/// with <see cref="UiFormat"/>; chart series come from <see cref="ChartFactory"/>. Insights and weather are filled by later tasks.
+/// with <see cref="UiFormat"/>; chart series come from <see cref="ChartFactory"/>. The weather card has its own view model and loads
+/// independently, so a slow or failing forecast never affects the rest of the screen.
 /// The view model is transient, so every navigation to the screen starts with the skeleton; "silent" only applies to
 /// <see cref="ReloadCommand"/> on the same instance (UIR-56), where the old content stays visible while the new data loads.
 /// </summary>
@@ -22,6 +24,8 @@ public sealed partial class DashboardViewModel : ViewModelBase
 {
     /// <summary>Shown in the "Hari refleksi" card when the profile call failed (the dashboard itself still loads).</summary>
     public const string UnknownValue = "—";
+
+    public const int MaxInsights = 3;
 
     private static readonly CultureInfo PercentCulture = CultureInfo.GetCultureInfo("id-ID");
 
@@ -33,10 +37,11 @@ public sealed partial class DashboardViewModel : ViewModelBase
     private readonly IUiText _text;
     private CancellationTokenSource? _cts;
     private DateOnly? _loadedFor;
+    private string? _weatherCity;
 
     public DashboardViewModel(
         IDashboardService dashboard, IProfileService profile, ISessionService session,
-        IClock clock, INavigationService navigation, IUiText text)
+        IClock clock, INavigationService navigation, IUiText text, WeatherSuggestionViewModel weather)
     {
         _dashboard = dashboard;
         _profile = profile;
@@ -44,6 +49,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
         _clock = clock;
         _navigation = navigation;
         _text = text;
+        Weather = weather;
         TodayText = UiFormat.LongDate(_clock.Today);
         Greeting = BuildGreeting();
         BannerText = _text.Get("Dashboard.PendingBanner");
@@ -52,7 +58,10 @@ public sealed partial class DashboardViewModel : ViewModelBase
         ReflectionDaysText = UnknownValue;
         StreakText = UiFormat.Count(0);
         LevelName = "";
+        InsightSubtitle = _text.Get("Dashboard.InsightSubtitle");
     }
+
+    public WeatherSuggestionViewModel Weather { get; }
 
     /// <summary>"Selamat malam, {nama}!"</summary>
     [ObservableProperty] private string _greeting;
@@ -93,20 +102,34 @@ public sealed partial class DashboardViewModel : ViewModelBase
     /// <summary>Set when reloading the trend failed; the rest of the dashboard stays visible.</summary>
     [ObservableProperty] private string? _trendErrorMessage;
 
-    /// <summary>"{kota} · Saran berdasarkan kota domisili": heading line of the weather card, from the signed-in user's city.</summary>
-    // TODO(FE insight/weather task): replaced by the city of the real WeatherSuggestionDto.
-    [ObservableProperty] private string _cityLineText = "";
+    [ObservableProperty] private IReadOnlyList<InsightRowItem> _insightRows = [];
+    [ObservableProperty] private string _insightSubtitle;
 
     public override async Task OnNavigatedToAsync(object? parameter)
     {
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
+        _session.SessionChanged -= OnSessionChanged;
+        _session.SessionChanged += OnSessionChanged;
         await LoadAsync(silent: false, _cts.Token);
     }
 
     public override void OnNavigatedFrom()
     {
         _cts?.Cancel();
+        _session.SessionChanged -= OnSessionChanged;
+        Weather.Cancel();
+    }
+
+    private void OnSessionChanged(object? sender, EventArgs e)
+    {
+        if (_session.Current?.City == _weatherCity)
+        {
+            return;
+        }
+
+        _weatherCity = _session.Current?.City;
+        Weather.StartLoading();
     }
 
     /// <summary>Reloads in place. After a successful load the old content stays visible (silent); from the Error state it shows the skeleton again, so it also serves as "Coba lagi".</summary>
@@ -160,6 +183,9 @@ public sealed partial class DashboardViewModel : ViewModelBase
         var today = _clock.Today;
         Result<UserProfileDto>? profile = null;
 
+        _weatherCity = _session.Current?.City;
+        Weather.StartLoading();
+
         var data = await RunAsync(async token =>
         {
             // Both calls start together; a failing profile call must not fail the dashboard.
@@ -186,7 +212,6 @@ public sealed partial class DashboardViewModel : ViewModelBase
     private void Apply(DashboardDto data, Result<UserProfileDto>? profile, DateOnly today)
     {
         Greeting = BuildGreeting();
-        CityLineText = string.Format(CultureInfo.CurrentCulture, _text.Get("Weather.CityLine"), _session.Current?.City ?? "");
         TodayText = UiFormat.LongDate(today);
         IsSubmitted = data.TodayState == TodayReviewState.Submitted;
         HeroCtaText = _text.Get(IsSubmitted ? "Dashboard.HeroCta.View" : "Dashboard.HeroCta.Fill");
@@ -200,12 +225,33 @@ public sealed partial class DashboardViewModel : ViewModelBase
         SelectedRange = data.Range;
         ApplyTrend(data.Trend, data.Range);
         ApplyBreakdown(data.Breakdown);
-        ReflectionDaysText = profile is { IsSuccess: true, Value: not null }
-            ? UiFormat.Count(profile.Value.TotalReviewCount)
-            : UnknownValue;
+        int? reflectionDays = profile is { IsSuccess: true, Value: not null } ? profile.Value.TotalReviewCount : null;
+        ReflectionDaysText = reflectionDays is { } days ? UiFormat.Count(days) : UnknownValue;
+        ApplyInsights(data.Insights, reflectionDays);
 
         // An account without reviews is a normal, loaded screen with zeros (UIR-57), never a separate empty screen.
         IsEmpty = false;
+    }
+
+    private void ApplyInsights(IReadOnlyList<InsightDto> insights, int? reflectionDays)
+    {
+        var personal = insights.Where(i => i.Kind != InsightKind.EmptyState).Take(MaxInsights).ToList();
+        if (personal.Count == 0)
+        {
+            var emptyBody = insights.FirstOrDefault()?.Text ?? _text.Get("Dashboard.InsightEmptyBody");
+            InsightRows =
+            [
+                InsightRowItem.For(InsightKind.EmptyState, _text.Get("Dashboard.InsightEmptyTitle"), emptyBody),
+                InsightRowItem.Tip(_text.Get("Dashboard.InsightHabitTitle"), _text.Get("Dashboard.InsightHabitBody")),
+            ];
+            InsightSubtitle = _text.Get("Dashboard.InsightSubtitle");
+            return;
+        }
+
+        InsightRows = personal.Select(i => InsightRowItem.For(i.Kind, _text.Get($"Dashboard.Insight.{i.Kind}"), i.Text)).ToList();
+        InsightSubtitle = reflectionDays is { } days
+            ? string.Format(CultureInfo.CurrentCulture, _text.Get("Dashboard.InsightSubtitleFilled"), UiFormat.Count(days))
+            : _text.Get("Dashboard.InsightSubtitleFilledNoCount");
     }
 
     private void ApplyTrend(IReadOnlyList<TrendPointDto> trend, TrendRange range)

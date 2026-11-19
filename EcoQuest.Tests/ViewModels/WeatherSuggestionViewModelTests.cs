@@ -117,6 +117,39 @@ public class WeatherSuggestionViewModelTests
     }
 
     [Fact]
+    public async Task An_unexpected_service_exception_ends_on_the_generic_suggestion_and_leaves_no_faulted_task()
+    {
+        _service.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns<Task<WeatherSuggestionDto>>(_ => throw new InvalidOperationException("boom"));
+        var vm = Create();
+
+        vm.StartLoading();
+        await vm.LoadTask;
+
+        Assert.False(vm.IsLoading);
+        Assert.True(vm.IsFallback);
+        Assert.Equal("Saran umum", vm.ContentTitle);
+    }
+
+    [Fact]
+    public async Task The_automation_name_summarises_the_forecast_or_the_generic_state()
+    {
+        var pending = new TaskCompletionSource<WeatherSuggestionDto>();
+        _service.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(pending.Task, Task.FromResult(Generic()));
+        var vm = Create();
+
+        vm.StartLoading();
+        Assert.Equal("Weather.Loading", vm.AutomationName);
+
+        pending.SetResult(Live());
+        await vm.LoadTask;
+        Assert.Equal("Besok di Yogyakarta. Cerah berawan, 24–31°C", vm.AutomationName);
+
+        vm.StartLoading();
+        await vm.LoadTask;
+        Assert.Equal("Saran umum", vm.AutomationName);
+    }
+
+    [Fact]
     public async Task Starting_again_replaces_the_previous_load()
     {
         var first = new TaskCompletionSource<WeatherSuggestionDto>();

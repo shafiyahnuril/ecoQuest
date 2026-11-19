@@ -828,6 +828,15 @@
 </StackPanel>
             </WrapPanel>
 
+            <TextBlock Style="{StaticResource Text.Title}" Text="Dashboard: panel insight dan kartu cuaca (kosong, terisi, data nyata, saran umum, memuat)" Margin="0,16,0,10" />
+            <UniformGrid Columns="2" Margin="0,0,0,12">
+                <ctl:InsightPanel x:Name="PreviewInsightEmpty" Margin="0,0,8,16" />
+                <ctl:InsightPanel x:Name="PreviewInsightFilled" Margin="8,0,0,16" />
+                <ctl:WeatherSuggestionCard x:Name="PreviewWeatherLive" Margin="0,0,8,16" />
+                <ctl:WeatherSuggestionCard x:Name="PreviewWeatherFallback" Margin="8,0,0,16" />
+                <ctl:WeatherSuggestionCard x:Name="PreviewWeatherLoading" Margin="0,0,8,16" />
+            </UniformGrid>
+
             <TextBlock Style="{StaticResource Text.Title}" Text="Layar Tidak dapat terhubung: varian jaringan dan konfigurasi" Margin="0,16,0,10" />
             <UniformGrid Columns="2" Margin="0,0,0,12">
                 <ContentControl x:Name="PreviewNetworkError" Height="640" Margin="0,0,8,0" IsTabStop="False" />

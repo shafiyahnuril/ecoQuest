@@ -25,13 +25,26 @@ public class DashboardViewModelTests
         ["Review.Saved"] = "Refleksi hari ini tersimpan",
         ["Dashboard.HeroCta.Fill"] = "Isi jurnal hari ini",
         ["Dashboard.HeroCta.View"] = "Lihat jurnal hari ini",
-        ["Weather.CityLine"] = "{0} · Saran berdasarkan kota domisili",
+        ["Weather.TomorrowIn"] = "Besok di {0}",
+        ["Weather.FallbackTitle"] = "Saran umum",
+        ["Weather.FallbackAdvice"] = "Siapkan tumbler dan tas belanja.",
+        ["Dashboard.InsightSubtitle"] = "Insight berdasarkan jurnalmu akan muncul di sini.",
+        ["Dashboard.InsightSubtitleFilled"] = "Kamu telah mencatat {0} hari refleksi.",
+        ["Dashboard.InsightSubtitleFilledNoCount"] = "Berikut hal yang bisa kamu pelajari.",
+        ["Dashboard.InsightEmptyTitle"] = "Mulai refleksi pertamamu",
+        ["Dashboard.InsightEmptyBody"] = "Catat aktivitas nyata hari ini untuk membuka insight personal.",
+        ["Dashboard.InsightHabitTitle"] = "Bangun kebiasaan secara bertahap",
+        ["Dashboard.InsightHabitBody"] = "Mulai dari kegiatan yang paling mudah.",
+        ["Dashboard.Insight.TopCategory"] = "Kontribusi terbesar",
+        ["Dashboard.Insight.WeakestCategory"] = "Peluang berikutnya",
+        ["Dashboard.Insight.Streak"] = "Konsistensi refleksi",
         ["Dashboard.TrendNoReview"] = "tidak ada refleksi",
     };
 
     private readonly IDashboardService _dashboard = Substitute.For<IDashboardService>();
     private readonly IProfileService _profile = Substitute.For<IProfileService>();
     private readonly INavigationService _nav = Substitute.For<INavigationService>();
+    private readonly IWeatherSuggestionService _weather = Substitute.For<IWeatherSuggestionService>();
     private readonly IUiText _text = Substitute.For<IUiText>();
     private readonly FakeSessionService _session = new();
     private readonly FakeClock _clock = new(Evening);
@@ -42,9 +55,14 @@ public class DashboardViewModelTests
         _session.Start(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null));
         ReturnsDashboard(Dto());
         ReturnsProfile(reviewCount: 7);
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(LiveForecast("Yogyakarta"));
     }
 
-    private DashboardViewModel Create() => new(_dashboard, _profile, _session, _clock, _nav, _text);
+    private DashboardViewModel Create() =>
+        new(_dashboard, _profile, _session, _clock, _nav, _text, new WeatherSuggestionViewModel(_weather, _session, _clock, _text));
+
+    private static WeatherSuggestionDto LiveForecast(string city) =>
+        new(city, Today.AddDays(1), false, "Cerah berawan, 24–31°C", 3, "Cocok untuk jalan kaki.", 1, 0.30m);
 
     private static LevelProgressDto Level(string name = "Eco Explorer") => new(2, name, 100, 499, 212, "Eco Warrior", 288, 0.28);
 
@@ -56,8 +74,8 @@ public class DashboardViewModelTests
 
     private static DashboardDto Dto(
         decimal total = 9.45m, TodayReviewState state = TodayReviewState.NotSubmitted, int streak = 4,
-        IReadOnlyList<TrendPointDto>? trend = null, string explanation = "Total dari 7 refleksi.") =>
-        new(total, explanation, 212, streak, Level(), state, TrendRange.Weekly, trend ?? [], Breakdown(), []);
+        IReadOnlyList<TrendPointDto>? trend = null, string explanation = "Total dari 7 refleksi.", IReadOnlyList<InsightDto>? insights = null) =>
+        new(total, explanation, 212, streak, Level(), state, TrendRange.Weekly, trend ?? [], Breakdown(), insights ?? []);
 
     private static UserProfileDto Profile(int reviewCount) =>
         new(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null, 212, 9.45m, 4, Level(), Today, reviewCount, 20, Evening);
@@ -142,7 +160,6 @@ public class DashboardViewModelTests
         Assert.Equal("7", vm.ReflectionDaysText);
         Assert.Equal("4", vm.StreakText);
         Assert.Equal("Eco Explorer", vm.LevelName);
-        Assert.Equal("Yogyakarta · Saran berdasarkan kota domisili", vm.CityLineText);
     }
 
     [Fact]
@@ -155,6 +172,136 @@ public class DashboardViewModelTests
         Assert.Equal(LoadState.Loaded, vm.State);
         Assert.Equal(DashboardViewModel.UnknownValue, vm.ReflectionDaysText);
         Assert.Equal("9,45 kg", vm.TotalCo2Text);
+    }
+
+    // ---------- insight panel (FR-4.4, UIR-54) ----------
+
+    [Fact]
+    public async Task Without_personal_insights_the_panel_invites_the_first_reflection_and_adds_the_habit_tip()
+    {
+        ReturnsDashboard(Dto(insights: [new InsightDto(InsightKind.EmptyState, "Catat aktivitas nyata hari ini.")]));
+
+        var vm = await LoadedAsync();
+
+        Assert.Equal(["Mulai refleksi pertamamu", "Bangun kebiasaan secara bertahap"], vm.InsightRows.Select(r => r.Title));
+        Assert.Equal("Catat aktivitas nyata hari ini.", vm.InsightRows[0].Body);
+        Assert.Equal("Insight berdasarkan jurnalmu akan muncul di sini.", vm.InsightSubtitle);
+    }
+
+    [Fact]
+    public async Task Personal_insights_show_one_row_each_with_the_service_text_and_the_reflection_count()
+    {
+        ReturnsDashboard(Dto(insights:
+        [
+            new InsightDto(InsightKind.TopCategory, "Transportasi paling besar."),
+            new InsightDto(InsightKind.Streak, "4 hari berturut-turut."),
+        ]));
+
+        var vm = await LoadedAsync();
+
+        Assert.Equal(["Kontribusi terbesar", "Konsistensi refleksi"], vm.InsightRows.Select(r => r.Title));
+        Assert.Equal(["Transportasi paling besar.", "4 hari berturut-turut."], vm.InsightRows.Select(r => r.Body));
+        Assert.Equal("Kamu telah mencatat 7 hari refleksi.", vm.InsightSubtitle);
+    }
+
+    [Fact]
+    public async Task The_panel_shows_at_most_three_insights()
+    {
+        ReturnsDashboard(Dto(insights: Enumerable.Range(1, 5).Select(i => new InsightDto(InsightKind.TopCategory, $"Butir {i}")).ToList()));
+
+        var vm = await LoadedAsync();
+
+        Assert.Equal(DashboardViewModel.MaxInsights, vm.InsightRows.Count);
+    }
+
+    [Fact]
+    public async Task A_failing_profile_call_keeps_the_insights_without_the_reflection_count()
+    {
+        _profile.GetProfileAsync(Arg.Any<CancellationToken>()).Returns(Result<UserProfileDto>.Failure(ErrorCode.NetworkError, "x"));
+        ReturnsDashboard(Dto(insights: [new InsightDto(InsightKind.TopCategory, "Transportasi paling besar.")]));
+
+        var vm = await LoadedAsync();
+
+        Assert.Single(vm.InsightRows);
+        Assert.Equal("Berikut hal yang bisa kamu pelajari.", vm.InsightSubtitle);
+    }
+
+    // ---------- weather card (FR-6, UIR-54) ----------
+
+    [Fact]
+    public async Task The_weather_card_shows_the_forecast_of_the_signed_in_city()
+    {
+        var vm = await LoadedAsync();
+        await vm.Weather.LoadTask;
+
+        Assert.False(vm.Weather.IsFallback);
+        Assert.Equal("Besok di Yogyakarta", vm.Weather.ContentTitle);
+    }
+
+    [Fact]
+    public async Task A_throwing_weather_service_falls_back_and_the_dashboard_still_loads()
+    {
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns<Task<WeatherSuggestionDto>>(_ => throw new InvalidOperationException("boom"));
+
+        var vm = await LoadedAsync();
+        await vm.Weather.LoadTask;
+
+        Assert.Equal(LoadState.Loaded, vm.State);
+        Assert.Equal("9,45 kg", vm.TotalCo2Text);
+        Assert.True(vm.Weather.IsFallback);
+        Assert.Equal("Saran umum", vm.Weather.ContentTitle);
+    }
+
+    [Fact]
+    public async Task A_slow_weather_service_does_not_hold_back_the_dashboard()
+    {
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(new TaskCompletionSource<WeatherSuggestionDto>().Task);
+
+        var vm = await LoadedAsync();
+
+        Assert.Equal(LoadState.Loaded, vm.State);
+        Assert.True(vm.Weather.IsLoading);
+    }
+
+    [Fact]
+    public async Task A_city_change_reloads_the_forecast_and_the_old_answer_does_not_overwrite_the_new_one()
+    {
+        var oldCity = new TaskCompletionSource<WeatherSuggestionDto>();
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(oldCity.Task, Task.FromResult(LiveForecast("Bandung")));
+        var vm = await LoadedAsync();
+        var firstLoad = vm.Weather.LoadTask;
+
+        _session.Update(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Bandung", null));
+        oldCity.SetResult(LiveForecast("Yogyakarta"));
+        await firstLoad;
+        await vm.Weather.LoadTask;
+
+        Assert.Equal("Besok di Bandung", vm.Weather.ContentTitle);
+        await _weather.Received(2).GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task A_session_change_without_a_new_city_does_not_reload_the_forecast()
+    {
+        var vm = await LoadedAsync();
+        await vm.Weather.LoadTask;
+
+        _session.Update(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", "avatar.png"));
+
+        await _weather.Received(1).GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Leaving_the_screen_stops_the_forecast_and_the_city_watch()
+    {
+        _weather.GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>()).Returns(new TaskCompletionSource<WeatherSuggestionDto>().Task);
+        var vm = await LoadedAsync();
+
+        vm.OnNavigatedFrom();
+        _session.Update(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Bandung", null));
+
+        Assert.False(vm.Weather.IsLoading);
+        await _weather.Received(1).GetTomorrowSuggestionAsync(Arg.Any<CancellationToken>());
     }
 
     // ---------- loading and errors (UIR-05) ----------

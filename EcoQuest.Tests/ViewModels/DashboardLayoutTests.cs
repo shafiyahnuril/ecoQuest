@@ -32,7 +32,8 @@ public class DashboardLayoutTests(ITestOutputHelper output)
     {
         var world = new FakeWorld(scenario);
         world.Session.Start(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null));
-        var vm = new DashboardViewModel(world.Dashboard, world.Profile, world.Session, world.Clock, Substitute.For<INavigationService>(), new ResourceUiText());
+        var vm = new DashboardViewModel(world.Dashboard, world.Profile, world.Session, world.Clock, Substitute.For<INavigationService>(), new ResourceUiText(),
+            new WeatherSuggestionViewModel(world.Weather, world.Session, world.Clock, new ResourceUiText()));
         vm.OnNavigatedToAsync(null).GetAwaiter().GetResult();   // fakes complete synchronously (delay recorder), so no deadlock
 
         // Created from a DataTemplate exactly like App.xaml does: names are then not reachable with FindName (template name scope),
@@ -253,7 +254,8 @@ public class DashboardLayoutTests(ITestOutputHelper output)
             var gate = new TaskCompletionSource<EcoQuest.Core.Common.Result<DashboardDto>>();
             dashboard.GetDashboardAsync(Arg.Any<EcoQuest.Core.Domain.TrendRange>(), Arg.Any<CancellationToken>()).Returns(gate.Task);
             profile.GetProfileAsync(Arg.Any<CancellationToken>()).Returns(new TaskCompletionSource<EcoQuest.Core.Common.Result<UserProfileDto>>().Task);
-            var vm = new DashboardViewModel(dashboard, profile, session, clock, Substitute.For<INavigationService>(), new ResourceUiText());
+            var vm = new DashboardViewModel(dashboard, profile, session, clock, Substitute.For<INavigationService>(), new ResourceUiText(),
+                new WeatherSuggestionViewModel(Substitute.For<EcoQuest.Core.Contracts.Services.IWeatherSuggestionService>(), session, clock, new ResourceUiText()));
             _ = vm.OnNavigatedToAsync(null);   // stays in Loading
 
             var view = new DashboardView { DataContext = vm };
