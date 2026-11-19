@@ -126,6 +126,8 @@
     <sys:String x:Key="Photo.Missing">Foto tidak tersedia di perangkat ini</sys:String>
     <sys:String x:Key="Offline.Title">Tidak dapat terhubung ke server</sys:String>
     <sys:String x:Key="Offline.Body">Periksa koneksi internet lalu coba lagi.</sys:String>
+    <sys:String x:Key="Offline.ConfigBody">Konfigurasi belum lengkap: {0} belum diisi di file .env.</sys:String>
+    <sys:String x:Key="Offline.ConfigHint">Isi file .env lalu jalankan ulang aplikasi.</sys:String>
     <sys:String x:Key="Common.Retry">Coba lagi</sys:String>
     <sys:String x:Key="Logout.Title">Keluar dari EcoQuest?</sys:String>
     <sys:String x:Key="Logout.Body">Kamu dapat kembali kapan saja untuk mengisi refleksi.</sys:String>

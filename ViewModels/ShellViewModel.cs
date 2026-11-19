@@ -69,13 +69,13 @@ public sealed partial class ShellViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty] private ViewModelBase? _currentViewModel;
 
-    /// <summary>Screen shown in the auth area (no sidebar). At most one of Auth/MainViewModel is non-null, so a view is never built twice.</summary>
+    /// <summary>Screen shown in the area without sidebar. At most one of Auth/MainViewModel is non-null, so a view is never built twice.</summary>
     [ObservableProperty] private ViewModelBase? _authViewModel;
 
     /// <summary>Screen shown in the main area (sidebar + page).</summary>
     [ObservableProperty] private ViewModelBase? _mainViewModel;
 
-    /// <summary>True when the sidebar (main area) is shown; false for Login, Register and Onboarding (auth area).</summary>
+    /// <summary>True when the sidebar (main area) is shown; false for Login, Register, Onboarding and the connection-error screen (auth area).</summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(NavigateCommand))]
     private bool _isAuthenticated;
@@ -193,7 +193,7 @@ public sealed partial class ShellViewModel : ViewModelBase, IDisposable
     }
 
     private static bool IsMainAreaScreen(ViewModelBase? screen) =>
-        screen is not null and not (LoginViewModel or RegisterViewModel or OnboardingViewModel);
+        screen is not null and not (LoginViewModel or RegisterViewModel or OnboardingViewModel or ConnectionErrorViewModel);
 
     private void UpdateIsAuthenticated() => IsAuthenticated = _session.IsAuthenticated && IsMainAreaScreen(_navigation.Current);
 

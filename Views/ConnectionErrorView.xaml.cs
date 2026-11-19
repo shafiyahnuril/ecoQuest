@@ -7,5 +7,6 @@ public partial class ConnectionErrorView : UserControl
     public ConnectionErrorView()
     {
         InitializeComponent();
+        Loaded += (_, _) => RetryButton.Focus();
     }
 }

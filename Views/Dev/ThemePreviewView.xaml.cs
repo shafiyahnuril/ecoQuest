@@ -3,7 +3,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using EcoQuest.Controls;
 using EcoQuest.Core.Contracts.Dtos;
+using EcoQuest.Infrastructure;
+using EcoQuest.Navigation;
 using EcoQuest.Services.Fakes;
+using EcoQuest.ViewModels;
 using EcoQuest.ViewModels.Items;
 
 namespace ecoQuest.Views.Dev;
@@ -15,6 +18,30 @@ public partial class ThemePreviewView : UserControl
         InitializeComponent();
         Loaded += OnLoaded;
         ActivityItems.ItemsSource = FakeData.ActivityTypes.Select(CreateActivityItem).ToList();
+        ShowConnectionErrorVariants();
+    }
+
+    private void ShowConnectionErrorVariants()
+    {
+        var text = new ResourceUiText();
+        var navigation = new PreviewNavigation();
+        PreviewNetworkError.Content = new ConnectionErrorViewModel(new AppConfig(null, null, null, UseFakes: true), navigation, text);
+        PreviewConfigError.Content = new ConnectionErrorViewModel(new AppConfig("", " ", null, UseFakes: false), navigation, text);
+    }
+
+    private sealed class PreviewNavigation : INavigationService
+    {
+        public ViewModelBase? Current => null;
+
+        public bool CanGoBack => false;
+
+        public event EventHandler? Navigated { add { } remove { } }
+
+        public Task NavigateTo<TViewModel>(object? parameter = null) where TViewModel : ViewModelBase => Task.CompletedTask;
+
+        public Task GoBackAsync() => Task.CompletedTask;
+
+        public void ClearHistory() { }
     }
 
     // Stands in for the Evening Review ViewModel (next task) so Validate/Preview results can be eyeballed.
