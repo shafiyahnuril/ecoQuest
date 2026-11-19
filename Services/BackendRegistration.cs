@@ -1,9 +1,11 @@
+using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Repositories;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Data.Repositories;
 using EcoQuest.Data.Rpc;
 using EcoQuest.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EcoQuest.Services;
 
@@ -11,6 +13,9 @@ public static class BackendRegistration
 {
     public static IServiceCollection AddEcoQuestBackend(this IServiceCollection s)
     {
+        s.TryAddSingleton<IClock, SystemClock>();
+        s.TryAddSingleton<IAppPaths, AppPaths>();
+        s.AddSingleton<AppLogger>();
         s.AddSingleton<SupabaseClientProvider>();
         s.AddSingleton<RpcClient>();
         s.AddSingleton<CityCatalog>();
