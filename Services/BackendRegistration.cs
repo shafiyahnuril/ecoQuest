@@ -31,6 +31,8 @@ public static class BackendRegistration
         s.AddSingleton<IReferenceDataService, ReferenceDataService>();
         s.AddSingleton<ISessionService, SessionService>();
         s.AddSingleton<IAuthService, AuthService>();
+        s.AddSingleton<PhotoStorageService>();
+        s.AddSingleton<IPhotoStorageService>(sp => sp.GetRequiredService<PhotoStorageService>());
         return s;
     }
 }
