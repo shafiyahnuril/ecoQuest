@@ -12,7 +12,7 @@ namespace EcoQuest.Data.Rpc;
 /// <summary>
 /// Pembungkus panggilan RPC PostgreSQL via Supabase dengan pembatalan dan pemetaan error seragam.
 /// </summary>
-public sealed class RpcClient(SupabaseClientProvider provider)
+public sealed class RpcClient(SupabaseClientProvider provider, AppLogger log)
 {
     public async Task<T?> CallAsync<T>(string fn, Dictionary<string, object?> args, CancellationToken ct)
     {
@@ -27,7 +27,9 @@ public sealed class RpcClient(SupabaseClientProvider provider)
         }
         catch (Exception ex)
         {
-            throw new DataAccessException(SupabaseErrorMapper.Map(ex), fn, ex);
+            var code = SupabaseErrorMapper.Map(ex);
+            log.Warn(fn, code.ToString(), ex.GetType().Name);
+            throw new DataAccessException(code, fn, ex);
         }
     }
 

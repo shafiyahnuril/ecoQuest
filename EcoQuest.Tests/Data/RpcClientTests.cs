@@ -1,7 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using EcoQuest.Core.Common;
+using EcoQuest.Data.Errors;
 using EcoQuest.Data.Rpc;
+using EcoQuest.Infrastructure;
+using EcoQuest.Services;
+using EcoQuest.Tests.TestDoubles;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -72,6 +81,52 @@ public class RpcClientTests
         Assert.NotNull(list);
         Assert.Equal(2, list.Count);
         Assert.Equal(2, list[1].Id);
+    }
+
+    [Fact]
+    public async Task CallAsync_logs_warning_without_request_payload_on_failure()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), "ecoquest-rpc-tests-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var provider = new SupabaseClientProvider(new AppConfig("https://example.supabase.co", "dummy-anon-key", null, false));
+            var clock = new FakeClock(new DateTimeOffset(2026, 11, 19, 14, 0, 0, TimeSpan.Zero));
+            var logger = new AppLogger(new AppPaths(tempDir), clock);
+            var rpc = new RpcClient(provider, logger);
+
+            var ex = await Assert.ThrowsAsync<DataAccessException>(() =>
+                rpc.CallAsync<SampleDto>(
+                    RpcNames.GetProfile,
+                    new Dictionary<string, object?> { ["p_secret"] = "ShouldNeverAppear" },
+                    CancellationToken.None));
+
+            Assert.Equal(ErrorCode.Unknown, ex.Code);
+            var logFile = Path.Combine(tempDir, "logs", "ecoquest-20261119.log");
+            Assert.True(File.Exists(logFile));
+
+            var content = File.ReadAllText(logFile);
+            Assert.Contains("[WARN] app_get_profile Unknown InvalidOperationException", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("ShouldNeverAppear", content, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+                Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void BackendRegistration_resolves_IClock_IAppPaths_AppLogger_and_RpcClient()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton(new AppConfig("https://example.supabase.co", "dummy-anon-key", null, false));
+        services.AddEcoQuestBackend();
+
+        using var sp = services.BuildServiceProvider();
+        Assert.IsType<SystemClock>(sp.GetRequiredService<IClock>());
+        Assert.IsType<AppPaths>(sp.GetRequiredService<IAppPaths>());
+        Assert.NotNull(sp.GetRequiredService<AppLogger>());
+        Assert.NotNull(sp.GetRequiredService<RpcClient>());
     }
 }
 
