@@ -487,6 +487,73 @@
         </Setter>
     </Style>
 
+    <!-- ===================== DatePicker ===================== -->
+    <!-- The default DatePickerTextBox template shows an English watermark; this one is a plain text host. -->
+    <Style x:Key="DatePickerTextBox.Plain" TargetType="DatePickerTextBox">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
+        <Setter Property="CaretBrush" Value="{StaticResource Text.Primary}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePickerTextBox">
+                    <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden" VerticalAlignment="Center" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DatePicker.Default" TargetType="DatePicker">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Regular}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
+        <Setter Property="Height" Value="{StaticResource Height.ButtonSmall}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Grid x:Name="PART_Root">
+                        <Border x:Name="Bd" Background="{StaticResource Bg.Input}" BorderBrush="{StaticResource Line.Input}" BorderThickness="1"
+                                CornerRadius="{StaticResource Radius.Input}" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <DatePickerTextBox x:Name="PART_TextBox" Style="{StaticResource DatePickerTextBox.Plain}" Margin="10,0,0,0"
+                                                   FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" />
+                                <Button x:Name="PART_Button" Grid.Column="1" Style="{StaticResource Button.Icon}" Width="{StaticResource Height.ButtonSmall}"
+                                        Height="Auto" Focusable="False" AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}">
+                                    <ctl:IconView Data="{DynamicResource Icon.Calendar}" Foreground="{StaticResource Brand.Forest}"
+                                                  Width="{StaticResource Size.IconInfo}" Height="{StaticResource Size.IconInfo}"
+                                                  AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                        <Popup x:Name="PART_Popup" PlacementTarget="{Binding ElementName=Bd}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Brand.Primary}" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="ctl:InputState.IsInvalid" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource State.Error}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="{StaticResource Opacity.Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===================== Surfaces ===================== -->
     <Style x:Key="Border.Card" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Bg.Surface}" />

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using Xunit;
@@ -47,6 +48,28 @@ public static class WpfTestHost
     /// <summary>Processes pending binding/layout work (ErrorsChanged notifications, Loaded) at background priority.</summary>
     public static void Flush() => Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ContextIdle);
 
+    /// <summary>
+    /// The theme refers to its fonts as "pack://application:,,,/Resources/Fonts/#Inter", which resolves against the test host and silently falls
+    /// back to a narrower font than the app uses. Typography is therefore loaded from its source file with the fonts pointed at the EcoQuest assembly.
+    /// </summary>
+    private static ResourceDictionary Load(string file)
+    {
+        var uri = new Uri($"pack://application:,,,/EcoQuest;component/{file}");
+        if (!file.EndsWith("Typography.xaml", StringComparison.Ordinal))
+        {
+            return new ResourceDictionary { Source = uri };
+        }
+
+        var root = new DirectoryInfo(AppContext.BaseDirectory);
+        while (!File.Exists(Path.Combine(root.FullName, file)))
+        {
+            root = root.Parent ?? throw new FileNotFoundException(file);
+        }
+
+        var xaml = File.ReadAllText(Path.Combine(root.FullName, file)).Replace("pack://application:,,,/Resources/Fonts/", "pack://application:,,,/EcoQuest;component/Resources/Fonts/", StringComparison.Ordinal);
+        return (ResourceDictionary)System.Windows.Markup.XamlReader.Parse(xaml);
+    }
+
     private static Dispatcher Start()
     {
         Dispatcher? dispatcher = null;
@@ -60,7 +83,7 @@ public static class WpfTestHost
                 var app = Application.Current ?? new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
                 foreach (var file in ThemeFiles)
                 {
-                    app.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri($"pack://application:,,,/EcoQuest;component/{file}") });
+                    app.Resources.MergedDictionaries.Add(Load(file));
                 }
 
                 dispatcher = Dispatcher.CurrentDispatcher;
