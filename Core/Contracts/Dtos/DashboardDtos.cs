@@ -6,7 +6,14 @@ using EcoQuest.Core.Domain;
 namespace EcoQuest.Core.Contracts.Dtos;
 
 public sealed record TrendPointDto(DateOnly Date, decimal Co2Kg, bool HasReview);   // hari tanpa review → 0, HasReview=false
-public sealed record CategoryBreakdownDto(int CategoryId, string CategoryName, decimal Co2Kg, decimal Percentage, string Explanation);
+
+public sealed record CategoryBreakdownDto(
+    int CategoryId,
+    string CategoryName,
+    decimal Co2Kg,
+    decimal Percentage, // Skala 0–100, bukan 0–1. Contoh: 25 = 25%.
+    string Explanation);
+
 public sealed record InsightDto(InsightKind Kind, string Text);
 
 public sealed record LevelProgressDto(
@@ -19,7 +26,8 @@ public sealed record DashboardDto(
     TodayReviewState TodayState,
     TrendRange Range, IReadOnlyList<TrendPointDto> Trend,              // FR-4.1
     IReadOnlyList<CategoryBreakdownDto> Breakdown,                      // FR-4.2 (selalu 4 item)
-    IReadOnlyList<InsightDto> Insights);                                // FR-4.4 (1–3 item)
+    IReadOnlyList<InsightDto> Insights,                                // FR-4.4 (1–3 item)
+    int TotalReviewCount = 0);
 
 public sealed record HistoryFilter(DateOnly? From, DateOnly? To, IReadOnlyList<int> CategoryIds);
 public sealed record HistoryDayDto(Guid ReviewId, DateOnly ReviewDate, decimal TotalCo2Kg, int TotalPoints,
