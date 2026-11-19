@@ -117,6 +117,14 @@
     <Thickness x:Key="Margin.EmptyImage">0,0,0,16</Thickness>
     <Thickness x:Key="Margin.EmptyText">0,6,0,0</Thickness>
     <Thickness x:Key="Margin.EmptyAction">0,16,0,0</Thickness>
+    <sys:Double x:Key="MaxWidth.OfflineCard">606</sys:Double>
+    <sys:Double x:Key="MaxWidth.OfflineContent">560</sys:Double>
+    <sys:Double x:Key="Width.OfflineImage">320</sys:Double>
+    <sys:Double x:Key="Height.OfflineImage">300</sys:Double>
+    <Thickness x:Key="Margin.OfflineContent">0,30</Thickness>
+    <Thickness x:Key="Margin.OfflineText">0,10,0,0</Thickness>
+    <Thickness x:Key="Margin.OfflineAction">0,16,0,0</Thickness>
+    <Thickness x:Key="Margin.OfflinePage">24</Thickness>
     <Thickness x:Key="Margin.BannerAction">14,0,0,0</Thickness>
     <Thickness x:Key="Margin.BannerIcon">0,0,12,0</Thickness>
     <sys:Double x:Key="Size.Spinner">28</sys:Double>
