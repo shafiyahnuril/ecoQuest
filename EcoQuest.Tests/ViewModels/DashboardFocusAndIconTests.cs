@@ -33,7 +33,8 @@ public class DashboardFocusAndIconTests(ITestOutputHelper output)
             world.Store.SubmitToday([]);
         }
 
-        var dashboard = new DashboardViewModel(world.Dashboard, world.Profile, world.Session, world.Clock, Substitute.For<INavigationService>(), new ResourceUiText());
+        var dashboard = new DashboardViewModel(world.Dashboard, world.Profile, world.Session, world.Clock, Substitute.For<INavigationService>(), new ResourceUiText(),
+            new WeatherSuggestionViewModel(world.Weather, world.Session, world.Clock, new ResourceUiText()));
         dashboard.OnNavigatedToAsync(null).GetAwaiter().GetResult();
         var shell = new ShellViewModel(Substitute.For<INavigationService>(), Substitute.For<IDialogService>(), new ResourceUiText(), new ToastViewModel(),
             world.Session, Substitute.For<IAuthService>(), Substitute.For<IEveningReviewService>());

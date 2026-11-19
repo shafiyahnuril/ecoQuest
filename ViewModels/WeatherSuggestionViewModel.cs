@@ -32,11 +32,11 @@ public sealed partial class WeatherSuggestionViewModel : ObservableObject
         _timeout = timeout ?? Timeout;
     }
 
-    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(AutomationName))] private bool _isLoading;
     [ObservableProperty] private bool _isFallback = true;
     [ObservableProperty] private string _cityLine = string.Empty;
-    [ObservableProperty] private string _contentTitle = string.Empty;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasContentSubtitle))] private string? _contentSubtitle;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(AutomationName))] private string _contentTitle = string.Empty;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasContentSubtitle)), NotifyPropertyChangedFor(nameof(AutomationName))] private string? _contentSubtitle;
     [ObservableProperty] private string _adviceText = string.Empty;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasImpact))] private string? _impactText;
     [ObservableProperty] private string _footerText = string.Empty;
@@ -44,6 +44,10 @@ public sealed partial class WeatherSuggestionViewModel : ObservableObject
     public string AdviceHeading => _text.Get("Weather.AdviceHeading");
 
     public string LoadingText => _text.Get("Weather.Loading");
+
+    public string AutomationName => IsLoading
+        ? LoadingText
+        : string.Join(". ", new[] { ContentTitle, ContentSubtitle }.Where(part => !string.IsNullOrEmpty(part)));
 
     public bool HasContentSubtitle => !string.IsNullOrEmpty(ContentSubtitle);
 
@@ -81,8 +85,9 @@ public sealed partial class WeatherSuggestionViewModel : ObservableObject
         {
             return;
         }
-        catch (OperationCanceledException)
+        catch (Exception)
         {
+            // The contract never fails, but this runs unobserved: any surprise must end in the generic suggestion, not a faulted task.
             suggestion = FallbackSuggestion();
         }
 

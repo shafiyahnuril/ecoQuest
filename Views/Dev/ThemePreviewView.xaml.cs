@@ -2,7 +2,10 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 using EcoQuest.Controls;
+using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Dtos;
+using EcoQuest.Core.Contracts.Services;
+using EcoQuest.Core.Domain;
 using EcoQuest.Infrastructure;
 using EcoQuest.Navigation;
 using EcoQuest.Services.Fakes;
@@ -19,6 +22,48 @@ public partial class ThemePreviewView : UserControl
         Loaded += OnLoaded;
         ActivityItems.ItemsSource = FakeData.ActivityTypes.Select(CreateActivityItem).ToList();
         ShowConnectionErrorVariants();
+        ShowDashboardPanelVariants();
+    }
+
+    private void ShowDashboardPanelVariants()
+    {
+        var text = new ResourceUiText();
+        PreviewInsightEmpty.DataContext = new InsightPanelSample(text.Get("Dashboard.InsightSubtitle"),
+        [
+            InsightRowItem.For(InsightKind.EmptyState, text.Get("Dashboard.InsightEmptyTitle"), text.Get("Dashboard.InsightEmptyBody")),
+            InsightRowItem.Tip(text.Get("Dashboard.InsightHabitTitle"), text.Get("Dashboard.InsightHabitBody")),
+        ]);
+        PreviewInsightFilled.DataContext = new InsightPanelSample(string.Format(text.Get("Dashboard.InsightSubtitleFilled"), 7),
+        [
+            InsightRowItem.For(InsightKind.TopCategory, text.Get("Dashboard.Insight.TopCategory"), "Kategori Transportasi paling banyak menurunkan emisimu (47% dari total dampakmu)."),
+            InsightRowItem.For(InsightKind.WeakestCategory, text.Get("Dashboard.Insight.WeakestCategory"), "Kategori Energi masih kecil kontribusinya. Coba tambah satu kebiasaan di kategori ini."),
+            InsightRowItem.For(InsightKind.Streak, text.Get("Dashboard.Insight.Streak"), "Kamu sudah refleksi 4 hari berturut-turut. Pertahankan!"),
+        ]);
+
+        var session = new FakeSessionService();
+        session.Start(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null));
+        var clock = new SystemClock();
+        var tomorrow = clock.Today.AddDays(1);
+        PreviewWeatherLive.DataContext = StartWeather(text, session, clock, Task.FromResult(new WeatherSuggestionDto(
+            "Yogyakarta", tomorrow, false, "Cerah berawan, 24–31°C", 3,
+            "Cuaca besok cerah berawan. Cocok untuk berjalan kaki atau bersepeda ke kampus.", 1, 0.3m)));
+        PreviewWeatherFallback.DataContext = StartWeather(text, session, clock, Task.FromResult(new WeatherSuggestionDto(
+            "Yogyakarta", tomorrow, true, null, null, text.Get("Weather.FallbackAdvice"), null, null)));
+        PreviewWeatherLoading.DataContext = StartWeather(text, session, clock, new TaskCompletionSource<WeatherSuggestionDto>().Task);
+    }
+
+    private static WeatherSuggestionViewModel StartWeather(IUiText text, ISessionService session, IClock clock, Task<WeatherSuggestionDto> answer)
+    {
+        var weather = new WeatherSuggestionViewModel(new PreviewWeatherService(answer), session, clock, text, TimeSpan.FromDays(1));
+        weather.StartLoading();
+        return weather;
+    }
+
+    private sealed record InsightPanelSample(string InsightSubtitle, IReadOnlyList<InsightRowItem> InsightRows);
+
+    private sealed class PreviewWeatherService(Task<WeatherSuggestionDto> answer) : IWeatherSuggestionService
+    {
+        public Task<WeatherSuggestionDto> GetTomorrowSuggestionAsync(CancellationToken ct = default) => answer;
     }
 
     private void ShowConnectionErrorVariants()

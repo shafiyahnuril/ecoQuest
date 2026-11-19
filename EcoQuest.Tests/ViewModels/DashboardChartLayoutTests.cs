@@ -31,7 +31,8 @@ public class DashboardChartLayoutTests(ITestOutputHelper output)
     {
         var world = new FakeWorld(scenario);
         world.Session.Start(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null));
-        var vm = new DashboardViewModel(world.Dashboard, world.Profile, world.Session, world.Clock, Substitute.For<INavigationService>(), new ResourceUiText());
+        var vm = new DashboardViewModel(world.Dashboard, world.Profile, world.Session, world.Clock, Substitute.For<INavigationService>(), new ResourceUiText(),
+            new WeatherSuggestionViewModel(world.Weather, world.Session, world.Clock, new ResourceUiText()));
         vm.OnNavigatedToAsync(null).GetAwaiter().GetResult();
 
         var host = new ContentControl
