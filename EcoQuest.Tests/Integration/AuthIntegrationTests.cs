@@ -26,7 +26,8 @@ public class AuthIntegrationTests
         var provider = new SupabaseClientProvider(config);
         await provider.InitializeAsync();
 
-        var rpc = new RpcClient(provider);
+        var logger = new AppLogger(new AppPaths(), new SystemClock());
+        var rpc = new RpcClient(provider, logger);
         var users = new SupabaseUserRepository(rpc);
         var hasher = new BCryptPasswordHasher();
         var session = new SessionService();
