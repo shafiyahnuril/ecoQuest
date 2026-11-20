@@ -161,6 +161,20 @@
         </Setter>
     </Style>
 
+    <!-- Chrome-less button around a picture (photo thumbnails): keyboard focus ring and hand cursor only. -->
+    <Style x:Key="Button.Thumb" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===================== Text inputs ===================== -->
     <Style x:Key="TextBox.Default" TargetType="TextBox">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />

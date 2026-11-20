@@ -35,6 +35,7 @@ public class EveningReviewViewModelTests
     private readonly IEveningReviewService _review = Substitute.For<IEveningReviewService>();
     private readonly IReferenceDataService _reference = Substitute.For<IReferenceDataService>();
     private readonly IDialogService _dialogs = Substitute.For<IDialogService>();
+    private readonly IPhotoStorageService _photos = Substitute.For<IPhotoStorageService>();
     private readonly INavigationService _nav = Substitute.For<INavigationService>();
     private readonly IUiText _text = Substitute.For<IUiText>();
     private readonly IWeatherSuggestionService _weather = Substitute.For<IWeatherSuggestionService>();
@@ -82,7 +83,7 @@ public class EveningReviewViewModelTests
         var shell = CreateShell();
         shell.HasPendingReview = true;
         var vm = new EveningReviewViewModel(
-            _review, _reference, _dialogs, _text, _world.Clock, _nav, shell, CreateWeather(weatherTimeout), debounce ?? TimeSpan.Zero);
+            _review, _reference, _dialogs, _photos, _text, _world.Clock, _nav, shell, CreateWeather(weatherTimeout), debounce ?? TimeSpan.Zero);
         await vm.OnNavigatedToAsync(null);
         return (vm, shell);
     }

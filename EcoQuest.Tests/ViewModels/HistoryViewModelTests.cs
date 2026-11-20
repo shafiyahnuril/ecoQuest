@@ -32,6 +32,7 @@ public class HistoryViewModelTests(ITestOutputHelper output)
     private readonly IHistoryService _history = Substitute.For<IHistoryService>();
     private readonly IReferenceDataService _reference = Substitute.For<IReferenceDataService>();
     private readonly IPhotoStorageService _photos = Substitute.For<IPhotoStorageService>();
+    private readonly IDialogService _dialogs = Substitute.For<IDialogService>();
     private readonly INavigationService _nav = Substitute.For<INavigationService>();
     private readonly IUiText _text = Substitute.For<IUiText>();
     private readonly List<HistoryFilter> _filters = [];
@@ -55,7 +56,7 @@ public class HistoryViewModelTests(ITestOutputHelper output)
             [new ActivityCategoryDto(1, "Transportasi", null), new ActivityCategoryDto(2, "Energi", null)]));
         _reference.GetActivityTypesAsync(Arg.Any<CancellationToken>()).Returns(Result<IReadOnlyList<ActivityTypeDto>>.Success([]));
         _photos.ResolveAbsolutePath(Arg.Any<string?>()).Returns((string?)null);
-        return new HistoryViewModel(_history, _reference, _photos, new FakeClock(Evening), _nav, _text, debounce ?? Debounce);
+        return new HistoryViewModel(_history, _reference, _photos, _dialogs, new FakeClock(Evening), _nav, _text, debounce ?? Debounce);
     }
 
     private void ReturnsDays(params HistoryDayDto[] days) =>

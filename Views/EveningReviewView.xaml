@@ -25,6 +25,7 @@
             <conv:CategoryIdToBrushConverter x:Key="CategoryBrush" />
             <conv:CompactWidthConverter x:Key="IsCompactWidth" />
             <conv:NoteCounterConverter x:Key="NoteCounter" />
+            <conv:LocalImageConverter x:Key="LocalImage" />
 
             <Style x:Key="Border.SkeletonRow" TargetType="Border" BasedOn="{StaticResource Border.Skeleton}">
                 <Setter Property="Height" Value="{StaticResource Height.SkeletonActivityRow}" />
@@ -66,6 +67,16 @@
                 <Setter Property="Padding" Value="{StaticResource Padding.ButtonSmall}" />
                 <Setter Property="HorizontalAlignment" Value="Left" />
                 <Setter Property="Margin" Value="{StaticResource Margin.ActivityNoteToggle}" />
+            </Style>
+
+            <!-- Hidden once a photo is attached; the replace button then takes over. -->
+            <Style x:Key="Button.PhotoAdd" TargetType="Button" BasedOn="{StaticResource Button.Small}">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding HasPhoto}" Value="True">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
 
             <Style x:Key="ItemsControl.Container" TargetType="ItemsControl">
@@ -176,8 +187,34 @@
                                     <TextBlock Style="{StaticResource Text.FieldError}" Text="{Binding NoteErrorText}"
                                                Visibility="{Binding HasNoteError, Converter={StaticResource BoolToVisibility}}" />
                                 </StackPanel>
-                                <!-- TODO(photo task): photo picker column; empty on purpose so it adds no height. -->
-                                <Border Grid.Column="2" />
+                                <!-- Turunan (tidak di referensi): the prototype only reserves this column; SRS UIR-38 / TC-41 require the photo attachment.
+                                     Shown only while the row is filled; emptying the row hides it but keeps the attached photo. -->
+                                <StackPanel Grid.Column="2" Visibility="{Binding IsFilled, Converter={StaticResource BoolToVisibility}}">
+                                    <TextBlock Style="{StaticResource Text.Small}" Margin="0,0,0,6" Text="{DynamicResource Review.PhotoLabel}" />
+                                    <Button Style="{StaticResource Button.PhotoAdd}" Content="{DynamicResource Review.PhotoAdd}" Command="{Binding PickPhotoCommand}" />
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding HasPhoto, Converter={StaticResource BoolToVisibility}}">
+                                        <Button Style="{StaticResource Button.Thumb}" Command="{Binding PreviewPhotoCommand}"
+                                                ToolTip="{DynamicResource Review.PhotoPreview}" AutomationProperties.Name="{DynamicResource Review.PhotoPreview}">
+                                            <Border Width="{StaticResource Size.PhotoThumb}" Height="{StaticResource Size.PhotoThumb}" ClipToBounds="True"
+                                                    Background="{StaticResource Bg.Mint}" CornerRadius="{StaticResource Radius.Input}">
+                                                <Image Stretch="UniformToFill"
+                                                       Source="{Binding PhotoSourcePath, Converter={StaticResource LocalImage}, ConverterParameter=96}" />
+                                            </Border>
+                                        </Button>
+                                        <Button Style="{StaticResource Button.Small}" Margin="{StaticResource Margin.PhotoAction}" VerticalAlignment="Center"
+                                                Content="{DynamicResource Review.PhotoReplace}" Command="{Binding PickPhotoCommand}" />
+                                        <Button Style="{StaticResource Button.Icon}" Margin="{StaticResource Margin.PhotoAction}" VerticalAlignment="Center"
+                                                Command="{Binding RemovePhotoCommand}" ToolTip="{DynamicResource Review.PhotoRemove}"
+                                                AutomationProperties.Name="{DynamicResource Review.PhotoRemove}">
+                                            <ctl:IconView Data="{DynamicResource Icon.Close}" Foreground="{StaticResource Brand.Forest}"
+                                                          Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}"
+                                                          AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                                        </Button>
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text.FieldError}" Text="{Binding PhotoMessageText}"
+                                               AutomationProperties.LiveSetting="Assertive"
+                                               Visibility="{Binding HasPhotoMessage, Converter={StaticResource BoolToVisibility}}" />
+                                </StackPanel>
                             </Grid>
                         </StackPanel>
                     </Grid>

@@ -250,6 +250,8 @@
     <Thickness x:Key="Margin.WarningText">6,0,0,0</Thickness>
     <Thickness x:Key="Margin.FieldMessage">0,5,0,0</Thickness>
     <sys:Double x:Key="MinHeight.NoteBox">62</sys:Double>
+    <sys:Double x:Key="Size.PhotoThumb">48</sys:Double><!-- Turunan (tidak di referensi): SRS UIR-38 photo attachment -->
+    <Thickness x:Key="Margin.PhotoAction">10,0,0,0</Thickness>
     <Thickness x:Key="Margin.NoteCounter">0,4,0,0</Thickness>
     <sys:Double x:Key="Offset.StickyFooter">14</sys:Double>
     <sys:Double x:Key="Height.SkeletonActivityRow">80</sys:Double>

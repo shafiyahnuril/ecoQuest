@@ -23,6 +23,7 @@ public sealed partial class HistoryViewModel : ViewModelBase
     private readonly IHistoryService _history;
     private readonly IReferenceDataService _reference;
     private readonly IPhotoStorageService _photos;
+    private readonly IDialogService _dialogs;
     private readonly IClock _clock;
     private readonly INavigationService _navigation;
     private readonly IUiText _text;
@@ -33,12 +34,13 @@ public sealed partial class HistoryViewModel : ViewModelBase
     private bool _applyingPeriod;
 
     public HistoryViewModel(
-        IHistoryService history, IReferenceDataService reference, IPhotoStorageService photos,
+        IHistoryService history, IReferenceDataService reference, IPhotoStorageService photos, IDialogService dialogs,
         IClock clock, INavigationService navigation, IUiText text, TimeSpan? debounce = null)
     {
         _history = history;
         _reference = reference;
         _photos = photos;
+        _dialogs = dialogs;
         _clock = clock;
         _navigation = navigation;
         _text = text;
@@ -73,6 +75,16 @@ public sealed partial class HistoryViewModel : ViewModelBase
     [ObservableProperty] private HistoryDayItemViewModel? _selectedDay;
 
     public bool HasRangeError => RangeError is not null;
+
+    /// <summary>Opens the D-05 preview; a photo that is not on this device has no file to show, the detail panel already says so.</summary>
+    [RelayCommand]
+    private void PreviewPhoto(HistoryLineItemViewModel? line)
+    {
+        if (line?.PhotoFilePath is { } path)
+        {
+            _dialogs.ShowImagePreview(path);
+        }
+    }
 
     public bool HasCategories => Categories.Count > 0;
 

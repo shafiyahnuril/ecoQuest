@@ -20,6 +20,9 @@ public interface IDialogService
     /// <summary>Opens the JPG/PNG picker and returns the chosen path, or null when the user cancels. Validation stays with IPhotoStorageService.</summary>
     string? PickImageFile();
 
+    /// <summary>Opens the large photo preview (D-05). A missing file shows the "Photo.Missing" placeholder instead of an image.</summary>
+    void ShowImagePreview(string absolutePath);
+
     // TODO(FE-19): string? PickCsvSaveLocation(string suggestedFileName);
 }
 

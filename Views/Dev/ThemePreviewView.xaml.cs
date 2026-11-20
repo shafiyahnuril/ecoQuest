@@ -73,7 +73,7 @@ public partial class ThemePreviewView : UserControl
         var context = new FakeContext(scenario, clock);
         var viewModel = new HistoryViewModel(
             new FakeHistoryService(context, new FakeStore(context)), new FakeReferenceDataService(context), new FakePhotoStorageService(),
-            clock, new PreviewNavigation(), new ResourceUiText());
+            new DialogService(new ResourceUiText(), new ToastViewModel()), clock, new PreviewNavigation(), new ResourceUiText());
         _ = LoadHistoryAsync(viewModel, afterLoad);
         return viewModel;
     }
