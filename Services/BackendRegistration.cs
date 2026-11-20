@@ -34,6 +34,18 @@ public static class BackendRegistration
         s.AddSingleton<IProfileService, ProfileService>();
         s.AddSingleton<PhotoStorageService>();
         s.AddSingleton<IPhotoStorageService>(sp => sp.GetRequiredService<PhotoStorageService>());
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.DistanceImpactCalculator>();
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.DurationImpactCalculator>();
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.CountImpactCalculator>();
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
+            EcoQuest.Core.Calculation.ToggleImpactCalculator>();
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculatorFactory,
+            EcoQuest.Core.Calculation.ImpactCalculatorFactory>();
+        s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculationService,
+            EcoQuest.Core.Calculation.ImpactCalculationService>();
         return s;
     }
 }
