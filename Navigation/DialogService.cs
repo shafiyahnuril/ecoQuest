@@ -31,6 +31,9 @@ public sealed class DialogService(IUiText text, ToastViewModel toast) : IDialogS
         return (owner is null ? picker.ShowDialog() : picker.ShowDialog(owner)) == true ? picker.FileName : null;
     }
 
+    public void ShowImagePreview(string absolutePath) =>
+        ShowOverlay(new ImagePreviewDialog { DataContext = new ImagePreviewDialogViewModel(absolutePath, text.Get("Common.Close")) });
+
     public void ShowToast(string message) => toast.Show(message);
 
     public void ShowThemePreview()
@@ -51,10 +54,10 @@ public sealed class DialogService(IUiText text, ToastViewModel toast) : IDialogS
 
     // The dialog window is a borderless, transparent overlay that covers the owner's client area, so its
     // Overlay.Backdrop dims the shell like .modal-backdrop in the prototype.
-    private static bool ShowModal(ConfirmDialogViewModel viewModel)
-    {
-        var dialog = new ConfirmDialog { DataContext = viewModel };
+    private static bool ShowModal(ConfirmDialogViewModel viewModel) => ShowOverlay(new ConfirmDialog { DataContext = viewModel });
 
+    private static bool ShowOverlay(Window dialog)
+    {
         if (Application.Current.MainWindow is { IsLoaded: true, Content: FrameworkElement client } owner
             && PresentationSource.FromVisual(client) is { CompositionTarget: not null } source)
         {

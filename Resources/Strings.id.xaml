@@ -53,6 +53,10 @@
     <sys:String x:Key="Review.NoteToggle">Catatan / foto</sys:String>
     <sys:String x:Key="Review.NoteLabel">Catatan pribadi (maks. 500 karakter)</sys:String>
     <sys:String x:Key="Review.PhotoLabel">Foto dokumentasi (opsional)</sys:String>
+    <sys:String x:Key="Review.PhotoAdd">Tambah foto</sys:String>
+    <sys:String x:Key="Review.PhotoReplace">Ganti foto</sys:String>
+    <sys:String x:Key="Review.PhotoRemove">Hapus foto</sys:String>
+    <sys:String x:Key="Review.PhotoPreview">Lihat foto lebih besar</sys:String>
     <sys:String x:Key="Review.Locked">Terkunci — refleksi hari ini sudah tersimpan</sys:String>
     <sys:String x:Key="Review.Saved">Refleksi hari ini tersimpan</sys:String>
     <sys:String x:Key="Review.SavedSubtitle">Data jurnal yang sudah disimpan tidak dapat diubah.</sys:String>
@@ -191,6 +195,7 @@
     <sys:String x:Key="Logout.Confirm">Keluar</sys:String>
     <sys:String x:Key="Common.Cancel">Batal</sys:String>
     <sys:String x:Key="Common.Continue">Lanjut</sys:String>
+    <sys:String x:Key="Common.Close">Tutup</sys:String>
     <!-- Dashboard shells (S-04, task FE dashboard). Not in UI-UX-Flow-Frontend 5 but present in prototype v7 screen 04: flagged for owner confirmation. -->
     <sys:String x:Key="Dashboard.InsightSubtitle">Insight berdasarkan jurnalmu akan muncul di sini.</sys:String>
     <sys:String x:Key="Dashboard.InsightHabitTitle">Bangun kebiasaan secara bertahap</sys:String>

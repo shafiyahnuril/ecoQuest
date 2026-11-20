@@ -1,0 +1,70 @@
+<Window x:Class="EcoQuest.Views.Dialogs.ImagePreviewDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ctl="clr-namespace:EcoQuest.Controls"
+        xmlns:conv="clr-namespace:EcoQuest.Converters"
+        mc:Ignorable="po"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="NoResize"
+        ShowInTaskbar="False" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        FontFamily="{StaticResource Font.Regular}"
+        ctl:DialogHelper.DialogResult="{Binding Result}"
+        FocusManager.FocusedElement="{Binding ElementName=CloseButton}"
+        AutomationProperties.Name="{DynamicResource Review.PhotoPreview}">
+    <!-- DataContext = ImagePreviewDialogViewModel (D-05). Same overlay as ConfirmDialog; the card takes the middle 80% of the window
+         (8* of 1*/8*/1*), so the picture never exceeds about 80% of the window. Esc, a click outside the card and Tutup close it. -->
+    <Window.Resources>
+        <conv:LocalImageConverter x:Key="LocalImage" />
+        <DropShadowEffect x:Key="Effect.Dialog" BlurRadius="40" ShadowDepth="12" Direction="270" Opacity="0.34"
+                          Color="{StaticResource Color.Shadow.Dialog}" po:Freeze="True" />
+        <Style x:Key="Text.PhotoMissing" TargetType="TextBlock" BasedOn="{StaticResource Text.BodyRelaxed}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasImage}" Value="False">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CloseCommand}" />
+    </Window.InputBindings>
+    <Grid>
+        <Border Background="{StaticResource Overlay.Backdrop}">
+            <Border.InputBindings>
+                <MouseBinding MouseAction="LeftClick" Command="{Binding CloseCommand}" />
+            </Border.InputBindings>
+        </Border>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="8*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="8*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="{StaticResource Bg.Surface}" CornerRadius="{StaticResource Radius.Dialog}"
+                    Padding="{StaticResource Padding.Dialog}" Effect="{StaticResource Effect.Dialog}">
+                <DockPanel>
+                    <Button x:Name="CloseButton" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="{StaticResource Margin.DialogActions}"
+                            Style="{StaticResource Button.Primary}" Content="{Binding CloseText}" Command="{Binding CloseCommand}"
+                            IsDefault="True" MinWidth="{StaticResource MinWidth.DialogButton}" />
+                    <Grid>
+                        <Image Stretch="Uniform" StretchDirection="DownOnly" AutomationProperties.Name="{DynamicResource Review.PhotoPreview}"
+                               Source="{Binding FilePath, Converter={StaticResource LocalImage}, ConverterParameter=1600}" />
+                        <TextBlock Style="{StaticResource Text.PhotoMissing}" Text="{DynamicResource Photo.Missing}" />
+                    </Grid>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

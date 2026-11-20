@@ -23,6 +23,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
     private readonly IEveningReviewService _review;
     private readonly IReferenceDataService _reference;
     private readonly IDialogService _dialogs;
+    private readonly IPhotoStorageService _photos;
     private readonly IUiText _text;
     private readonly IClock _clock;
     private readonly INavigationService _navigation;
@@ -40,12 +41,13 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
     private CancellationTokenSource? _debounce;
 
     public EveningReviewViewModel(
-        IEveningReviewService review, IReferenceDataService reference, IDialogService dialogs, IUiText text,
+        IEveningReviewService review, IReferenceDataService reference, IDialogService dialogs, IPhotoStorageService photos, IUiText text,
         IClock clock, INavigationService navigation, ShellViewModel shell, WeatherSuggestionViewModel weather, TimeSpan? debounce = null)
     {
         _review = review;
         _reference = reference;
         _dialogs = dialogs;
+        _photos = photos;
         _text = text;
         _clock = clock;
         _navigation = navigation;
@@ -192,6 +194,7 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
         foreach (var item in _items)
         {
             item.Changed += OnItemChanged;
+            item.ConfigurePhoto(_dialogs, _photos);
         }
 
         Groups = _items

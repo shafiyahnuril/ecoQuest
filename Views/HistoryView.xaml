@@ -227,11 +227,16 @@
                     <Border Width="{StaticResource Width.HistoryPhoto}" HorizontalAlignment="Left" Margin="{StaticResource Margin.HistoryPhoto}"
                             CornerRadius="{StaticResource Radius.HistoryPhoto}" ClipToBounds="True"
                             Visibility="{Binding HasPhoto, Converter={StaticResource BoolToVisibility}}">
-                        <Grid>
-                            <TextBlock Style="{StaticResource Text.HistoryPhotoMissing}" Text="{DynamicResource Photo.Missing}" />
-                            <Image x:Name="Photo" Stretch="UniformToFill" AutomationProperties.Name="{DynamicResource History.PhotoAlt}"
-                                   Source="{Binding PhotoFilePath, Converter={StaticResource LocalImage}, ConverterParameter=360}" />
-                        </Grid>
+                        <Button Style="{StaticResource Button.Thumb}" ToolTip="{DynamicResource Review.PhotoPreview}"
+                                AutomationProperties.Name="{DynamicResource Review.PhotoPreview}"
+                                Command="{Binding DataContext.PreviewPhotoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="{Binding}">
+                            <Grid>
+                                <TextBlock Style="{StaticResource Text.HistoryPhotoMissing}" Text="{DynamicResource Photo.Missing}" />
+                                <Image x:Name="Photo" Stretch="UniformToFill" AutomationProperties.Name="{DynamicResource History.PhotoAlt}"
+                                       Source="{Binding PhotoFilePath, Converter={StaticResource LocalImage}, ConverterParameter=360}" />
+                            </Grid>
+                        </Button>
                     </Border>
                 </StackPanel>
             </Border>

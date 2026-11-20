@@ -68,7 +68,7 @@ public class HistoryDetailLayoutTests(ITestOutputHelper output)
         reference.GetCategoriesAsync(Arg.Any<CancellationToken>()).Returns(_ => world.Reference.GetCategoriesAsync());
         reference.GetActivityTypesAsync(Arg.Any<CancellationToken>()).Returns(Result<IReadOnlyList<ActivityTypeDto>>.Success(types));
 
-        var vm = new HistoryViewModel(history, reference, new FakePhotoStorageService(), world.Clock, Substitute.For<INavigationService>(), new ResourceUiText(), TimeSpan.Zero);
+        var vm = new HistoryViewModel(history, reference, new FakePhotoStorageService(), Substitute.For<IDialogService>(), world.Clock, Substitute.For<INavigationService>(), new ResourceUiText(), TimeSpan.Zero);
         var host = new ContentControl
         {
             Content = vm,

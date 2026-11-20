@@ -152,7 +152,7 @@ public class HistoryLayoutTests(ITestOutputHelper output)
         world.Session.Start(new UserSession(Guid.NewGuid(), "dinda", "dinda@mail.ugm.ac.id", "Yogyakarta", null));
         var nav = Substitute.For<INavigationService>();
         IHistoryService history = data switch { Data.Generated120Days => Generated120(world), Data.Varied => GeneratedVaried(world), _ => world.History };
-        var vm = new HistoryViewModel(history, world.Reference, new FakePhotoStorageService(), world.Clock, nav, new ResourceUiText(), TimeSpan.Zero);
+        var vm = new HistoryViewModel(history, world.Reference, new FakePhotoStorageService(), Substitute.For<IDialogService>(), world.Clock, nav, new ResourceUiText(), TimeSpan.Zero);
 
         var host = new ContentControl
         {

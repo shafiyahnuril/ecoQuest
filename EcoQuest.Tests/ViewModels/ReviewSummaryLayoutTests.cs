@@ -55,7 +55,7 @@ public class ReviewSummaryLayoutTests(ITestOutputHelper output)
         var text = new ResourceUiText();
         var shell = new ShellViewModel(nav, dialogs, text, new ToastViewModel(), world.Session, world.Auth, world.Review);
         var weather = new WeatherSuggestionViewModel(world.Weather, world.Session, world.Clock, text);
-        var vm = new EveningReviewViewModel(world.Review, world.Reference, dialogs, text, world.Clock, nav, shell, weather, TimeSpan.Zero);
+        var vm = new EveningReviewViewModel(world.Review, world.Reference, dialogs, new FakePhotoStorageService(), text, world.Clock, nav, shell, weather, TimeSpan.Zero);
         vm.OnNavigatedToAsync(null).GetAwaiter().GetResult();
 
         var items = vm.Groups.SelectMany(g => g.Items).ToList();
