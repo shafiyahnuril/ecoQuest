@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ public sealed class ProfileService : IProfileService
     private readonly CityCatalog _cities;
     private readonly IPasswordHasher _hasher;
     private readonly IClock _clock;
+    private readonly PhotoStorageService _photos;
 
     public ProfileService(
         ISessionService session,
@@ -33,7 +35,8 @@ public sealed class ProfileService : IProfileService
         ILevelRepository levels,
         CityCatalog cities,
         IPasswordHasher hasher,
-        IClock clock)
+        IClock clock,
+        PhotoStorageService photos)
     {
         _session = session ?? throw new ArgumentNullException(nameof(session));
         _users = users ?? throw new ArgumentNullException(nameof(users));
@@ -41,6 +44,7 @@ public sealed class ProfileService : IProfileService
         _cities = cities ?? throw new ArgumentNullException(nameof(cities));
         _hasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _photos = photos ?? throw new ArgumentNullException(nameof(photos));
     }
 
     public IReadOnlyList<string> GetSupportedCities() => _cities.Cities;
@@ -97,16 +101,46 @@ public sealed class ProfileService : IProfileService
                 new Dictionary<string, string> { ["City"] = "Pilih kota domisili" });
         }
 
+        var oldAvatar = current.AvatarPath;
+        var newAvatar = oldAvatar;
+
+        if (request.RemoveAvatar)
+        {
+            newAvatar = null;
+        }
+        else if (!string.IsNullOrWhiteSpace(request.NewAvatarSourcePath))
+        {
+            var check = _photos.ValidatePhoto(request.NewAvatarSourcePath);
+            if (!check.IsSuccess)
+            {
+                var errMsg = check.Message ?? Messages.FileError;
+                return Result<UserProfileDto>.Failure(
+                    check.Error,
+                    errMsg,
+                    new Dictionary<string, string> { ["Avatar"] = errMsg });
+            }
+        }
+
         try
         {
-            // avatar: BE-07b
-            await _users.UpdateProfileAsync(current.UserId, request.City, current.AvatarPath, ct);
-            _session.Update(current with { City = request.City });
+            if (!request.RemoveAvatar && !string.IsNullOrWhiteSpace(request.NewAvatarSourcePath))
+                newAvatar = _photos.CopyAvatar(request.NewAvatarSourcePath, current.UserId);
+
+            await _users.UpdateProfileAsync(current.UserId, request.City, newAvatar, ct);
+
+            if (request.RemoveAvatar && !string.IsNullOrWhiteSpace(oldAvatar))
+                _photos.TryDelete(oldAvatar);
+
+            _session.Update(current with { City = request.City, AvatarPath = newAvatar });
             return await GetProfileAsync(ct);
         }
         catch (DataAccessException ex)
         {
             return Result<UserProfileDto>.Failure(ex.Code, Messages.For(ex.Code));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Result<UserProfileDto>.Failure(ErrorCode.FileError, Messages.FileError);
         }
     }
 
