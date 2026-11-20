@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using EcoQuest.Core.Common;
@@ -18,7 +19,7 @@ using Xunit;
 
 namespace EcoQuest.Tests.Services;
 
-public class ProfileServiceTests
+public sealed class ProfileServiceTests : IDisposable
 {
     private static readonly IReadOnlyList<Level> DefaultLevels =
     [
@@ -28,6 +29,9 @@ public class ProfileServiceTests
         new(4, "Eco Champion", 1500, null)
     ];
 
+    private readonly string _tempDir;
+    private readonly AppPaths _paths;
+    private readonly PhotoStorageService _photos;
     private readonly ISessionService _session = Substitute.For<ISessionService>();
     private readonly IUserRepository _users = Substitute.For<IUserRepository>();
     private readonly ILevelRepository _levels = Substitute.For<ILevelRepository>();
@@ -38,13 +42,32 @@ public class ProfileServiceTests
 
     public ProfileServiceTests()
     {
+        _tempDir = Path.Combine(Path.GetTempPath(), "ecoquest-profile-tests-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(_tempDir);
+        _paths = new AppPaths(_tempDir);
+        _photos = new PhotoStorageService(_paths);
+
         _session.RequireUser().Returns(_activeUser);
         _session.Current.Returns(_activeUser);
         _levels.GetAllAsync(Arg.Any<CancellationToken>()).Returns(DefaultLevels);
     }
 
+    public void Dispose()
+    {
+        if (Directory.Exists(_tempDir))
+            Directory.Delete(_tempDir, recursive: true);
+    }
+
     private ProfileService CreateSut(IPasswordHasher? hasher = null)
-        => new(_session, _users, _levels, _cities, hasher ?? _hasher, _clock);
+        => new(_session, _users, _levels, _cities, hasher ?? _hasher, _clock, _photos);
+
+    private string CreateTempFile(string fileName, long lengthBytes = 1024)
+    {
+        var path = Path.Combine(_tempDir, fileName);
+        using var fs = File.Create(path);
+        fs.SetLength(lengthBytes);
+        return path;
+    }
 
     [Fact]
     public void GetSupportedCities_returns_catalog_cities()
@@ -122,7 +145,7 @@ public class ProfileServiceTests
         _users.GetProfileAsync(_activeUser.UserId, Arg.Any<CancellationToken>())
               .Returns(new UserProfileSnapshot(updatedUser, _clock.Today.AddDays(-1), 2, 5));
 
-        var res = await sut.UpdateProfileAsync(new UpdateProfileRequest("Semarang", "C:\\ignored\\avatar.png", true));
+        var res = await sut.UpdateProfileAsync(new UpdateProfileRequest("Semarang", null, false));
 
         Assert.True(res.IsSuccess);
         Assert.Equal("Semarang", res.Value!.City);
@@ -210,5 +233,104 @@ public class ProfileServiceTests
 
         using var sp = services.BuildServiceProvider();
         Assert.IsType<ProfileService>(sp.GetRequiredService<IProfileService>());
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_rejects_gif_avatar_and_does_not_call_repo()
+    {
+        var gif = CreateTempFile("anim.gif");
+        var sut = CreateSut();
+
+        var res = await sut.UpdateProfileAsync(new UpdateProfileRequest("Yogyakarta", gif, false));
+
+        Assert.False(res.IsSuccess);
+        Assert.Equal(ErrorCode.ValidationFailed, res.Error);
+        Assert.Equal("Foto harus berformat JPG atau PNG", res.FieldErrors["Avatar"]);
+        await _users.DidNotReceiveWithAnyArgs().UpdateProfileAsync(default, default!, default, default);
+        _session.DidNotReceiveWithAnyArgs().Update(default!);
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_rejects_oversized_8mb_avatar_and_keeps_existing_avatar()
+    {
+        var bigPng = CreateTempFile("huge.png", 8L * 1024 * 1024);
+        var sut = CreateSut();
+
+        var res = await sut.UpdateProfileAsync(new UpdateProfileRequest("Yogyakarta", bigPng, false));
+
+        Assert.False(res.IsSuccess);
+        Assert.Equal(ErrorCode.ValidationFailed, res.Error);
+        Assert.Equal("Ukuran foto maksimal 5 MB", res.FieldErrors["Avatar"]);
+        await _users.DidNotReceiveWithAnyArgs().UpdateProfileAsync(default, default!, default, default);
+        _session.DidNotReceiveWithAnyArgs().Update(default!);
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_valid_png_copies_avatar_and_updates_session()
+    {
+        var srcPng = CreateTempFile("avatar.PNG", 1024);
+        var expectedRel = $"avatars/{_activeUser.UserId}.png";
+        var updatedUser = new User(
+            _activeUser.UserId,
+            _activeUser.UserName,
+            _activeUser.Email,
+            "Yogyakarta",
+            new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero),
+            expectedRel);
+        _users.GetProfileAsync(_activeUser.UserId, Arg.Any<CancellationToken>())
+              .Returns(new UserProfileSnapshot(updatedUser, _clock.Today, 1, 1));
+
+        var res = await CreateSut().UpdateProfileAsync(new UpdateProfileRequest("Yogyakarta", srcPng, false));
+
+        Assert.True(res.IsSuccess);
+        Assert.Equal(expectedRel, res.Value!.AvatarPath);
+        Assert.NotNull(_photos.ResolveAbsolutePath(expectedRel));
+        await _users.Received(1).UpdateProfileAsync(_activeUser.UserId, "Yogyakarta", expectedRel, Arg.Any<CancellationToken>());
+        _session.Received(1).Update(Arg.Is<UserSession>(s => s.AvatarPath == expectedRel));
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_remove_avatar_sends_null_deletes_old_file_and_updates_session()
+    {
+        var oldRel = $"avatars/{_activeUser.UserId}.png";
+        Directory.CreateDirectory(_paths.AvatarsRoot);
+        var oldAbs = Path.Combine(_paths.AvatarsRoot, $"{_activeUser.UserId}.png");
+        File.WriteAllBytes(oldAbs, [1, 2, 3]);
+
+        var userWithExistingAvatar = _activeUser with { AvatarPath = oldRel };
+        _session.RequireUser().Returns(userWithExistingAvatar);
+        _session.Current.Returns(userWithExistingAvatar);
+
+        var updatedUser = new User(
+            _activeUser.UserId,
+            _activeUser.UserName,
+            _activeUser.Email,
+            "Yogyakarta",
+            new DateTimeOffset(2026, 10, 1, 0, 0, 0, TimeSpan.Zero),
+            avatarPath: null);
+        _users.GetProfileAsync(_activeUser.UserId, Arg.Any<CancellationToken>())
+              .Returns(new UserProfileSnapshot(updatedUser, _clock.Today, 1, 1));
+
+        var res = await CreateSut().UpdateProfileAsync(new UpdateProfileRequest("Yogyakarta", null, RemoveAvatar: true));
+
+        Assert.True(res.IsSuccess);
+        Assert.Null(res.Value!.AvatarPath);
+        Assert.False(File.Exists(oldAbs));
+        await _users.Received(1).UpdateProfileAsync(_activeUser.UserId, "Yogyakarta", null, Arg.Any<CancellationToken>());
+        _session.Received(1).Update(Arg.Is<UserSession>(s => s.AvatarPath == null));
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_db_failure_keeps_session_unchanged()
+    {
+        var srcPng = CreateTempFile("new.png", 512);
+        _users.UpdateProfileAsync(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+              .Throws(new DataAccessException(ErrorCode.NetworkError, "app_update_profile"));
+
+        var res = await CreateSut().UpdateProfileAsync(new UpdateProfileRequest("Yogyakarta", srcPng, false));
+
+        Assert.False(res.IsSuccess);
+        Assert.Equal(ErrorCode.NetworkError, res.Error);
+        _session.DidNotReceiveWithAnyArgs().Update(default!);
     }
 }
