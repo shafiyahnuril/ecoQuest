@@ -19,6 +19,7 @@ public sealed partial class ShellViewModel : ViewModelBase, IDisposable
     private readonly ISessionService _session;
     private readonly IAuthService _auth;
     private readonly IEveningReviewService _review;
+    private readonly IPhotoStorageService? _photos;
     private readonly NavItemViewModel _reviewItem;
     private int _refreshRunning;
     private volatile bool _refreshAgain;
@@ -31,7 +32,8 @@ public sealed partial class ShellViewModel : ViewModelBase, IDisposable
         ToastViewModel toast,
         ISessionService session,
         IAuthService auth,
-        IEveningReviewService review)
+        IEveningReviewService review,
+        IPhotoStorageService? photos = null)
     {
         _navigation = navigation;
         _dialogs = dialogs;
@@ -40,6 +42,7 @@ public sealed partial class ShellViewModel : ViewModelBase, IDisposable
         _session = session;
         _auth = auth;
         _review = review;
+        _photos = photos;
 
         _reviewItem = new NavItemViewModel(
             MainMenu.EveningReview,
@@ -267,7 +270,8 @@ public sealed partial class ShellViewModel : ViewModelBase, IDisposable
 
         DisplayName = user?.UserName ?? "";
         City = user?.City ?? "";
-        AvatarImagePath = user?.AvatarPath;
+        // The session keeps the stored relative path; the image converter needs a file that exists on this device.
+        AvatarImagePath = _photos?.ResolveAbsolutePath(user?.AvatarPath) ?? user?.AvatarPath;
 
         AvatarInitial = string.IsNullOrWhiteSpace(user?.UserName)
             ? ""

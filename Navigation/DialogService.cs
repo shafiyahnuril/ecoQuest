@@ -1,4 +1,5 @@
 using System.Windows;
+using Microsoft.Win32;
 using System.Windows.Threading;
 using EcoQuest.ViewModels;
 using EcoQuest.Views.Dialogs;
@@ -21,6 +22,13 @@ public sealed class DialogService(IUiText text, ToastViewModel toast) : IDialogS
         }
 
         ShowModal(new ConfirmDialogViewModel(title, message, buttonText ?? text.Get("Common.Continue"), cancelText: null, icon));
+    }
+
+    public string? PickImageFile()
+    {
+        var picker = new OpenFileDialog { Filter = text.Get("FilePicker.ImageFilter"), CheckFileExists = true, Multiselect = false };
+        var owner = Application.Current?.MainWindow;
+        return (owner is null ? picker.ShowDialog() : picker.ShowDialog(owner)) == true ? picker.FileName : null;
     }
 
     public void ShowToast(string message) => toast.Show(message);

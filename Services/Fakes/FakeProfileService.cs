@@ -10,11 +10,12 @@ public sealed class FakeProfileService : IProfileService
     private readonly FakeContext _ctx;
     private readonly FakeStore _store;
     private readonly ISessionService _session;
-    private string? _avatarPath;
+    private readonly string _root;
 
-    public FakeProfileService(FakeContext ctx, FakeStore store, ISessionService session)
+    public FakeProfileService(FakeContext ctx, FakeStore store, ISessionService session, string? storageRoot = null)
     {
         _ctx = ctx; _store = store; _session = session;
+        _root = Path.GetFullPath(storageRoot ?? FakePhotoStorageService.DefaultRoot);
     }
 
     public async Task<Result<UserProfileDto>> GetProfileAsync(CancellationToken ct = default)
@@ -36,12 +37,18 @@ public sealed class FakeProfileService : IProfileService
             return Result<UserProfileDto>.Failure(ErrorCode.ValidationFailed, FakeMessages.ValidationFailed,
                 new Dictionary<string, string> { ["City"] = "Pilih kota domisili" });
 
-        account.City = request.City;
-        if (request.RemoveAvatar) _avatarPath = null;
-        else if (!string.IsNullOrWhiteSpace(request.NewAvatarSourcePath))
-            _avatarPath = "avatars/" + Path.GetFileName(request.NewAvatarSourcePath);   // fake: no file copy
+        var copied = request.RemoveAvatar || string.IsNullOrWhiteSpace(request.NewAvatarSourcePath) ? null : CopyAvatar(request.NewAvatarSourcePath);
+        if (copied is null && !request.RemoveAvatar && !string.IsNullOrWhiteSpace(request.NewAvatarSourcePath))
+            return Result<UserProfileDto>.Failure(ErrorCode.FileError, FakeMessages.FileError);
 
-        _session.Update(new UserSession(account.UserId, account.UserName, account.Email, account.City, _avatarPath));
+        account.City = request.City;
+        if (request.RemoveAvatar || copied is not null)
+        {
+            DeleteAvatar(account);
+            account.AvatarPath = copied;
+        }
+
+        _session.Update(new UserSession(account.UserId, account.UserName, account.Email, account.City, account.AvatarPath));
         return Result<UserProfileDto>.Success(ToDto(account));
     }
 
@@ -68,11 +75,34 @@ public sealed class FakeProfileService : IProfileService
 
     public IReadOnlyList<string> GetSupportedCities() => FakeData.Cities;
 
+    private string? CopyAvatar(string sourcePath)
+    {
+        try
+        {
+            var relative = "avatars/" + Guid.NewGuid().ToString("N") + Path.GetExtension(sourcePath).ToLowerInvariant();
+            var target = Path.Combine(_root, relative);
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            File.Copy(sourcePath, target);
+            return relative;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
+    private void DeleteAvatar(FakeAccount account)
+    {
+        if (account.AvatarPath is null) return;
+        try { File.Delete(Path.Combine(_root, account.AvatarPath)); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+    }
+
     private FakeAccount? CurrentAccount() =>
         _session.Current is { } user && _store.Accounts.TryGetValue(user.UserName, out var account) ? account : null;
 
     private UserProfileDto ToDto(FakeAccount a) => new(
-        a.UserId, a.UserName, a.Email, a.City, _avatarPath,
+        a.UserId, a.UserName, a.Email, a.City, a.AvatarPath,
         _store.TotalPoints, _store.TotalCo2Kg, _store.CurrentStreak, _store.LevelProgress(),
         _store.LastReviewDate, _store.TotalReviewCount, _store.TotalLogCount, a.CreatedAt);
 }
