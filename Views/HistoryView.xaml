@@ -141,12 +141,8 @@
         <Style x:Key="Border.Block" TargetType="Border" BasedOn="{StaticResource Border.Skeleton}" />
 
         <DataTemplate x:Key="HistoryLine" DataType="{x:Type items:HistoryLineItemViewModel}">
-            <Grid Margin="{StaticResource Margin.HistoryLine}" MinHeight="{StaticResource MinHeight.HistoryLine}" ToolTipService.InitialShowDelay="300">
-                <Grid.ToolTip>
-                    <ToolTip Style="{StaticResource ToolTip.Default}">
-                        <TextBlock Text="{Binding FormulaText}" />
-                    </ToolTip>
-                </Grid.ToolTip>
+            <Grid Margin="{StaticResource Margin.HistoryLine}" MinHeight="{StaticResource MinHeight.HistoryLine}"
+                  ctl:FormulaToolTip.Text="{Binding FormulaText}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />

@@ -24,7 +24,6 @@
             <conv:ResourceKeyConverter x:Key="ResourceKey" />
             <conv:CategoryIdToBrushConverter x:Key="CategoryBrush" />
             <conv:CompactWidthConverter x:Key="IsCompactWidth" />
-            <conv:FirstNonEmptyConverter x:Key="FirstNonEmpty" />
             <conv:NoteCounterConverter x:Key="NoteCounter" />
 
             <Style x:Key="Border.SkeletonRow" TargetType="Border" BasedOn="{StaticResource Border.Skeleton}">
@@ -145,21 +144,10 @@
 
                         <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource Text.Impact}" TextWrapping="NoWrap" VerticalAlignment="Center"
-                                       Margin="{StaticResource Margin.ActivityImpactGap}" Text="{Binding ImpactText}" />
+                                       Margin="{StaticResource Margin.ActivityImpactGap}" Text="{Binding ImpactText}"
+                                       ctl:FormulaToolTip.Text="{Binding ExplanationText}" />
                             <Button Style="{StaticResource Button.Icon}" AutomationProperties.Name="{DynamicResource Review.FormulaInfo}"
-                                    ToolTipService.InitialShowDelay="300">
-                                <Button.ToolTip>
-                                    <ToolTip Style="{StaticResource ToolTip.Default}">
-                                        <TextBlock>
-                                            <TextBlock.Text>
-                                                <MultiBinding Converter="{StaticResource FirstNonEmpty}">
-                                                    <Binding Path="FormulaExplanation" />
-                                                    <Binding Path="Description" />
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </ToolTip>
-                                </Button.ToolTip>
+                                    ctl:FormulaToolTip.Text="{Binding ExplanationText}">
                                 <ctl:IconView Data="{DynamicResource Icon.Info}" Foreground="{StaticResource Brand.Forest}"
                                               Width="{StaticResource Size.IconInfo}" Height="{StaticResource Size.IconInfo}" />
                             </Button>

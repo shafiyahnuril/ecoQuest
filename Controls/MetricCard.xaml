@@ -4,13 +4,9 @@
              xmlns:ctl="clr-namespace:EcoQuest.Controls"
              x:Name="Self" Focusable="False" IsTabStop="False">
     <!-- Dashboard metric card (.metric): card, padding 15, round icon bubble 43 (icon 22) + value (19 ExtraBold) over a label (11, muted).
-         Bubble colours are passed in as theme brushes. Explanation (optional) becomes the tooltip and the automation help text (UIR-50). -->
+         Bubble colours are passed in as theme brushes. Explanation (optional) becomes the tooltip and the automation help text via FormulaToolTip (UIR-50). -->
     <Border Style="{StaticResource Border.Card}" Padding="{StaticResource Padding.Metric}"
-            AutomationProperties.HelpText="{Binding Explanation, ElementName=Self}"
-            ToolTipService.InitialShowDelay="300">
-        <Border.ToolTip>
-            <ToolTip Style="{StaticResource ToolTip.Default}" Content="{Binding Explanation, ElementName=Self}" />
-        </Border.ToolTip>
+            ctl:FormulaToolTip.Text="{Binding Explanation, ElementName=Self}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

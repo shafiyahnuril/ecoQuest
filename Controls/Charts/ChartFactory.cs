@@ -91,7 +91,6 @@ public static class ChartFactory
             HoverPushout = 0,
             Fill = new SolidColorPaint(CategoryColors.For(c.CategoryId)),
             Stroke = null,
-            ToolTipLabelFormatter = _ => c.Explanation,
         }).ToArray();
 
     // Explicit limits keep trailing days without a review on the axis; LiveCharts would otherwise stop at the last real point.

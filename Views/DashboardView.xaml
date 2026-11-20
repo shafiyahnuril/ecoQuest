@@ -297,7 +297,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid Width="{StaticResource Size.Donut}" Height="{StaticResource Size.Donut}" VerticalAlignment="Center"
-                                      AutomationProperties.Name="{Binding BreakdownAutomationText}">
+                                      AutomationProperties.Name="{Binding BreakdownAutomationText}" AutomationProperties.HelpText="{Binding BreakdownAutomationHelp}">
                                     <Ellipse Width="{StaticResource Size.Donut}" Height="{StaticResource Size.Donut}" Stroke="{StaticResource Bg.Track}" StrokeThickness="{StaticResource Thickness.DonutRing}">
                                         <Ellipse.Style>
                                             <Style TargetType="Ellipse">
@@ -309,10 +309,12 @@
                                             </Style>
                                         </Ellipse.Style>
                                     </Ellipse>
-                                    <lvc:PieChart IsTabStop="False" Focusable="False" InitialRotation="-90" Series="{Binding BreakdownSeries}" DrawMargin="{x:Static charts:ChartFactory.NoDrawMargin}"
+                                    <lvc:PieChart IsTabStop="False" Focusable="False" InitialRotation="-90" TooltipPosition="Hidden"
+                                                  Series="{Binding BreakdownSeries}" DrawMargin="{x:Static charts:ChartFactory.NoDrawMargin}"
                                                   AnimationsSpeed="{x:Static charts:ChartMotion.Speed}"
                                                   Visibility="{Binding HasBreakdownData, Converter={StaticResource BoolToVisibility}}" />
-                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Background="Transparent"
+                                                ctl:FormulaToolTip.Text="{Binding TotalCo2Explanation}">
                                         <TextBlock Style="{StaticResource Text.Subtitle}" FontSize="18" TextAlignment="Center" TextWrapping="NoWrap"
                                                    Text="{Binding TotalCo2Text}" />
                                         <TextBlock Style="{StaticResource Text.Tiny}" TextAlignment="Center" Text="{DynamicResource Dashboard.DonutUnit}" />
@@ -322,7 +324,7 @@
                                               Focusable="False">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type vm:CategoryLegendItem}">
-                                            <Grid Margin="0,5.5">
+                                            <Grid Margin="0,5.5" Background="Transparent" ctl:FormulaToolTip.Text="{Binding Explanation}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*" />

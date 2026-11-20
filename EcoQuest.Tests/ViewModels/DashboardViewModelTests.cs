@@ -421,6 +421,31 @@ public class DashboardViewModelTests
     }
 
     [Fact]
+    public async Task Legend_rows_and_donut_help_carry_the_service_explanations()
+    {
+        var explained = FilledBreakdown().Select(b => b with { Explanation = $"{b.CategoryName}: dari faktor CO₂ per unit." }).ToList();
+        ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7, 0, 1, 3), explained));
+
+        var vm = await LoadedAsync();
+
+        Assert.All(vm.BreakdownLegend, l => Assert.False(string.IsNullOrWhiteSpace(l.Explanation)));
+        Assert.Equal("Transportasi: dari faktor CO₂ per unit.", vm.BreakdownLegend[0].Explanation);
+        Assert.Contains("Konsumsi: dari faktor CO₂ per unit.", vm.BreakdownAutomationHelp);
+        Assert.DoesNotContain("faktor", vm.BreakdownAutomationText);
+    }
+
+    [Fact]
+    public async Task Without_breakdown_data_the_legend_has_no_explanation()
+    {
+        var explained = Breakdown().Select(b => b with { Explanation = "tidak dipakai" }).ToList();
+        ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7), explained));
+
+        var vm = await LoadedAsync();
+
+        Assert.All(vm.BreakdownLegend, l => Assert.Equal("", l.Explanation));
+    }
+
+    [Fact]
     public async Task Without_reviews_both_charts_are_empty_and_the_legend_shows_names_only()
     {
         ReturnsDashboard(ChartDto(TrendRange.Weekly, Days(7), Breakdown()));

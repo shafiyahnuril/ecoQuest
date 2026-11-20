@@ -55,14 +55,10 @@
                         <TextBlock Style="{StaticResource Text.Tiny}" TextWrapping="NoWrap" Text="{Binding QuantityText}" />
                     </StackPanel>
                     <TextBlock Grid.Column="2" Style="{StaticResource Text.Impact}" TextWrapping="NoWrap" TextAlignment="Right"
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Text="{Binding ImpactText}" />
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Text="{Binding ImpactText}"
+                               ctl:FormulaToolTip.Text="{Binding FormulaText}" />
                     <Button Grid.Column="3" Style="{StaticResource Button.Icon}" VerticalAlignment="Center"
-                            AutomationProperties.Name="{DynamicResource Review.FormulaInfo}" ToolTipService.InitialShowDelay="300">
-                        <Button.ToolTip>
-                            <ToolTip Style="{StaticResource ToolTip.Default}">
-                                <TextBlock Text="{Binding FormulaText}" />
-                            </ToolTip>
-                        </Button.ToolTip>
+                            AutomationProperties.Name="{DynamicResource Review.FormulaInfo}" ctl:FormulaToolTip.Text="{Binding FormulaText}">
                         <ctl:IconView Data="{DynamicResource Icon.Info}" Foreground="{StaticResource Brand.Forest}"
                                       Width="{StaticResource Size.IconInfo}" Height="{StaticResource Size.IconInfo}" />
                     </Button>

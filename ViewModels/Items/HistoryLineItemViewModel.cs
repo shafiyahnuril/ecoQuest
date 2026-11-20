@@ -23,7 +23,7 @@ public sealed class HistoryLineItemViewModel
         Co2Text = UiFormat.Kg(impact.Co2SavedKg);
         DetailCo2Text = UiFormat.Co2(impact.Co2SavedKg);
         PointsText = string.Format(CultureInfo.CurrentCulture, text.Get("History.Points"), UiFormat.Count(impact.PointsEarned));
-        FormulaText = impact.FormulaExplanation + Environment.NewLine + impact.PointsExplanation;
+        FormulaText = ImpactExplanation.Of(impact);
         Note = string.IsNullOrWhiteSpace(impact.Note) ? null : impact.Note;
         Description = description;
     }

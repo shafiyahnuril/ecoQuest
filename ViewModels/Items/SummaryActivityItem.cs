@@ -17,5 +17,5 @@ public sealed class SummaryActivityItem(ActivityImpactDto impact, IUiText text)
     public string ImpactText { get; } =
         string.Format(CultureInfo.CurrentCulture, text.Get("Summary.Impact"), UiFormat.Kg(impact.Co2SavedKg), UiFormat.Count(impact.PointsEarned));
 
-    public string FormulaText { get; } = impact.FormulaExplanation + Environment.NewLine + impact.PointsExplanation;
+    public string FormulaText { get; } = ImpactExplanation.Of(impact);
 }
