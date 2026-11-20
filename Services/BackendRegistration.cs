@@ -46,6 +46,7 @@ public static class BackendRegistration
             EcoQuest.Core.Calculation.ImpactCalculatorFactory>();
         s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculationService,
             EcoQuest.Core.Calculation.ImpactCalculationService>();
+        s.AddSingleton<EcoQuest.Core.Validation.ActivityInputValidator>();
         return s;
     }
 }
