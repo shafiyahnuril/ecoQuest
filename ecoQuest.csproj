@@ -33,4 +33,8 @@
     <None Remove="EcoQuest.Tests\**" />
     <None Remove="docs\**;database\**" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EcoQuest.Tests" />
+  </ItemGroup>
 </Project>
