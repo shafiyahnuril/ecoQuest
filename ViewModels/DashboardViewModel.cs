@@ -89,6 +89,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private ISeries[] _breakdownSeries = [];
     [ObservableProperty] private bool _hasBreakdownData;
     [ObservableProperty] private string _breakdownAutomationText = "";
+    [ObservableProperty] private string _breakdownAutomationHelp = "";
 
     /// <summary>Range of the trend line only; the donut always shows the cumulative breakdown.</summary>
     [ObservableProperty] private TrendRange _selectedRange = TrendRange.Weekly;
@@ -270,9 +271,10 @@ public sealed partial class DashboardViewModel : ViewModelBase
     {
         HasBreakdownData = breakdown.Any(b => b.Co2Kg > 0);
         BreakdownLegend = breakdown
-            .Select(b => new CategoryLegendItem(b.CategoryId, b.CategoryName, HasBreakdownData ? FormatPercent(b.Percentage) : ""))
+            .Select(b => new CategoryLegendItem(b.CategoryId, b.CategoryName, HasBreakdownData ? FormatPercent(b.Percentage) : "", HasBreakdownData ? b.Explanation : ""))
             .ToList();
         BreakdownSeries = HasBreakdownData ? ChartFactory.Breakdown(breakdown) : [];
+        BreakdownAutomationHelp = string.Join(" ", BreakdownLegend.Select(l => l.Explanation).Where(e => e.Length > 0));
         BreakdownAutomationText = _text.Get(HasBreakdownData ? "Dashboard.BreakdownTitle" : "Dashboard.BreakdownAutomation")
             + (HasBreakdownData ? ": " + string.Join("; ", BreakdownLegend.Select(l => $"{l.Name} {l.PercentText}")) : "");
     }
@@ -295,5 +297,5 @@ public sealed partial class DashboardViewModel : ViewModelBase
     }
 }
 
-/// <summary>One legend row: colour comes from <see cref="CategoryId"/> (CategoryIdToBrushConverter), always next to the name (NFR-12); <see cref="PercentText"/> is empty while there is no data.</summary>
-public sealed record CategoryLegendItem(int CategoryId, string Name, string PercentText);
+/// <summary>One legend row: colour comes from <see cref="CategoryId"/> (CategoryIdToBrushConverter), always next to the name (NFR-12); <see cref="PercentText"/> and <see cref="Explanation"/> are empty while there is no data.</summary>
+public sealed record CategoryLegendItem(int CategoryId, string Name, string PercentText, string Explanation);

@@ -140,13 +140,13 @@ public class ChartFactoryTests
     }
 
     [Fact]
-    public void Slice_tooltip_is_the_explanation_from_the_service()
+    public void Slices_are_named_after_their_category()
     {
         var cat = new CategoryBreakdownDto(1, "Transportasi", 1m, 100m, "Transportasi: 1 kg CO₂ dari 2 aktivitas");
 
         var slice = Assert.IsType<PieSeries<double>>(Assert.Single(ChartFactory.Breakdown([cat])));
 
-        Assert.NotNull(slice.ToolTipLabelFormatter);
+        Assert.Equal("Transportasi", slice.Name);
     }
 
     [Fact]

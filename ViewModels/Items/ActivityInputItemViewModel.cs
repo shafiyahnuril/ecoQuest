@@ -20,7 +20,7 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     [ObservableProperty] private string? _note;
     [ObservableProperty] private string? _photoSourcePath;
     [ObservableProperty] private string _impactText = UiFormat.Co2(0m);
-    [ObservableProperty] private string? _formulaExplanation;
+    [ObservableProperty] private string? _explanationText;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasError), nameof(HasWarning))] private string? _errorText;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasWarning))] private string? _warningText;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasNoteError), nameof(ShowExtras))] private string? _noteErrorText;
@@ -31,6 +31,7 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     {
         Type = type;
         _visual = ActivityVisual.For(type.ActivityTypeId);
+        _explanationText = ImpactExplanation.Of(null, type.Description);
     }
 
     public event EventHandler? Changed;
@@ -87,7 +88,7 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     public void ApplyImpact(ActivityImpactDto? impact)
     {
         ImpactText = impact is { Co2SavedKg: not 0m } ? $"≈ {UiFormat.Co2(impact.Co2SavedKg)}" : UiFormat.Co2(0m);
-        FormulaExplanation = impact?.FormulaExplanation;
+        ExplanationText = ImpactExplanation.Of(impact, Description);
     }
 
     protected void NotifyInputChanged()
