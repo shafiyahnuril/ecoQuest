@@ -50,6 +50,7 @@ public static class BackendRegistration
         s.AddSingleton<IDashboardService, DashboardService>();
         s.AddSingleton<DtoFactory>();
         s.AddSingleton<IEveningReviewService, EveningReviewService>();
+        s.AddSingleton<IHistoryService, HistoryService>();
         return s;
     }
 }
