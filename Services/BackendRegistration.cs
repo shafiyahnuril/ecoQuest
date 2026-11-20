@@ -6,6 +6,7 @@ using EcoQuest.Data.Rpc;
 using EcoQuest.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Net.Http;
 
 namespace EcoQuest.Services;
 
@@ -51,6 +52,9 @@ public static class BackendRegistration
         s.AddSingleton<DtoFactory>();
         s.AddSingleton<IEveningReviewService, EveningReviewService>();
         s.AddSingleton<IHistoryService, HistoryService>();
+        s.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://dataservice.accuweather.com/"), Timeout = TimeSpan.FromSeconds(5) });
+        s.AddSingleton<IAccuWeatherClient, AccuWeatherClient>();
+        s.AddSingleton<LocationKeyCache>();
         return s;
     }
 }
