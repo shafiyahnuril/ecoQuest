@@ -48,6 +48,8 @@ public static class BackendRegistration
             EcoQuest.Core.Calculation.ImpactCalculationService>();
         s.AddSingleton<EcoQuest.Core.Validation.ActivityInputValidator>();
         s.AddSingleton<IDashboardService, DashboardService>();
+        s.AddSingleton<DtoFactory>();
+        s.AddSingleton<IEveningReviewService, EveningReviewService>();
         return s;
     }
 }
