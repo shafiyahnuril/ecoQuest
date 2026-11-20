@@ -17,7 +17,10 @@ public interface IDialogService
     /// <summary>DEBUG builds only: opens the FE-01 theme preview in its own window. Does nothing in Release.</summary>
     void ShowThemePreview();
 
-    // TODO(FE-14/FE-19): string? PickImageFile(); string? PickCsvSaveLocation(string suggestedFileName);
+    /// <summary>Opens the JPG/PNG picker and returns the chosen path, or null when the user cancels. Validation stays with IPhotoStorageService.</summary>
+    string? PickImageFile();
+
+    // TODO(FE-19): string? PickCsvSaveLocation(string suggestedFileName);
 }
 
 /// <summary>Looks up Indonesian UI copy from Resources/Strings.id.xaml by key, so ViewModels never hold literals.</summary>

@@ -97,7 +97,7 @@ public sealed partial class FakeAuthService : IAuthService
         return errors;
     }
 
-    private static UserSession ToSession(FakeAccount a) => new(a.UserId, a.UserName, a.Email, a.City, null);
+    private static UserSession ToSession(FakeAccount a) => new(a.UserId, a.UserName, a.Email, a.City, a.AvatarPath);
 
     [GeneratedRegex("^[A-Za-z0-9_.]+$")]
     private static partial Regex UserNameRegex();

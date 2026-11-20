@@ -351,6 +351,17 @@
     <Thickness x:Key="Margin.HistoryPhoto">0,9,0,0</Thickness>
     <Thickness x:Key="Padding.HistoryPhotoMissing">10,12</Thickness>
     <sys:Double x:Key="Height.SkeletonHistoryDay">120</sys:Double>
+    <GridLength x:Key="Width.ProfileGap">16</GridLength>
+    <sys:Double x:Key="FontSize.AvatarProfile">42</sys:Double>
+    <Thickness x:Key="Margin.ProfileCardTitle">0,0,0,12</Thickness>
+    <Thickness x:Key="Margin.ProfileAvatarRow">0,0,0,15</Thickness>
+    <Thickness x:Key="Margin.ProfileAvatarText">12,0,0,0</Thickness>
+    <Thickness x:Key="Margin.ProfileAvatarActions">0,12,0,0</Thickness>
+    <Thickness x:Key="Margin.ProfileBanner">0,0,0,16</Thickness>
+    <sys:Double x:Key="Height.SkeletonProfileCard">459</sys:Double>
+    <Thickness x:Key="Margin.ProfileField">0,0,0,15</Thickness>
+    <Thickness x:Key="Margin.ProfileLabel">0,0,0,6</Thickness>
+    <Thickness x:Key="Margin.ProfileButtonGap">8,0,0,0</Thickness>
     <!-- Dialog icon pop (D-04): one light scale animation as the answer to the user's action. -->
     <sys:Double x:Key="Scale.DialogIconFrom">0.82</sys:Double>
     <Duration x:Key="Duration.DialogIcon">0:0:0.24</Duration>

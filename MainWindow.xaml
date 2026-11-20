@@ -173,7 +173,7 @@
 
     <Grid Background="{StaticResource Bg.App}">
         <!-- Auth area: Login, Register, Onboarding. No sidebar. -->
-        <ContentControl x:Name="AuthHost" Content="{Binding AuthViewModel}" IsTabStop="False" FocusVisualStyle="{x:Null}" />
+        <ContentControl x:Name="AuthHost" Content="{Binding AuthViewModel, ValidatesOnNotifyDataErrors=False}" IsTabStop="False" FocusVisualStyle="{x:Null}" />
 
         <!-- Main area: sidebar | page. -->
         <Grid>
@@ -253,9 +253,9 @@
                 <Border Background="{StaticResource Bg.ContentGlow}" IsHitTestVisible="False" />
                 <ScrollViewer x:Name="PageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                               IsTabStop="False" FocusVisualStyle="{x:Null}"
-                              ctl:ScrollViewerHelper.ScrollToTopOnChange="{Binding MainViewModel}">
+                              ctl:ScrollViewerHelper.ScrollToTopOnChange="{Binding MainViewModel, ValidatesOnNotifyDataErrors=False}">
                     <Border Style="{StaticResource Border.Content}">
-                        <ContentControl x:Name="MainHost" Content="{Binding MainViewModel}" IsTabStop="False" FocusVisualStyle="{x:Null}" />
+                        <ContentControl x:Name="MainHost" Content="{Binding MainViewModel, ValidatesOnNotifyDataErrors=False}" IsTabStop="False" FocusVisualStyle="{x:Null}" />
                     </Border>
                 </ScrollViewer>
             </Grid>
