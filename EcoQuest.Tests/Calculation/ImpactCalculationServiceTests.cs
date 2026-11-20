@@ -33,6 +33,7 @@ public class ImpactCalculationServiceTests
     [MemberData(nameof(SrsRows))]
     public void Matches_SRS_4_4_table(int no, ActivityType type, ActivityInput input, decimal qty, decimal co2, int points)
     {
+        Assert.InRange(no, 1, int.MaxValue);
         var r = Sut.Calculate(input, type);
         Assert.Equal(qty, r.Quantity);
         Assert.Equal(co2, r.Co2SavedKg);
