@@ -49,6 +49,7 @@ public static class BackendRegistration
         s.AddSingleton<EcoQuest.Core.Validation.ActivityInputValidator>();
         s.AddSingleton<DtoFactory>();
         s.AddSingleton<IEveningReviewService, EveningReviewService>();
+        s.AddSingleton<IHistoryService, HistoryService>();
         return s;
     }
 }
