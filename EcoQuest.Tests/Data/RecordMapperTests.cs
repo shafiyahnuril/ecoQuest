@@ -100,7 +100,7 @@ public class RecordMapperTests
         {
             CacheId = 12,
             City = "Yogyakarta",
-            ForDate = new DateTime(2026, 11, 13, 0, 0, 0, DateTimeKind.Unspecified),
+            ForDate = "2026-11-13",
             ForecastSummary = "Cerah berawan, 24–31°C",
             RawResponse = "{\"Headline\":\"Sunny\"}",
             RetrievedAt = retrievedAt
@@ -113,6 +113,18 @@ public class RecordMapperTests
         Assert.Equal("Cerah berawan, 24–31°C", domain.ForecastSummary);
         Assert.Equal("{\"Headline\":\"Sunny\"}", domain.RawResponse);
         Assert.Equal(retrievedAt, domain.RetrievedAt);
+    }
+
+    [Fact]
+    public void WeatherCacheRecord_serializes_fordate_as_plain_date_string()
+    {
+        var rec = new WeatherCacheUpsertRecord { City = "Yogyakarta", ForDate = "2026-11-22" };
+
+        var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+            rec, Postgrest.Client.SerializerSettings(new Postgrest.ClientOptions()));
+
+        Assert.Contains("\"fordate\":\"2026-11-22\"", json);
+        Assert.DoesNotContain("cacheid", json);
     }
 
     [Fact]

@@ -43,7 +43,7 @@ public static class RecordMapper
 
     public static WeatherCache ToDomain(WeatherCacheRecord r) => WeatherCache.Create(
         r.City,
-        DateOnly.FromDateTime(r.ForDate),
+        ParseDate(r.ForDate),
         r.ForecastSummary,
         r.RawResponse,
         r.RetrievedAt);
