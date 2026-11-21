@@ -158,6 +158,17 @@
     <sys:String x:Key="Achievements.Progress.Co2">{0}/{1} kg CO₂</sys:String>
     <sys:String x:Key="Achievements.Progress.Plain">{0}/{1}</sys:String>
     <sys:String x:Key="Leaderboard.Intro">Peringkat berdasarkan estimasi CO₂ yang dihindari. EcoQuest adalah jurnal pribadi — gunakan ini sebagai inspirasi, bukan kompetisi.</sys:String>
+    <sys:String x:Key="Leaderboard.Col.Rank">Peringkat</sys:String>
+    <sys:String x:Key="Leaderboard.Col.User">Username</sys:String>
+    <sys:String x:Key="Leaderboard.Col.Co2">CO₂ dihindari</sys:String>
+    <sys:String x:Key="Leaderboard.Col.Level">Level</sys:String>
+    <sys:String x:Key="Leaderboard.You">Kamu</sys:String>
+    <sys:String x:Key="Leaderboard.Gap">…</sys:String>
+    <sys:String x:Key="Leaderboard.NoLevel">–</sys:String>
+    <sys:String x:Key="Leaderboard.Empty">Belum ada peringkat untuk ditampilkan.</sys:String>
+    <sys:String x:Key="Leaderboard.TableName">Peringkat CO₂ yang dihindari</sys:String>
+    <sys:String x:Key="Leaderboard.Auto">Peringkat {0}, {1}, {2}, level {3}</sys:String>
+    <sys:String x:Key="Leaderboard.Auto.You">Peringkat {0}, {1} (Kamu), {2}, level {3}</sys:String>
     <sys:String x:Key="Profile.Title">Profil Saya</sys:String>
     <sys:String x:Key="Profile.Subtitle">Kelola data profil dan preferensimu.</sys:String>
     <sys:String x:Key="Profile.SaveCity">Simpan perubahan</sys:String>
