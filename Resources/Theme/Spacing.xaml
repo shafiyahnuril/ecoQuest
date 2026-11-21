@@ -366,6 +366,21 @@
     <Thickness x:Key="Margin.ProfileField">0,0,0,15</Thickness>
     <Thickness x:Key="Margin.ProfileLabel">0,0,0,6</Thickness>
     <Thickness x:Key="Margin.ProfileButtonGap">8,0,0,0</Thickness>
+    <!-- Pencapaian (S-08): summary cards, 4-column badge grid (D-11 chosen by the owner), badge cell. -->
+    <sys:Double x:Key="Height.SkeletonAchievementsCard">140</sys:Double>
+    <sys:Double x:Key="Height.SkeletonBadge">150</sys:Double>
+    <Thickness x:Key="Margin.AchievementsCards">0,0,0,16</Thickness>
+    <Thickness x:Key="Margin.AchievementsFilterRow">0,0,0,15</Thickness>
+    <Thickness x:Key="Margin.AchievementsLevelBar">0,10,0,9</Thickness>
+    <Thickness x:Key="Margin.AchievementsStreakUnit">0,2,0,0</Thickness>
+    <Thickness x:Key="Margin.PageHeadDate">15,0,0,0</Thickness>
+    <Thickness x:Key="Margin.BadgeGrid">0,0,-12,-12</Thickness>
+    <Thickness x:Key="Margin.BadgeCell">0,0,12,12</Thickness>
+    <Thickness x:Key="Padding.BadgeCell">13,20</Thickness>
+    <Thickness x:Key="Margin.BadgeIcon">0,0,0,11</Thickness>
+    <Thickness x:Key="Margin.BadgeStatus">0,8,0,0</Thickness>
+    <sys:Double x:Key="Size.BadgeBubble">68</sys:Double>
+    <sys:Double x:Key="Size.IconBadge">32</sys:Double>
     <!-- Dialog icon pop (D-04): one light scale animation as the answer to the user's action. -->
     <sys:Double x:Key="Scale.DialogIconFrom">0.82</sys:Double>
     <Duration x:Key="Duration.DialogIcon">0:0:0.24</Duration>

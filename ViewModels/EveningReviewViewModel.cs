@@ -325,7 +325,9 @@ public sealed partial class EveningReviewViewModel : ViewModelBase
             lines.Add(string.Format(CultureInfo.CurrentCulture, _text.Get("Dialog.LevelUp"), levelUp.NewLevelName));
         }
 
-        lines.AddRange(summary.NewBadges.Select(b => string.Format(CultureInfo.CurrentCulture, _text.Get("Dialog.NewBadge"), b.Name)));
+        // The "Milestone baru:" prefix appears once, on the first badge line; the rest are plain names.
+        lines.AddRange(summary.NewBadges.Select((b, i) =>
+            i == 0 ? string.Format(CultureInfo.CurrentCulture, _text.Get("Dialog.NewBadge"), b.Name) : b.Name));
         if (lines.Count > 0)
         {
             var icon = summary.LevelUp is null ? DialogIcon.Badge : DialogIcon.Level;

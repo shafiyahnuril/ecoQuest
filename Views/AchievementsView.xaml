@@ -1,6 +1,161 @@
 <UserControl x:Class="EcoQuest.Views.AchievementsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
-    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Achievements.Title}" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:items="clr-namespace:EcoQuest.ViewModels.Items"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             xmlns:conv="clr-namespace:EcoQuest.Converters"
+             mc:Ignorable="d" IsTabStop="False" FocusVisualStyle="{x:Null}"
+             d:DataContext="{d:DesignInstance Type=vm:AchievementsViewModel}">
+    <!-- S-08 Pencapaian. Reference: design-reference/screens/10-achievements.png, INVENTORY-v7 .badge-grid .badge .badge-icon .chip .mini-progress.
+         Deltas: D-11 (4 columns, chosen by the owner; v7 has 3), UIR-73 (filter chips, view-only), S-08 text (earned date / "4/7 hari" progress, criteria tooltip,
+         locked = outline icon on a muted bubble instead of opacity + grayscale so text keeps its contrast). The streak card follows v7 ("Konsistensi"). -->
+    <UserControl.Resources>
+        <conv:ResourceKeyConverter x:Key="ResourceKey" />
+        <conv:EnumEqualsConverter x:Key="EnumEquals" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+
+        <Style x:Key="Text.BadgeName" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+            <Setter Property="FontFamily" Value="{StaticResource Font.Bold}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEarned}" Value="False">
+                    <Setter Property="Foreground" Value="{StaticResource Text.Secondary}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="Text.BadgeStatus" TargetType="TextBlock" BasedOn="{StaticResource Text.Pill}">
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <DataTemplate x:Key="BadgeCell" DataType="{x:Type items:BadgeItemViewModel}">
+            <Border Style="{StaticResource Border.Card}" Padding="{StaticResource Padding.BadgeCell}" Margin="{StaticResource Margin.BadgeCell}"
+                    ToolTip="{Binding Description}" ToolTipService.ShowOnDisabled="True"
+                    AutomationProperties.Name="{Binding AutomationName}" AutomationProperties.HelpText="{Binding Description}">
+                <StackPanel>
+                    <Grid Width="{StaticResource Size.BadgeBubble}" Height="{StaticResource Size.BadgeBubble}" Margin="{StaticResource Margin.BadgeIcon}"
+                          AutomationProperties.IsOffscreenBehavior="Offscreen">
+                        <Ellipse Fill="{Binding BubbleBackgroundKey, Converter={StaticResource ResourceKey}}" />
+                        <ctl:IconView Data="{Binding IconKey, Converter={StaticResource ResourceKey}}"
+                                      Foreground="{Binding BubbleForegroundKey, Converter={StaticResource ResourceKey}}"
+                                      Width="{StaticResource Size.IconBadge}" Height="{StaticResource Size.IconBadge}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Text.BadgeName}" Text="{Binding Name}" ToolTip="{Binding Name}" />
+                    <Border Style="{StaticResource Border.Pill}" HorizontalAlignment="Center" Margin="{StaticResource Margin.BadgeStatus}">
+                        <TextBlock Style="{StaticResource Text.BadgeStatus}" Text="{Binding StatusText}" />
+                    </Border>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Grid Margin="{StaticResource Margin.PageHead}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.Header}" Margin="{StaticResource Margin.PageHeadTitle}" TextWrapping="NoWrap"
+                           Text="{DynamicResource Achievements.Title}" AutomationProperties.HeadingLevel="Level1" />
+                <TextBlock Style="{StaticResource Text.BodyRelaxed}" Text="{DynamicResource Achievements.Subtitle}" />
+            </StackPanel>
+            <TextBlock Grid.Column="1" Style="{StaticResource Text.Small}" Margin="{StaticResource Margin.PageHeadDate}" TextWrapping="NoWrap" VerticalAlignment="Top"
+                       Text="{Binding TodayText}" />
+        </Grid>
+
+        <ctl:StateHost State="{Binding State}" IsEmpty="{Binding IsEmpty}" ErrorMessage="{Binding ErrorMessage}" RetryCommand="{Binding LoadCommand}">
+            <ctl:StateHost.LoadingContent>
+                <StackPanel>
+                    <Grid Margin="{StaticResource Margin.AchievementsCards}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ctl:Skeleton Height="{StaticResource Height.SkeletonAchievementsCard}" CornerRadius="{StaticResource Radius.Card}" />
+                        <ctl:Skeleton Grid.Column="2" Height="{StaticResource Height.SkeletonAchievementsCard}" CornerRadius="{StaticResource Radius.Card}" />
+                    </Grid>
+                    <UniformGrid Columns="4" Margin="{StaticResource Margin.BadgeGrid}">
+                        <ctl:Skeleton Height="{StaticResource Height.SkeletonBadge}" CornerRadius="{StaticResource Radius.Card}" Margin="{StaticResource Margin.BadgeCell}" />
+                        <ctl:Skeleton Height="{StaticResource Height.SkeletonBadge}" CornerRadius="{StaticResource Radius.Card}" Margin="{StaticResource Margin.BadgeCell}" />
+                        <ctl:Skeleton Height="{StaticResource Height.SkeletonBadge}" CornerRadius="{StaticResource Radius.Card}" Margin="{StaticResource Margin.BadgeCell}" />
+                        <ctl:Skeleton Height="{StaticResource Height.SkeletonBadge}" CornerRadius="{StaticResource Radius.Card}" Margin="{StaticResource Margin.BadgeCell}" />
+                    </UniformGrid>
+                </StackPanel>
+            </ctl:StateHost.LoadingContent>
+
+            <ctl:StateHost.Content>
+                <StackPanel>
+                    <Grid Margin="{StaticResource Margin.AchievementsCards}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{StaticResource Width.CardGap}" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource Border.Card}">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{DynamicResource Achievements.Level.Eyebrow}" />
+                                <TextBlock Style="{StaticResource Text.Title}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding LevelName}" />
+                                <ProgressBar Style="{StaticResource ProgressBar.Mini}" Margin="{StaticResource Margin.AchievementsLevelBar}"
+                                             Value="{Binding LevelProgressPercent, Mode=OneWay}"
+                                             AutomationProperties.Name="{DynamicResource Achievements.Level.Progress}"
+                                             Visibility="{Binding HasNextLevel, Converter={StaticResource BoolToVisibility}}" />
+                                <TextBlock Style="{StaticResource Text.BodySecondary}" Text="{Binding LevelProgressText}" />
+                                <TextBlock Style="{StaticResource Text.Small}" Text="{DynamicResource Points.Disclaimer}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource Border.Card}">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource Text.Eyebrow}" Text="{DynamicResource Achievements.Streak.Eyebrow}" />
+                                <TextBlock Style="{StaticResource Text.StatBig}" Text="{Binding StreakDays}"
+                                           AutomationProperties.Name="{Binding StreakDays}" />
+                                <TextBlock Style="{StaticResource Text.BodySecondary}" Margin="{StaticResource Margin.AchievementsStreakUnit}"
+                                           Text="{DynamicResource Achievements.Streak.Unit}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.AchievementsFilterRow}"
+                                AutomationProperties.Name="{DynamicResource Achievements.FilterGroup}">
+                        <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="AchievementsFilter" Margin="{StaticResource Margin.FilterChip}"
+                                     Content="{DynamicResource Achievements.Filter.All}"
+                                     IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=All}"
+                                     Command="{Binding SetFilterCommand}" CommandParameter="{x:Static vm:AchievementFilter.All}" />
+                        <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="AchievementsFilter" Margin="{StaticResource Margin.FilterChip}"
+                                     Content="{DynamicResource Achievements.Filter.Earned}"
+                                     IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Earned}"
+                                     Command="{Binding SetFilterCommand}" CommandParameter="{x:Static vm:AchievementFilter.Earned}" />
+                        <RadioButton Style="{StaticResource RadioButton.Segmented}" GroupName="AchievementsFilter" Margin="{StaticResource Margin.FilterChip}"
+                                     Content="{DynamicResource Achievements.Filter.Locked}"
+                                     IsChecked="{Binding Filter, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Locked}"
+                                     Command="{Binding SetFilterCommand}" CommandParameter="{x:Static vm:AchievementFilter.Locked}" />
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding VisibleBadges}" ItemTemplate="{StaticResource BadgeCell}"
+                                  Margin="{StaticResource Margin.BadgeGrid}" IsTabStop="False" Focusable="False" FocusVisualStyle="{x:Null}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <TextBlock Style="{StaticResource Text.BodySecondary}" Text="{DynamicResource Achievements.FilterEmpty}"
+                               Visibility="{Binding HasNoVisibleBadges, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </ctl:StateHost.Content>
+        </ctl:StateHost>
+    </StackPanel>
 </UserControl>
