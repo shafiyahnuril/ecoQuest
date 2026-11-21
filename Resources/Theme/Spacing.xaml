@@ -384,4 +384,13 @@
     <!-- Dialog icon pop (D-04): one light scale animation as the answer to the user's action. -->
     <sys:Double x:Key="Scale.DialogIconFrom">0.82</sys:Double>
     <Duration x:Key="Duration.DialogIcon">0:0:0.24</Duration>
+    <!-- Leaderboard table (S-09): column widths, own-row accent, row padding. -->
+    <GridLength x:Key="Width.LeaderboardAccent">3</GridLength>
+    <GridLength x:Key="Width.LeaderboardRank">92</GridLength>
+    <GridLength x:Key="Width.LeaderboardCo2">150</GridLength>
+    <GridLength x:Key="Width.LeaderboardLevel">150</GridLength>
+    <Thickness x:Key="Padding.LeaderboardRow">9,13,12,13</Thickness>
+    <Thickness x:Key="Margin.LeaderboardIntro">0,0,0,14</Thickness>
+    <Thickness x:Key="Margin.LeaderboardYou">8,0,0,0</Thickness>
+    <sys:Double x:Key="Height.SkeletonLeaderboardRow">44</sys:Double>
 </ResourceDictionary>
