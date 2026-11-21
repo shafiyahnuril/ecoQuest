@@ -219,4 +219,10 @@
     <Style x:Key="Text.ForecastFooter" TargetType="TextBlock" BasedOn="{StaticResource Text.Tiny}">
         <Setter Property="FontSize" Value="10" />
     </Style>
+    <!-- Big figure on a summary card (Pencapaian streak; .card h2 at 30 px). -->
+    <Style x:Key="Text.StatBig" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontFamily" Value="{StaticResource Font.ExtraBold}" />
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
 </ResourceDictionary>

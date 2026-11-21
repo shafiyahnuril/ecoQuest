@@ -481,8 +481,19 @@ public class EveningReviewViewModelTests
 
         var dialog = Assert.Single(dialogs);
         Assert.Equal("Kamu kini Eco Explorer", dialog.Title);
-        Assert.Equal("Milestone baru: A" + Environment.NewLine + "Milestone baru: B", dialog.Message);
+        Assert.Equal("Milestone baru: A" + Environment.NewLine + "B", dialog.Message);
         Assert.Equal(DialogIcon.Level, dialog.Icon);
+    }
+
+    [Fact]
+    public async Task Several_badges_without_level_up_show_the_prefix_only_once()
+    {
+        var (_, dialogs) = await SaveAsync(SummaryWith(null, Badge("A"), Badge("B")));
+
+        var dialog = Assert.Single(dialogs);
+        Assert.Equal("Milestone baru: A", dialog.Title);
+        Assert.Equal("B", dialog.Message);
+        Assert.Equal(DialogIcon.Badge, dialog.Icon);
     }
 
     [Fact]
