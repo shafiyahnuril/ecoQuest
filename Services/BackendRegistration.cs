@@ -1,3 +1,4 @@
+
 using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Repositories;
 using EcoQuest.Core.Contracts.Services;
@@ -35,6 +36,7 @@ public static class BackendRegistration
         s.AddSingleton<ISessionService, SessionService>();
         s.AddSingleton<IAuthService, AuthService>();
         s.AddSingleton<IProfileService, ProfileService>();
+        s.AddSingleton<IGamificationService, GamificationService>();
         s.AddSingleton<PhotoStorageService>();
         s.AddSingleton<IPhotoStorageService>(sp => sp.GetRequiredService<PhotoStorageService>());
         s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
