@@ -62,6 +62,8 @@ public static class BackendRegistration
         s.AddSingleton<IWeatherCacheRepository, SupabaseWeatherCacheRepository>();
         s.AddSingleton<WeatherSuggestionRules>();
         s.AddSingleton<IWeatherSuggestionService, WeatherSuggestionService>();
+        s.AddSingleton<ILeaderboardRepository, SupabaseLeaderboardRepository>();
+        s.AddSingleton<ILeaderboardService, LeaderboardService>();
         return s;
     }
 }
