@@ -43,12 +43,12 @@ public sealed class WeatherSuggestionService(
             if (fc is null) return rules.Fallback(user.City, date, types);
 
             var entry = WeatherCache.Create(user.City, date, rules.Summary(fc.DayPhrase, fc.MinTempC, fc.MaxTempC), fc.RawJson, clock.UtcNow);
-            try { await cache.UpsertAsync(entry, cts.Token); } catch (Exception ex) { log.Warn("weather.cache", "Upsert", ex.GetType().Name); }
+            try { await cache.UpsertAsync(entry, cts.Token); } catch (Exception ex) { log.Warn("weather.cache", "Upsert", $"{ex.GetType().Name}: {(ex.InnerException ?? ex).Message}"); }
             return rules.FromForecast(user.City, date, fc.DayPhrase, fc.MinTempC, fc.MaxTempC, fc.HasPrecipitation, fc.DayIcon, types);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
-            log.Warn("weather", "Fallback", ex.GetType().Name);
+            log.Warn("weather", "Fallback", $"{ex.GetType().Name}: {(ex.InnerException ?? ex).Message}");
             return rules.Fallback(user.City, date, await SafeTypes());                  
         }
     }
