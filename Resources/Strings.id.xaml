@@ -215,6 +215,11 @@
     <sys:String x:Key="Onboarding.2.Body">Catat kuantitas nyata enam aktivitas yang benar-benar kamu lakukan. Cukup beberapa menit.</sys:String>
     <sys:String x:Key="Onboarding.3.Title">Lihat dampakmu bertumbuh</sys:String>
     <sys:String x:Key="Onboarding.3.Body">Setiap langkah kecil dapat dihitung dan dipelajari dari waktu ke waktu.</sys:String>
+    <!-- Onboarding controls: not in UI-UX-Flow-Frontend 5 as keys, but the labels are given in S-03 and shown in prototype v7 screen 03. -->
+    <sys:String x:Key="Onboarding.Skip">Lewati</sys:String>
+    <sys:String x:Key="Onboarding.Next">Lanjut</sys:String>
+    <sys:String x:Key="Onboarding.Start">Mulai</sys:String>
+    <sys:String x:Key="Onboarding.StepLabel">Langkah {0} dari {1}</sys:String>
     <!-- Shell (FE-02): sidebar labels follow prototype v7 screens 04/13; Nav.PendingHint = UI-UX-Flow-Frontend 3. -->
     <sys:String x:Key="Brand.Name">EcoQuest</sys:String>
     <sys:String x:Key="Nav.Dashboard">Beranda</sys:String>

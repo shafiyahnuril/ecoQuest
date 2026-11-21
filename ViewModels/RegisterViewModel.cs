@@ -21,6 +21,7 @@ public sealed partial class RegisterViewModel : ViewModelBase
 
     private readonly IAuthService _auth;
     private readonly INavigationService _navigation;
+    private readonly IOnboardingStore _onboarding;
 
     // Fields the user has left (or a submit has checked). Only these are re-validated while typing, so no error shows before the first blur.
     private readonly HashSet<string> _touched = [];
@@ -28,10 +29,11 @@ public sealed partial class RegisterViewModel : ViewModelBase
     private IReadOnlyDictionary<string, string> _formatErrors = new Dictionary<string, string>();
     private bool _isResetting;
 
-    public RegisterViewModel(IAuthService auth, IProfileService profile, INavigationService navigation)
+    public RegisterViewModel(IAuthService auth, IProfileService profile, INavigationService navigation, IOnboardingStore onboarding)
     {
         _auth = auth;
         _navigation = navigation;
+        _onboarding = onboarding;
         Cities = profile.GetSupportedCities();
         City = Cities.Contains(DefaultCity) ? DefaultCity : "";
         ErrorsChanged += (_, _) => RegisterCommand.NotifyCanExecuteChanged();
@@ -229,8 +231,16 @@ public sealed partial class RegisterViewModel : ViewModelBase
             if (result.IsSuccess)
             {
                 ResetSecrets();
-                // TODO(UIR-22): navigate to OnboardingViewModel once the Onboarding screen exists (it is still a stub); until then go to the Dashboard.
-                await _navigation.NavigateTo<DashboardViewModel>();
+                // UIR-22/72: onboarding only right after registering, and only once per user.
+                if (result.Value is { } user && !_onboarding.HasCompleted(user.UserId))
+                {
+                    await _navigation.NavigateTo<OnboardingViewModel>();
+                }
+                else
+                {
+                    await _navigation.NavigateTo<DashboardViewModel>();
+                }
+
                 return;
             }
 

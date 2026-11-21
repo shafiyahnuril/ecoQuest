@@ -20,6 +20,7 @@ public class RegisterViewModelTests
     private readonly IAuthService _auth = Substitute.For<IAuthService>();
     private readonly IProfileService _profile = Substitute.For<IProfileService>();
     private readonly INavigationService _nav = Substitute.For<INavigationService>();
+    private readonly IOnboardingStore _onboarding = Substitute.For<IOnboardingStore>();
 
     public RegisterViewModelTests()
     {
@@ -31,7 +32,7 @@ public class RegisterViewModelTests
     private void RegisterReturns(Result<UserSession> result) =>
         _auth.RegisterAsync(Arg.Any<RegisterRequest>(), Arg.Any<CancellationToken>()).Returns(result);
 
-    private RegisterViewModel Create() => new(_auth, _profile, _nav);
+    private RegisterViewModel Create() => new(_auth, _profile, _nav, _onboarding);
 
     private RegisterViewModel CreateFilled()
     {
@@ -239,18 +240,31 @@ public class RegisterViewModelTests
     }
 
     [Fact]
-    public async Task Success_navigates_to_dashboard_and_clears_both_passwords()
+    public async Task Success_navigates_to_onboarding_and_clears_both_passwords()
     {
         var vm = CreateFilled();
 
         await vm.RegisterCommand.ExecuteAsync(null);
 
-        await _nav.Received(1).NavigateTo<DashboardViewModel>(null);
+        await _nav.Received(1).NavigateTo<OnboardingViewModel>(null);
+        await _nav.DidNotReceive().NavigateTo<DashboardViewModel>(Arg.Any<object?>());
         Assert.Equal("", vm.Password);
         Assert.Equal("", vm.ConfirmPassword);
         Assert.False(vm.HasErrors);
         Assert.Null(vm.ErrorMessage);
         Assert.False(vm.IsBusy);
+    }
+
+    [Fact]
+    public async Task Success_for_a_user_who_already_finished_onboarding_goes_straight_to_the_dashboard()
+    {
+        _onboarding.HasCompleted(Dinda.UserId).Returns(true);
+        var vm = CreateFilled();
+
+        await vm.RegisterCommand.ExecuteAsync(null);
+
+        await _nav.Received(1).NavigateTo<DashboardViewModel>(null);
+        await _nav.DidNotReceive().NavigateTo<OnboardingViewModel>(Arg.Any<object?>());
     }
 
     [Fact]
@@ -346,7 +360,7 @@ public class RegisterViewModelTests
         await first;
 
         Assert.False(vm.IsBusy);
-        await _nav.Received(1).NavigateTo<DashboardViewModel>(null);
+        await _nav.Received(1).NavigateTo<OnboardingViewModel>(null);
     }
 
     [Fact]

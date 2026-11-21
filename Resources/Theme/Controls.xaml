@@ -673,6 +673,12 @@
     <BitmapImage x:Key="Image.HeroIsland" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/floating_garden_island_waterfall.png" DecodePixelWidth="1080"
                  CacheOption="OnLoad" po:Freeze="True" />
 
+    <!-- Onboarding steps 2 and 3 (shown at 285 DIP high; decoded at 2x). Step 1 reuses Image.HeroIsland. -->
+    <BitmapImage x:Key="Image.OnboardingDesk" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/cozy_eco_evening_desk_diorama.png" DecodePixelWidth="456"
+                 CacheOption="OnLoad" po:Freeze="True" />
+    <BitmapImage x:Key="Image.OnboardingSprout" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_sprout_in_mossy_pot.png" DecodePixelWidth="570"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
     <!-- Offline illustration (eco_friendly_offline_wi_fi_island.png, shown at <= 320 DIP; decoded at 2x). -->
     <BitmapImage x:Key="Image.OfflineIsland" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_friendly_offline_wi_fi_island.png" DecodePixelWidth="640"
                  CacheOption="OnLoad" po:Freeze="True" />
