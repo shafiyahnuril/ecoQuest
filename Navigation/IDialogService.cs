@@ -23,7 +23,8 @@ public interface IDialogService
     /// <summary>Opens the large photo preview (D-05). A missing file shows the "Photo.Missing" placeholder instead of an image.</summary>
     void ShowImagePreview(string absolutePath);
 
-    // TODO(FE-19): string? PickCsvSaveLocation(string suggestedFileName);
+    /// <summary>Opens the CSV save dialog (overwrite prompt on) and returns the chosen path, or null when the user cancels.</summary>
+    string? PickCsvSaveLocation(string suggestedFileName);
 }
 
 /// <summary>Looks up Indonesian UI copy from Resources/Strings.id.xaml by key, so ViewModels never hold literals.</summary>

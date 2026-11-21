@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EcoQuest.Core.Common;
@@ -76,6 +78,67 @@ public sealed partial class HistoryViewModel : ViewModelBase
 
     public bool HasRangeError => RangeError is not null;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ExportButtonText))]
+    [NotifyCanExecuteChangedFor(nameof(ExportCsvCommand))]
+    private bool _isExporting;
+
+    /// <summary>Message of the last failed export (UIR-64), shown in a banner; null when there is none.</summary>
+    [ObservableProperty] private string? _exportError;
+
+    public string ExportButtonText => _text.Get(IsExporting ? "History.Exporting" : "History.Export");
+
+    private string SuggestedExportFileName => $"ecoquest-riwayat-{_clock.Today:yyyyMMdd}.csv";
+
+    private bool CanExportCsv() => !IsExporting && State == LoadState.Loaded && !IsEmpty && !HasRangeError;
+
+    /// <summary>Exports the rows of the filter that is active now. Cancelling the save dialog does nothing at all.</summary>
+    [RelayCommand(CanExecute = nameof(CanExportCsv))]
+    private async Task ExportCsvAsync(CancellationToken ct)
+    {
+        if (IsExporting)
+        {
+            return;
+        }
+
+        var path = _dialogs.PickCsvSaveLocation(SuggestedExportFileName);
+        if (path is null)
+        {
+            return;
+        }
+
+        IsExporting = true;
+        ExportError = null;
+        try
+        {
+            var result = await _history.ExportCsvAsync(CurrentFilter(), path, ct);
+            if (result.IsSuccess)
+            {
+                _dialogs.ShowToast(string.Format(CultureInfo.CurrentCulture, _text.Get("History.ExportDone"), UiFormat.Count(result.Value!.RowCount)));
+            }
+            else
+            {
+                ExportError = result.Message;
+            }
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if (e.PropertyName is nameof(State) or nameof(IsEmpty) or nameof(RangeError))
+        {
+            ExportCsvCommand.NotifyCanExecuteChanged();
+        }
+    }
+
+    private HistoryFilter CurrentFilter() =>
+        new(From, To, Categories.Where(c => c.IsSelected).Select(c => c.CategoryId).ToList());
+
     /// <summary>Opens the D-05 preview; a photo that is not on this device has no file to show, the detail panel already says so.</summary>
     [RelayCommand]
     private void PreviewPhoto(HistoryLineItemViewModel? line)
@@ -97,7 +160,11 @@ public sealed partial class HistoryViewModel : ViewModelBase
         return PendingLoad = RunLoadAsync(TimeSpan.Zero, BeginLoad());
     }
 
-    public override void OnNavigatedFrom() => _loadCts?.Cancel();
+    public override void OnNavigatedFrom()
+    {
+        _loadCts?.Cancel();
+        ExportCsvCommand.Cancel();
+    }
 
     [RelayCommand]
     private Task LoadAsync() => PendingLoad = RunLoadAsync(TimeSpan.Zero, BeginLoad());
@@ -153,6 +220,7 @@ public sealed partial class HistoryViewModel : ViewModelBase
 
     private void OnFilterChanged()
     {
+        ExportError = null;
         RangeError = From > To ? _text.Get("History.RangeError") : null;
         if (RangeError is not null)
         {
@@ -232,8 +300,7 @@ public sealed partial class HistoryViewModel : ViewModelBase
             State = LoadState.Loading;
         }
 
-        var filter = new HistoryFilter(From, To, Categories.Where(c => c.IsSelected).Select(c => c.CategoryId).ToList());
-        var result = await _history.GetHistoryAsync(filter, ct);
+        var result = await _history.GetHistoryAsync(CurrentFilter(), ct);
         if (ct.IsCancellationRequested)
         {
             return;
