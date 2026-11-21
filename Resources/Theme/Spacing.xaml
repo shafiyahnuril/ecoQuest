@@ -313,6 +313,8 @@
     <Thickness x:Key="Margin.HistoryFilterRow">0,14,0,0</Thickness>
     <Thickness x:Key="Margin.FilterChip">0,0,7,0</Thickness>
     <Thickness x:Key="Margin.HistoryDates">20,0,0,0</Thickness>
+    <Thickness x:Key="Margin.HistoryExportError">0,0,0,15</Thickness>
+    <Thickness x:Key="Margin.HistoryExportIcon">0,0,8,0</Thickness>
     <Thickness x:Key="Margin.HistoryDateLabel">0,0,8,0</Thickness>
     <Thickness x:Key="Margin.HistoryDateGap">14,0,8,0</Thickness>
     <sys:Double x:Key="Width.HistoryDate">136</sys:Double>

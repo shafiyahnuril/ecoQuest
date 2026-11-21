@@ -31,6 +31,21 @@ public sealed class DialogService(IUiText text, ToastViewModel toast) : IDialogS
         return (owner is null ? picker.ShowDialog() : picker.ShowDialog(owner)) == true ? picker.FileName : null;
     }
 
+    public string? PickCsvSaveLocation(string suggestedFileName)
+    {
+        var picker = new SaveFileDialog
+        {
+            Title = text.Get("FilePicker.ExportTitle"),
+            Filter = text.Get("FilePicker.CsvFilter"),
+            DefaultExt = ".csv",
+            AddExtension = true,
+            FileName = suggestedFileName,
+            OverwritePrompt = true,
+        };
+        var owner = Application.Current?.MainWindow;
+        return (owner is null ? picker.ShowDialog() : picker.ShowDialog(owner)) == true ? picker.FileName : null;
+    }
+
     public void ShowImagePreview(string absolutePath) =>
         ShowOverlay(new ImagePreviewDialog { DataContext = new ImagePreviewDialogViewModel(absolutePath, text.Get("Common.Close")) });
 

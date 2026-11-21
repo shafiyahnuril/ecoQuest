@@ -258,6 +258,18 @@
                        Text="{Binding TodayText}" />
         </Grid>
 
+        <ctl:ErrorBanner Message="{Binding ExportError}" Margin="{StaticResource Margin.HistoryExportError}">
+            <ctl:ErrorBanner.Style>
+                <Style TargetType="ctl:ErrorBanner">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ExportError}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ctl:ErrorBanner.Style>
+        </ctl:ErrorBanner>
+
         <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.HistoryFilterCard}">
             <StackPanel>
                 <Grid>
@@ -296,7 +308,16 @@
                                     AutomationProperties.Name="{DynamicResource History.To}" ctl:InputState.IsInvalid="{Binding HasRangeError}"
                                     SelectedDate="{Binding To, Converter={StaticResource DateOnlyToDateTime}, ValidatesOnNotifyDataErrors=False}" />
                     </StackPanel>
-                    <!-- TODO(FE-20): "Ekspor CSV" button goes into the right column (Grid.Column=2, HorizontalAlignment=Right). -->
+                    <!-- Ekspor CSV (S-07): secondary button. Deviation: S-07 puts it at the right of the title row, but the date text already sits there, so it takes the right end of the filter card. -->
+                    <Button Grid.Column="2" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Command="{Binding ExportCsvCommand}" AutomationProperties.Name="{DynamicResource History.Export}">
+                        <StackPanel Orientation="Horizontal">
+                            <ctl:IconView Data="{DynamicResource Icon.Download}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                          Width="{StaticResource Size.IconSm}" Height="{StaticResource Size.IconSm}" Margin="{StaticResource Margin.HistoryExportIcon}"
+                                          VerticalAlignment="Center" AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                            <TextBlock VerticalAlignment="Center" TextWrapping="NoWrap" Text="{Binding ExportButtonText}" />
+                        </StackPanel>
+                    </Button>
                     <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Text.FieldError}" Margin="{StaticResource Margin.HistoryDates}"
                                Text="{Binding RangeError}" AutomationProperties.LiveSetting="Polite"
                                Visibility="{Binding HasRangeError, Converter={StaticResource BoolToVisibility}}" />

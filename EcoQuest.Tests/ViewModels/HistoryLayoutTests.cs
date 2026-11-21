@@ -36,7 +36,7 @@ public class HistoryLayoutTests(ITestOutputHelper output)
         double Width, double Height, Rect FilterCard, List<Rect> PeriodChips, List<Rect> CategoryChips, List<Rect> DatePickers, List<string> DateTexts,
         Rect List, Rect Detail, int Realized, int TotalDays, double PageScrollable, List<Rect> DayCards, List<double> Co2Rights, double LinePitch, double HeaderToFirstLine, double CardPaddingLeft,
         List<string> ClippedText, double LoadMs, bool FirstSelected, string? FirstAutomationName, Brush? SelectedBackground, bool KeyboardSelected,
-        Rect EmptyCard, bool EmptyActionVisible, int PrimaryButtons, int ErrorAdorners, Rect DayHeaderCo2, Rect DayHeaderDate, Columns Columns);
+        Rect EmptyCard, bool EmptyActionVisible, int PrimaryButtons, int ErrorAdorners, Rect DayHeaderCo2, Rect DayHeaderDate, Columns Columns, Rect ExportButton, Rect TodayText, Rect PageTitle, bool ExportEnabled);
 
     private sealed record Columns(
         List<double> QuantityRights, List<double> ExtrasLefts, List<double> Co2Rights, List<double> PointsRights,
@@ -228,6 +228,9 @@ public class HistoryLayoutTests(ITestOutputHelper output)
                 .ToList();
 
             var emptyBorder = all.OfType<Border>().Where(b => b.Style == card).Skip(1).FirstOrDefault();
+            var exportButton = all.OfType<Button>().FirstOrDefault(b => b.Command == vm.ExportCsvCommand);
+            var todayText = all.OfType<TextBlock>().FirstOrDefault(t => t.Text == vm.TodayText);
+            var pageTitle = all.OfType<TextBlock>().FirstOrDefault(t => AutomationProperties.GetHeadingLevel(t) == AutomationHeadingLevel.Level1);
             var emptyButton = all.OfType<Button>().FirstOrDefault(b => b.Command is not null && b.Content is string);
 
             return new Metrics(
@@ -245,7 +248,9 @@ public class HistoryLayoutTests(ITestOutputHelper output)
                 keyboardSelected, emptyBorder is null ? default : Box(emptyBorder), emptyButton?.IsVisible == true,
                 all.OfType<Button>().Count(b => b.Style == primary),
                 all.OfType<Control>().Count(c => Validation.GetErrorTemplate(c) is not null && Validation.GetHasError(c)),
-                headerCo2 is null ? default : Box(headerCo2), headerDate is null ? default : Box(headerDate), CollectColumns(items, Box));
+                headerCo2 is null ? default : Box(headerCo2), headerDate is null ? default : Box(headerDate), CollectColumns(items, Box),
+                exportButton is null ? default : Box(exportButton), todayText is null ? default : Box(todayText), pageTitle is null ? default : Box(pageTitle),
+                exportButton?.IsEnabled == true);
         }
         finally
         {
@@ -376,6 +381,32 @@ public class HistoryLayoutTests(ITestOutputHelper output)
             Assert.Equal(0, m.PageScrollable, 1);
             Assert.True(m.List.Bottom <= m.Height + 0.5);
             Assert.True(m.LoadMs < 2500, $"{m.LoadMs} ms");
+        }
+    }
+
+    [Fact]
+    public void Export_button_sits_at_the_right_of_the_filter_card_without_overlapping_anything()
+    {
+        foreach (var m in Run(Data.Fake30Days))
+        {
+            var b = m.ExportButton;
+            Assert.True(b.Width > 0 && b.Height > 0, "export button not rendered");
+            Assert.True(m.ExportEnabled);
+            Assert.True(b.Top >= m.FilterCard.Top && b.Bottom <= m.FilterCard.Bottom, $"{m.Width}: button outside the filter card");
+            Assert.True(b.Right <= m.FilterCard.Right + 0.5);
+            Assert.True(b.Left >= m.DatePickers[1].Right, $"{m.Width}: button overlaps the date pickers");
+            Assert.True(b.Left >= m.PeriodChips[2].Right);
+            Assert.True(b.Top >= m.PageTitle.Bottom && b.Top >= m.TodayText.Bottom, $"{m.Width}: button overlaps title/date text");
+            Assert.Empty(m.ClippedText);
+        }
+    }
+
+    [Fact]
+    public void Export_button_is_disabled_when_there_is_nothing_to_export()
+    {
+        foreach (var m in Run(Data.Empty))
+        {
+            Assert.False(m.ExportEnabled);
         }
     }
 

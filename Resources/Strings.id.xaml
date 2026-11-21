@@ -131,6 +131,9 @@
     <sys:String x:Key="History.DayAutomation">{0}, total {1}</sys:String>
     <sys:String x:Key="History.ActivityInfo">Penjelasan aktivitas</sys:String>
     <sys:String x:Key="History.PhotoAlt">Foto aktivitas</sys:String>
+    <sys:String x:Key="History.Export">Ekspor CSV</sys:String>
+    <sys:String x:Key="History.Exporting">Mengekspor…</sys:String>
+    <sys:String x:Key="History.ExportDone">Riwayat diekspor ({0} baris)</sys:String>
     <sys:String x:Key="Achievements.Title">Pencapaian</sys:String>
     <sys:String x:Key="Achievements.Subtitle">Rayakan perjalanan kecilmu menuju dampak besar.</sys:String>
     <sys:String x:Key="Achievements.Filter.All">Semua</sys:String>
@@ -158,6 +161,8 @@
     <sys:String x:Key="Profile.RemovePhotoTitle">Hapus foto profil?</sys:String>
     <sys:String x:Key="Profile.RemovePhotoMessage">Foto akan diganti dengan huruf awal namamu.</sys:String>
     <sys:String x:Key="FilePicker.ImageFilter">Gambar JPG atau PNG|*.jpg;*.jpeg;*.png</sys:String>
+    <sys:String x:Key="FilePicker.CsvFilter">CSV (*.csv)|*.csv</sys:String>
+    <sys:String x:Key="FilePicker.ExportTitle">Ekspor riwayat</sys:String>
     <sys:String x:Key="Photo.Missing">Foto tidak tersedia di perangkat ini</sys:String>
     <sys:String x:Key="Offline.Title">Tidak dapat terhubung ke server</sys:String>
     <sys:String x:Key="Offline.Body">Periksa koneksi internet lalu coba lagi.</sys:String>
