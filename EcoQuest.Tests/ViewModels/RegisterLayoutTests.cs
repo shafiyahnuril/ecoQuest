@@ -29,7 +29,7 @@ public class RegisterLayoutTests(ITestOutputHelper output)
         double FieldGap);
 
     private static RegisterViewModel NewViewModel() =>
-        new(new FakeWorld(FakeScenario.Normal).Auth, new FakeWorld(FakeScenario.Normal).Profile, Substitute.For<INavigationService>());
+        new(new FakeWorld(FakeScenario.Normal).Auth, new FakeWorld(FakeScenario.Normal).Profile, Substitute.For<INavigationService>(), Substitute.For<IOnboardingStore>());
 
     private static RegisterView NewView(double width, double height, RegisterViewModel? vm = null)
     {

@@ -1,6 +1,114 @@
 <UserControl x:Class="EcoQuest.Views.OnboardingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
-    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Onboarding.1.Title}" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:OnboardingViewModel}"
+             Background="{StaticResource Bg.Onboarding}">
+    <!-- S-03 Onboarding. Reference: design-reference/screens/03-onboarding-1.png and .onboard / .onboard-card / .onboard-dots of styles.css (v7).
+         Full-screen gradient, one white card (max 590) centred in both directions. Steps change without animation. -->
+    <UserControl.Resources>
+        <!-- Illustration per step (the view only picks the picture; texts and step logic live in the ViewModel). -->
+        <Style x:Key="Image.StepIllustration" TargetType="Image">
+            <Setter Property="Source" Value="{StaticResource Image.HeroIsland}" />
+            <Setter Property="Height" Value="{StaticResource Height.OnboardingImage}" />
+            <Setter Property="Stretch" Value="Uniform" />
+            <Setter Property="AutomationProperties.IsOffscreenBehavior" Value="Offscreen" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding StepIndex}" Value="1">
+                    <Setter Property="Source" Value="{StaticResource Image.OnboardingDesk}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StepIndex}" Value="2">
+                    <Setter Property="Source" Value="{StaticResource Image.OnboardingSprout}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- All step bodies share one grid cell, so the card is as tall as the longest body on every step. Hidden (not Collapsed) keeps
+             the space; hidden elements are not exposed to UI Automation, so a screen reader only reads the current body. -->
+        <Style x:Key="Text.StepBody" TargetType="TextBlock" BasedOn="{StaticResource Text.BodyRelaxed}">
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Visibility" Value="Hidden" />
+        </Style>
+        <Style x:Key="Text.StepBody1" TargetType="TextBlock" BasedOn="{StaticResource Text.StepBody}">
+            <Style.Triggers><DataTrigger Binding="{Binding StepIndex}" Value="0"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers>
+        </Style>
+        <Style x:Key="Text.StepBody2" TargetType="TextBlock" BasedOn="{StaticResource Text.StepBody}">
+            <Style.Triggers><DataTrigger Binding="{Binding StepIndex}" Value="1"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers>
+        </Style>
+        <Style x:Key="Text.StepBody3" TargetType="TextBlock" BasedOn="{StaticResource Text.StepBody}">
+            <Style.Triggers><DataTrigger Binding="{Binding StepIndex}" Value="2"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers>
+        </Style>
+
+        <!-- .onboard-dots span: inactive Onboard.DotInactive, active Brand.Primary; full radius = half the size. -->
+        <DataTemplate x:Key="Template.Dot" DataType="{x:Type vm:OnboardingDot}">
+            <Ellipse Width="{StaticResource Size.OnboardingDot}" Height="{StaticResource Size.OnboardingDot}"
+                     Margin="{StaticResource Margin.OnboardingDot}">
+                <Ellipse.Style>
+                    <!-- Fill lives in the style: a local Fill would beat the trigger and every dot would look inactive. -->
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="{StaticResource Onboard.DotInactive}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                <Setter Property="Fill" Value="{StaticResource Brand.Primary}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer x:Name="PageScroll" Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Border MinHeight="{Binding ViewportHeight, ElementName=PageScroll}" Padding="{StaticResource Padding.OnboardingPage}">
+            <!-- Stretch + MaxWidth keeps the card centred; Border.Card gives white, 1 px line, radius 14 and padding 22 (.card). -->
+            <Border x:Name="Card" Style="{StaticResource Border.Card}" MaxWidth="{StaticResource Width.Onboarding}"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <StackPanel>
+                    <!-- .brand, centred -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                                AutomationProperties.IsOffscreenBehavior="Offscreen">
+                        <ctl:IconView Data="{DynamicResource Icon.Leaf}" Foreground="{StaticResource Brand.Primary}"
+                                      Width="{StaticResource Size.BrandIcon}" Height="{StaticResource Size.BrandIcon}" />
+                        <TextBlock Style="{StaticResource Text.Brand}" Text="{DynamicResource Brand.Name}"
+                                   Margin="{StaticResource Margin.BrandText}" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <Image x:Name="Illustration" Style="{StaticResource Image.StepIllustration}" />
+
+                    <TextBlock x:Name="TitleText" Style="{StaticResource Text.Header}" TextAlignment="Center"
+                               Text="{Binding StepTitle}" Margin="{StaticResource Margin.OnboardingTitle}"
+                               AutomationProperties.HeadingLevel="Level1" AutomationProperties.LiveSetting="Polite" />
+                    <Grid x:Name="BodyHost">
+                        <TextBlock Style="{StaticResource Text.StepBody1}" Text="{Binding StepBodies[0]}" />
+                        <TextBlock Style="{StaticResource Text.StepBody2}" Text="{Binding StepBodies[1]}" />
+                        <TextBlock Style="{StaticResource Text.StepBody3}" Text="{Binding StepBodies[2]}" />
+                    </Grid>
+
+                    <ItemsControl x:Name="StepDots" ItemsSource="{Binding Dots}" ItemTemplate="{StaticResource Template.Dot}"
+                                  HorizontalAlignment="Center" Margin="{StaticResource Margin.OnboardingDots}" IsTabStop="False" Focusable="False"
+                                  AutomationProperties.Name="{Binding StepIndicatorLabel}" AutomationProperties.HelpText="{Binding StepIndicator}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <!-- .row.between: "Lewati" (ghost) left, "Lanjut" / "Mulai" (primary) right -->
+                    <Grid>
+                        <Button x:Name="SkipButton" Style="{StaticResource Button.Ghost}" HorizontalAlignment="Left"
+                                Content="{DynamicResource Onboarding.Skip}" Command="{Binding SkipCommand}"
+                                AutomationProperties.Name="{DynamicResource Onboarding.Skip}" />
+                        <Button x:Name="NextButton" Style="{StaticResource Button.Primary}" HorizontalAlignment="Right" IsDefault="True"
+                                Content="{Binding NextLabel}" Command="{Binding NextCommand}"
+                                AutomationProperties.Name="{Binding NextLabel}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Border>
+    </ScrollViewer>
 </UserControl>

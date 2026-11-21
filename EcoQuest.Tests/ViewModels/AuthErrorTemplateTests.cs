@@ -46,7 +46,7 @@ public class AuthErrorTemplateTests(Xunit.Abstractions.ITestOutputHelper output)
     private static RegisterViewModel NewRegisterViewModel()
     {
         var world = new FakeWorld(FakeScenario.Normal);
-        return new RegisterViewModel(world.Auth, world.Profile, Substitute.For<INavigationService>());
+        return new RegisterViewModel(world.Auth, world.Profile, Substitute.For<INavigationService>(), Substitute.For<IOnboardingStore>());
     }
 
     [Fact]

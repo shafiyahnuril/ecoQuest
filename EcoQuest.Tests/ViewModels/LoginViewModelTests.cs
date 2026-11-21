@@ -64,6 +64,7 @@ public class LoginViewModelTests
         await vm.LoginCommand.ExecuteAsync(null);
 
         await _nav.Received(1).NavigateTo<DashboardViewModel>(null);
+        await _nav.DidNotReceive().NavigateTo<OnboardingViewModel>(Arg.Any<object?>());
         Assert.Equal("", vm.Password);
         Assert.Null(vm.ErrorMessage);
         Assert.False(vm.IsBusy);

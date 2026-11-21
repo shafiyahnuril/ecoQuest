@@ -66,6 +66,13 @@
     <sys:Double x:Key="Width.AuthCard">490</sys:Double><!-- effective body.auth-mode .auth-card max-width (the older 430 rule is overridden) -->
     <sys:Double x:Key="Width.HistoryDetail">330</sys:Double>
     <sys:Double x:Key="Width.Onboarding">590</sys:Double>
+    <!-- .onboard (padding 20), .onboard-card img (height 285), .onboard-dots (7 px dots, gap 7, margin 18 0). Title/sub gap is read from screens/03. -->
+    <Thickness x:Key="Padding.OnboardingPage">20</Thickness>
+    <sys:Double x:Key="Height.OnboardingImage">285</sys:Double>
+    <Thickness x:Key="Margin.OnboardingTitle">0,0,0,8</Thickness>
+    <Thickness x:Key="Margin.OnboardingDots">0,18</Thickness>
+    <sys:Double x:Key="Size.OnboardingDot">7</sys:Double>
+    <Thickness x:Key="Margin.OnboardingDot">3.5,0</Thickness>
     <sys:Double x:Key="Width.StepperInput">84</sys:Double>
     <sys:Double x:Key="MinWidth.TimeInput">110</sys:Double>
     <sys:Double x:Key="Size.SwitchThumb">18</sys:Double>
