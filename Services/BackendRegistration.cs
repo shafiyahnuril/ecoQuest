@@ -1,11 +1,15 @@
+
 using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Repositories;
 using EcoQuest.Core.Contracts.Services;
+using EcoQuest.Core.Rules;  
 using EcoQuest.Data.Repositories;
 using EcoQuest.Data.Rpc;
 using EcoQuest.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Net.Http;
+
 
 namespace EcoQuest.Services;
 
@@ -32,6 +36,7 @@ public static class BackendRegistration
         s.AddSingleton<ISessionService, SessionService>();
         s.AddSingleton<IAuthService, AuthService>();
         s.AddSingleton<IProfileService, ProfileService>();
+        s.AddSingleton<IGamificationService, GamificationService>();
         s.AddSingleton<PhotoStorageService>();
         s.AddSingleton<IPhotoStorageService>(sp => sp.GetRequiredService<PhotoStorageService>());
         s.AddSingleton<EcoQuest.Core.Calculation.IImpactCalculator,
@@ -51,6 +56,12 @@ public static class BackendRegistration
         s.AddSingleton<DtoFactory>();
         s.AddSingleton<IEveningReviewService, EveningReviewService>();
         s.AddSingleton<IHistoryService, HistoryService>();
+        s.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://dataservice.accuweather.com/"), Timeout = TimeSpan.FromSeconds(5) });
+        s.AddSingleton<IAccuWeatherClient, AccuWeatherClient>();
+        s.AddSingleton<LocationKeyCache>();
+        s.AddSingleton<IWeatherCacheRepository, SupabaseWeatherCacheRepository>();
+        s.AddSingleton<WeatherSuggestionRules>();
+        s.AddSingleton<IWeatherSuggestionService, WeatherSuggestionService>();
         return s;
     }
 }
