@@ -56,12 +56,21 @@ public static class BackendRegistration
         s.AddSingleton<DtoFactory>();
         s.AddSingleton<IEveningReviewService, EveningReviewService>();
         s.AddSingleton<IHistoryService, HistoryService>();
-        s.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://dataservice.accuweather.com/"), Timeout = TimeSpan.FromSeconds(5) });
+        s.AddSingleton(sp =>
+        {
+            var cfg = sp.GetRequiredService<AppConfig>();
+            var baseUrl = Uri.TryCreate(cfg.SupabaseUrl?.TrimEnd('/'), UriKind.Absolute, out var uri)
+                ? $"{uri.ToString().TrimEnd('/')}/functions/v1/"
+                : "https://localhost/functions/v1/";
+            return new HttpClient { BaseAddress = new Uri(baseUrl), Timeout = TimeSpan.FromSeconds(5) };
+        });
         s.AddSingleton<IAccuWeatherClient, AccuWeatherClient>();
         s.AddSingleton<LocationKeyCache>();
         s.AddSingleton<IWeatherCacheRepository, SupabaseWeatherCacheRepository>();
         s.AddSingleton<WeatherSuggestionRules>();
         s.AddSingleton<IWeatherSuggestionService, WeatherSuggestionService>();
+        s.AddSingleton<ILeaderboardRepository, SupabaseLeaderboardRepository>();
+        s.AddSingleton<ILeaderboardService, LeaderboardService>();
         return s;
     }
 }

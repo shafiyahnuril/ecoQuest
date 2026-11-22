@@ -1,0 +1,7 @@
+project_id = "bokdhbcsltjarwoblana"
+
+[functions.weather-tomorrow]
+enabled = true
+verify_jwt = false
+import_map = "./functions/weather-tomorrow/deno.json"
+entrypoint = "./functions/weather-tomorrow/index.ts"
