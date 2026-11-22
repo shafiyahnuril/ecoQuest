@@ -40,7 +40,7 @@ public class WeatherSuggestionServiceTests
         public IAccuWeatherClient Accu { get; } = Substitute.For<IAccuWeatherClient>();
         public WeatherSuggestionService Sut { get; }
 
-        public Rig(string? apiKey = "tes-key")
+        public Rig(string? supabaseKey = "sb_publishable_tes")
         {
             var session = Substitute.For<ISessionService>();
             session.RequireUser().Returns(new UserSession(Guid.NewGuid(), "alya", "alya@tes.local", "Yogyakarta", null));
@@ -64,8 +64,8 @@ public class WeatherSuggestionServiceTests
                     new CountImpactCalculator(), new ToggleImpactCalculator()
                 })));
 
-            Sut = new WeatherSuggestionService(session, clock, TypeRepo, Cache, Accu, new LocationKeyCache(paths),
-                rules, new AppConfig(null, null, apiKey, false), new AppLogger(paths, clock));
+            Sut = new WeatherSuggestionService(session, clock, TypeRepo, Cache, Accu,
+                rules, new AppConfig("https://example.supabase.co", supabaseKey, null, false), new AppLogger(paths, clock));
         }
 
         public void Dispose()
@@ -76,9 +76,9 @@ public class WeatherSuggestionServiceTests
 
     private static void GivenForecastAvailable(Rig rig)
     {
-        var forecast = AccuWeatherClient.ParseForecast(FixtureJson(), Tomorrow)!;   
-        rig.Accu.ResolveLocationKeyAsync("Yogyakarta", Arg.Any<CancellationToken>()).Returns("202119");
-        rig.Accu.GetForecastForAsync("202119", Tomorrow, Arg.Any<CancellationToken>()).Returns(forecast);
+        var forecast = AccuWeatherClient.ParseForecast(FixtureJson(), Tomorrow)!;
+        rig.Accu.ResolveLocationKeyAsync("Yogyakarta", Arg.Any<CancellationToken>()).Returns("Yogyakarta");
+        rig.Accu.GetForecastForAsync("Yogyakarta", Tomorrow, Arg.Any<CancellationToken>()).Returns(forecast);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class WeatherSuggestionServiceTests
     public async Task Valid_cache_is_used_without_calling_api()
     {
         using var rig = new Rig();
-        
+
         var rawDay = AccuWeatherClient.ParseForecast(FixtureJson(), Tomorrow)!.RawJson;
         rig.Cache.GetAsync("Yogyakarta", Tomorrow, Arg.Any<CancellationToken>())
                  .Returns(WeatherCache.Create("Yogyakarta", Tomorrow, "Cerah berawan, 24–31°C", rawDay, Now.AddHours(-1)));
@@ -112,9 +112,9 @@ public class WeatherSuggestionServiceTests
     }
 
     [Fact]
-    public async Task Empty_api_key_returns_fallback_without_calling_client()
+    public async Task Empty_supabase_key_returns_fallback_without_calling_client()
     {
-        using var rig = new Rig(apiKey: "");
+        using var rig = new Rig(supabaseKey: "");
 
         var r = await rig.Sut.GetTomorrowSuggestionAsync();
 
@@ -124,16 +124,15 @@ public class WeatherSuggestionServiceTests
     }
 
     [Fact]
-    public async Task Upsert_failure_still_returns_the_suggestion()
+    public async Task Live_edge_forecast_returns_suggestion_without_client_cache_upsert()
     {
         using var rig = new Rig();
         GivenForecastAvailable(rig);
-        rig.Cache.UpsertAsync(Arg.Any<WeatherCache>(), Arg.Any<CancellationToken>())
-                 .ThrowsAsync(new InvalidOperationException("db mati"));
 
         var r = await rig.Sut.GetTomorrowSuggestionAsync();
 
         Assert.False(r.IsFallback);
         Assert.Equal("Cerah berawan, 24–31°C", r.ForecastSummary);
+        await rig.Cache.DidNotReceive().UpsertAsync(Arg.Any<WeatherCache>(), Arg.Any<CancellationToken>());
     }
 }

@@ -1,0 +1,23 @@
+{
+  "Headline": { "Text": "Contoh fixture untuk unit test EcoQuest (bukan data asli)", "Category": "rain" },
+  "DailyForecasts": [
+    {
+      "Date": "2026-11-10T07:00:00+07:00",
+      "Temperature": { "Minimum": { "Value": 24.0, "Unit": "C" }, "Maximum": { "Value": 31.0, "Unit": "C" } },
+      "Day":   { "Icon": 4,  "IconPhrase": "Cerah berawan", "HasPrecipitation": false },
+      "Night": { "Icon": 35, "IconPhrase": "Sebagian berawan", "HasPrecipitation": false }
+    },
+    {
+      "Date": "2026-11-11T07:00:00+07:00",
+      "Temperature": { "Minimum": { "Value": 23.0, "Unit": "C" }, "Maximum": { "Value": 29.0, "Unit": "C" } },
+      "Day":   { "Icon": 18, "IconPhrase": "Hujan", "HasPrecipitation": true, "PrecipitationType": "Rain", "PrecipitationIntensity": "Moderate" },
+      "Night": { "Icon": 18, "IconPhrase": "Hujan", "HasPrecipitation": true }
+    },
+    {
+      "Date": "2026-11-12T07:00:00+07:00",
+      "Temperature": { "Minimum": { "Value": 25.0, "Unit": "C" }, "Maximum": { "Value": 34.0, "Unit": "C" } },
+      "Day":   { "Icon": 1,  "IconPhrase": "Cerah", "HasPrecipitation": false },
+      "Night": { "Icon": 33, "IconPhrase": "Cerah", "HasPrecipitation": false }
+    }
+  ]
+}

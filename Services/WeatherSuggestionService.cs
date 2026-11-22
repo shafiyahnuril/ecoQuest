@@ -18,7 +18,6 @@ public sealed class WeatherSuggestionService(
     IActivityTypeRepository typeRepo,
     IWeatherCacheRepository cache,
     IAccuWeatherClient accu,
-    LocationKeyCache locationKeys,
     WeatherSuggestionRules rules,
     AppConfig config,
     AppLogger log) : IWeatherSuggestionService
@@ -35,15 +34,15 @@ public sealed class WeatherSuggestionService(
             var cached = await cache.GetAsync(user.City, date, cts.Token);
             if (cached is not null && !cached.IsExpired(clock.UtcNow))
                 return rules.FromCache(user.City, date, cached, types);
-            if (string.IsNullOrWhiteSpace(config.AccuWeatherApiKey)) return rules.Fallback(user.City, date, types);
+            if (string.IsNullOrWhiteSpace(config.SupabaseUrl) || string.IsNullOrWhiteSpace(config.SupabaseKey))
+                return rules.Fallback(user.City, date, types);
 
-            var key = await locationKeys.GetOrResolveAsync(user.City, () => accu.ResolveLocationKeyAsync(user.City, cts.Token));
+            var key = await accu.ResolveLocationKeyAsync(user.City, cts.Token);
             if (key is null) return rules.Fallback(user.City, date, types);
             var fc = await accu.GetForecastForAsync(key, date, cts.Token);
             if (fc is null) return rules.Fallback(user.City, date, types);
 
-            var entry = WeatherCache.Create(user.City, date, rules.Summary(fc.DayPhrase, fc.MinTempC, fc.MaxTempC), fc.RawJson, clock.UtcNow);
-            try { await cache.UpsertAsync(entry, cts.Token); } catch (Exception ex) { log.Warn("weather.cache", "Upsert", ex.GetType().Name); }
+            // Edge Function weather-tomorrow sudah melakukan upsert weathercache di server (service_role).
             return rules.FromForecast(user.City, date, fc.DayPhrase, fc.MinTempC, fc.MaxTempC, fc.HasPrecipitation, fc.DayIcon, types);
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
