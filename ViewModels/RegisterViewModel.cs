@@ -94,6 +94,7 @@ public sealed partial class RegisterViewModel : ViewModelBase
 
         // A server error (UsernameTaken ...) describes the old value; editing the field retires it.
         var hadServerError = _serverErrors.Remove(field);
+        HasNetworkError = false;
 
         if (_touched.Contains(field))
         {
@@ -205,6 +206,9 @@ public sealed partial class RegisterViewModel : ViewModelBase
         }
     }
 
+    /// <summary>True after a NetworkError: the view shows the banner with "Coba lagi" instead of the inline message.</summary>
+    [ObservableProperty] private bool _hasNetworkError;
+
     private bool CanRegister() => !IsBusy && !HasErrors;
 
     [RelayCommand(CanExecute = nameof(CanRegister))]
@@ -217,6 +221,7 @@ public sealed partial class RegisterViewModel : ViewModelBase
         }
 
         ErrorMessage = null;
+        HasNetworkError = false;
         ValidateAll();
         if (HasErrors)
         {
@@ -247,6 +252,7 @@ public sealed partial class RegisterViewModel : ViewModelBase
             if (!ApplyFieldErrors(result.FieldErrors))
             {
                 ErrorMessage = result.Message;
+                HasNetworkError = result.Error == EcoQuest.Core.Common.ErrorCode.NetworkError;
             }
         }
         finally

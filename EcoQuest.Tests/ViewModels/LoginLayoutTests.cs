@@ -76,4 +76,15 @@ public class LoginLayoutTests(ITestOutputHelper output)
         Assert.True(small.Card < 490 && small.Card > 400);
         Assert.Equal(normal.Card, normal.Input, 1);
     }
+
+    [Fact]
+    public void At_1280x720_the_page_fills_the_window_and_the_card_keeps_its_form_column()
+    {
+        var m = RunOnSta((1280, 720))[0];
+        output.WriteLine($"{m.Width}x{m.Height}: page {m.Page:F1}, form col {m.FormColumn:F1}, card {m.Card:F1}, input {m.Input:F1}");
+
+        Assert.Equal(1280, m.Page, 1);
+        Assert.True(m.FormColumn >= 460);
+        Assert.True(m.Card <= 490.5 && m.Card > 400);
+    }
 }

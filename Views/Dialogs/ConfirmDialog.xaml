@@ -83,7 +83,7 @@
                            Visibility="{Binding HasMessage, Converter={StaticResource BoolToVisibility}}" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="{StaticResource Margin.DialogActions}">
                     <Button x:Name="CancelButton" Style="{StaticResource Button.Secondary}" Content="{Binding CancelText}"
-                            Command="{Binding CancelCommand}" MinWidth="{StaticResource MinWidth.DialogButton}"
+                            Command="{Binding CancelCommand}" IsCancel="True" MinWidth="{StaticResource MinWidth.DialogButton}"
                             Visibility="{Binding HasCancel, Converter={StaticResource BoolToVisibility}}" />
                     <Button x:Name="ConfirmButton" Style="{StaticResource Button.Primary}" Content="{Binding ConfirmText}"
                             Command="{Binding ConfirmCommand}" IsDefault="True" MinWidth="{StaticResource MinWidth.DialogButton}"

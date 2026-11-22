@@ -13,6 +13,7 @@
          Same two panels as Login. Form: 2 columns (gap 16): Username | Email, Password | Ulangi password, Kota (full width).
          Sizes that CSS derives from vh use the ActualHeight of this root (= client area). Heights <= 740 follow @media(max-height:740px). -->
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
         <conv:ShortHeightConverter x:Key="IsShortHeight" />
         <conv:VhClampConverter x:Key="VhClamp" />
 
@@ -118,6 +119,9 @@
 
         <Style x:Key="Border.RegisterError" TargetType="Border" BasedOn="{StaticResource Border.AuthError}">
             <Style.Triggers>
+                <DataTrigger Binding="{Binding HasNetworkError}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
@@ -261,6 +265,9 @@
                         <TextBlock Style="{StaticResource Text.Base}" Foreground="{StaticResource State.ErrorText}"
                                    Text="{Binding ErrorMessage}" AutomationProperties.LiveSetting="Assertive" />
                     </Border>
+
+                    <ctl:ErrorBanner Margin="{StaticResource Margin.AuthBanner}" Message="{Binding ErrorMessage}" RetryText="{DynamicResource Common.Retry}"
+                                     RetryCommand="{Binding RegisterCommand}" Visibility="{Binding HasNetworkError, Converter={StaticResource BoolToVisibility}}" />
 
                     <Button Style="{StaticResource Button.RegisterSubmit}" Command="{Binding RegisterCommand}" IsDefault="True" />
 
