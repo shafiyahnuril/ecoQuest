@@ -15,6 +15,7 @@ public sealed class FakeAccount
     public string Email { get; }
     public string City { get; set; }
     public string Password { get; set; }
+    public string? AvatarPath { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
 }
 

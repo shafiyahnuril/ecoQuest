@@ -1,7 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Dtos;
+using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Core.Domain;
+using EcoQuest.Navigation;
 
 namespace EcoQuest.ViewModels.Items;
 
@@ -19,16 +22,22 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     [ObservableProperty] private string? _note;
     [ObservableProperty] private string? _photoSourcePath;
     [ObservableProperty] private string _impactText = UiFormat.Co2(0m);
-    [ObservableProperty] private string? _formulaExplanation;
+    [ObservableProperty] private string? _explanationText;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasError), nameof(HasWarning))] private string? _errorText;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(HasWarning))] private string? _warningText;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasNoteError))] private string? _noteErrorText;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasPhotoError))] private string? _photoErrorText;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasNoteError), nameof(ShowExtras))] private string? _noteErrorText;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowExtras))] private bool _isExtrasExpanded;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasPhotoError), nameof(PhotoMessageText), nameof(HasPhotoMessage))] private string? _photoErrorText;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(PhotoMessageText), nameof(HasPhotoMessage))] private string? _photoPickErrorText;
+
+    private IDialogService? _dialogs;
+    private IPhotoStorageService? _photos;
 
     protected ActivityInputItemViewModel(ActivityTypeDto type)
     {
         Type = type;
         _visual = ActivityVisual.For(type.ActivityTypeId);
+        _explanationText = ImpactExplanation.Of(null, type.Description);
     }
 
     public event EventHandler? Changed;
@@ -63,11 +72,35 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
 
     public bool HasPhotoError => PhotoErrorText is not null;
 
+    public bool HasPhoto => !string.IsNullOrEmpty(PhotoSourcePath);
+
+    /// <summary>The picker's own failure wins over the last review validation, because validation clears its text on every edit.</summary>
+    public string? PhotoMessageText => PhotoPickErrorText ?? PhotoErrorText;
+
+    public bool HasPhotoMessage => PhotoMessageText is not null;
+
+    /// <summary>The note area opens on request once the row is filled; a note error always shows it so the message is never hidden.</summary>
+    public bool ShowExtras => (IsFilled && IsExtrasExpanded) || HasNoteError || HasLeftover;
+
+    /// <summary>A cleared row that still holds a note or photo. The validator blocks saving it, so both controls stay visible to let the user remove them.</summary>
+    public bool HasLeftover => !IsFilled && (!string.IsNullOrEmpty(Note) || HasPhoto);
+
+    public bool ShowPhotoColumn => IsFilled || HasPhoto;
+
     public abstract bool IsFilled { get; }
 
     protected abstract IReadOnlyCollection<string> ControlFields { get; }
 
     public abstract ActivityInput ToActivityInput();
+
+    /// <summary>Gives the row what it needs to pick and preview a photo. Without it the photo commands stay disabled.</summary>
+    public void ConfigurePhoto(IDialogService dialogs, IPhotoStorageService photos)
+    {
+        _dialogs = dialogs;
+        _photos = photos;
+        PickPhotoCommand.NotifyCanExecuteChanged();
+        PreviewPhotoCommand.NotifyCanExecuteChanged();
+    }
 
     public void ApplyIssues(IEnumerable<ValidationIssue> issues)
     {
@@ -82,18 +115,64 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     public void ApplyImpact(ActivityImpactDto? impact)
     {
         ImpactText = impact is { Co2SavedKg: not 0m } ? $"≈ {UiFormat.Co2(impact.Co2SavedKg)}" : UiFormat.Co2(0m);
-        FormulaExplanation = impact?.FormulaExplanation;
+        ExplanationText = ImpactExplanation.Of(impact, Description);
     }
 
     protected void NotifyInputChanged()
     {
         OnPropertyChanged(nameof(IsFilled));
+        OnPropertyChanged(nameof(ShowExtras));
+        OnPropertyChanged(nameof(HasLeftover));
+        OnPropertyChanged(nameof(ShowPhotoColumn));
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
+    [RelayCommand]
+    private void ToggleExtras() => IsExtrasExpanded = !IsExtrasExpanded;
+
+    // Add and replace share one flow; a cancelled picker changes nothing and a rejected file is not attached.
+    [RelayCommand(CanExecute = nameof(CanPickPhoto))]
+    private void PickPhoto()
+    {
+        var path = _dialogs!.PickImageFile();
+        if (path is null)
+        {
+            return;
+        }
+
+        var check = _photos!.ValidatePhoto(path);
+        if (!check.IsSuccess)
+        {
+            PhotoPickErrorText = check.Message;
+            return;
+        }
+
+        PhotoPickErrorText = null;
+        PhotoSourcePath = path;
+    }
+
+    [RelayCommand]
+    private void RemovePhoto()
+    {
+        PhotoPickErrorText = null;
+        PhotoSourcePath = null;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanPreviewPhoto))]
+    private void PreviewPhoto() => _dialogs!.ShowImagePreview(PhotoSourcePath!);
+
+    private bool CanPickPhoto() => _dialogs is not null && _photos is not null;
+
+    private bool CanPreviewPhoto() => _dialogs is not null && HasPhoto;
+
     partial void OnNoteChanged(string? value) => NotifyInputChanged();
 
-    partial void OnPhotoSourcePathChanged(string? value) => NotifyInputChanged();
+    partial void OnPhotoSourcePathChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasPhoto));
+        PreviewPhotoCommand.NotifyCanExecuteChanged();
+        NotifyInputChanged();
+    }
 
     private static string? FirstMessage(IEnumerable<ValidationIssue> issues, ValidationSeverity severity, IReadOnlyCollection<string> fields) =>
         issues.FirstOrDefault(i => i.Severity == severity && fields.Contains(i.Field))?.Message;

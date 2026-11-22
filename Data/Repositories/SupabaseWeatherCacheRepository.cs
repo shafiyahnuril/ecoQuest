@@ -1,3 +1,4 @@
+using System.Globalization;
 using EcoQuest.Core.Contracts.Repositories;
 using EcoQuest.Core.Domain;
 using EcoQuest.Data.Errors;
@@ -16,7 +17,7 @@ public sealed class SupabaseWeatherCacheRepository(SupabaseClientProvider provid
         {
             var resp = await provider.Client.From<WeatherCacheRecord>()
                 .Filter("city", Operator.Equals, city)
-                .Filter("fordate", Operator.Equals, forDate.ToString("yyyy-MM-dd"))
+                .Filter("fordate", Operator.Equals, forDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
                 .Get().WaitAsync(ct);
             var row = resp.Models.FirstOrDefault();
             return row is null ? null : RecordMapper.ToDomain(row);
@@ -35,15 +36,15 @@ public sealed class SupabaseWeatherCacheRepository(SupabaseClientProvider provid
     {
         try
         {
-            var record = new WeatherCacheRecord
+            var record = new WeatherCacheUpsertRecord
             {
                 City = entry.City,
-                ForDate = entry.ForDate.ToDateTime(TimeOnly.MinValue),
+                ForDate = entry.ForDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 ForecastSummary = entry.ForecastSummary,
                 RawResponse = entry.RawResponse,
                 RetrievedAt = entry.RetrievedAt
             };
-            await provider.Client.From<WeatherCacheRecord>()
+            await provider.Client.From<WeatherCacheUpsertRecord>()
                 .Upsert(record, new Postgrest.QueryOptions { OnConflict = "city,fordate" })
                 .WaitAsync(ct);
         }

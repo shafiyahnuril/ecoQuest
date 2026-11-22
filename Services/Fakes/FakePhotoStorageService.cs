@@ -4,9 +4,13 @@ using EcoQuest.Core.Contracts.Services;
 
 namespace EcoQuest.Services.Fakes;
 
-/// <summary>Validates a picked file like the real service (.jpg/.jpeg/.png, max 5 MB) but never copies anything.</summary>
-public sealed class FakePhotoStorageService : IPhotoStorageService
+/// <summary>Validates a picked file like the real service (.jpg/.jpeg/.png, max 5 MB) and resolves relative paths below <c>%AppData%\EcoQuest</c>.</summary>
+public sealed class FakePhotoStorageService(string? root = null) : IPhotoStorageService
 {
+    public static string DefaultRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EcoQuest");
+
+    private readonly string _root = Path.GetFullPath(root ?? DefaultRoot);
+
     private const long MaxBytes = 5 * 1024 * 1024;
     private static readonly string[] Extensions = [".jpg", ".jpeg", ".png"];
 
@@ -34,8 +38,7 @@ public sealed class FakePhotoStorageService : IPhotoStorageService
     {
         if (string.IsNullOrWhiteSpace(relativePath) || Path.IsPathRooted(relativePath)) return null;
 
-        var root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EcoQuest");
-        var full = Path.GetFullPath(Path.Combine(root, relativePath));
-        return full.StartsWith(root, StringComparison.OrdinalIgnoreCase) && File.Exists(full) ? full : null;
+        var full = Path.GetFullPath(Path.Combine(_root, relativePath));
+        return full.StartsWith(_root, StringComparison.OrdinalIgnoreCase) && File.Exists(full) ? full : null;
     }
 }

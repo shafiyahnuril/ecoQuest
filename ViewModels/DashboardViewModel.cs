@@ -1,17 +1,22 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EcoQuest.Controls.Charts;
 using EcoQuest.Core.Common;
 using EcoQuest.Core.Contracts.Dtos;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Core.Domain;
 using EcoQuest.Navigation;
+using EcoQuest.ViewModels.Items;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace EcoQuest.ViewModels;
 
 /// <summary>
 /// Dashboard / Beranda (S-04, SDD-Frontend 3.4). Text only: all numbers come from <see cref="IDashboardService"/> and are formatted
-/// with <see cref="UiFormat"/>. Charts, insights and weather are filled by later tasks.
+/// with <see cref="UiFormat"/>; chart series come from <see cref="ChartFactory"/>. The weather card has its own view model and loads
+/// independently, so a slow or failing forecast never affects the rest of the screen.
 /// The view model is transient, so every navigation to the screen starts with the skeleton; "silent" only applies to
 /// <see cref="ReloadCommand"/> on the same instance (UIR-56), where the old content stays visible while the new data loads.
 /// </summary>
@@ -19,6 +24,10 @@ public sealed partial class DashboardViewModel : ViewModelBase
 {
     /// <summary>Shown in the "Hari refleksi" card when the profile call failed (the dashboard itself still loads).</summary>
     public const string UnknownValue = "—";
+
+    public const int MaxInsights = 3;
+
+    private static readonly CultureInfo PercentCulture = CultureInfo.GetCultureInfo("id-ID");
 
     private readonly IDashboardService _dashboard;
     private readonly IProfileService _profile;
@@ -28,10 +37,11 @@ public sealed partial class DashboardViewModel : ViewModelBase
     private readonly IUiText _text;
     private CancellationTokenSource? _cts;
     private DateOnly? _loadedFor;
+    private string? _weatherCity;
 
     public DashboardViewModel(
         IDashboardService dashboard, IProfileService profile, ISessionService session,
-        IClock clock, INavigationService navigation, IUiText text)
+        IClock clock, INavigationService navigation, IUiText text, WeatherSuggestionViewModel weather)
     {
         _dashboard = dashboard;
         _profile = profile;
@@ -39,6 +49,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
         _clock = clock;
         _navigation = navigation;
         _text = text;
+        Weather = weather;
         TodayText = UiFormat.LongDate(_clock.Today);
         Greeting = BuildGreeting();
         BannerText = _text.Get("Dashboard.PendingBanner");
@@ -47,7 +58,10 @@ public sealed partial class DashboardViewModel : ViewModelBase
         ReflectionDaysText = UnknownValue;
         StreakText = UiFormat.Count(0);
         LevelName = "";
+        InsightSubtitle = _text.Get("Dashboard.InsightSubtitle");
     }
+
+    public WeatherSuggestionViewModel Weather { get; }
 
     /// <summary>"Selamat malam, {nama}!"</summary>
     [ObservableProperty] private string _greeting;
@@ -71,24 +85,52 @@ public sealed partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private string _streakText;
     [ObservableProperty] private string _levelName;
 
-    /// <summary>Four category names (from the service, never hardcoded) for the legend of the not-yet-filled donut shell.</summary>
-    // TODO(FE chart task): replace by the real legend with percentages and the donut series.
     [ObservableProperty] private IReadOnlyList<CategoryLegendItem> _breakdownLegend = [];
+    [ObservableProperty] private ISeries[] _breakdownSeries = [];
+    [ObservableProperty] private bool _hasBreakdownData;
+    [ObservableProperty] private string _breakdownAutomationText = "";
+    [ObservableProperty] private string _breakdownAutomationHelp = "";
 
-    /// <summary>"{kota} · Saran berdasarkan kota domisili": heading line of the weather card, from the signed-in user's city.</summary>
-    // TODO(FE insight/weather task): replaced by the city of the real WeatherSuggestionDto.
-    [ObservableProperty] private string _cityLineText = "";
+    /// <summary>Range of the trend line only; the donut always shows the cumulative breakdown.</summary>
+    [ObservableProperty] private TrendRange _selectedRange = TrendRange.Weekly;
+
+    [ObservableProperty] private ISeries[] _trendSeries = [];
+    [ObservableProperty] private Axis[] _trendXAxes = [];
+    [ObservableProperty] private Axis[] _trendYAxes = [];
+    [ObservableProperty] private bool _hasTrendData;
+    [ObservableProperty] private string _trendAutomationText = "";
+
+    /// <summary>Set when reloading the trend failed; the rest of the dashboard stays visible.</summary>
+    [ObservableProperty] private string? _trendErrorMessage;
+
+    [ObservableProperty] private IReadOnlyList<InsightRowItem> _insightRows = [];
+    [ObservableProperty] private string _insightSubtitle;
 
     public override async Task OnNavigatedToAsync(object? parameter)
     {
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
+        _session.SessionChanged -= OnSessionChanged;
+        _session.SessionChanged += OnSessionChanged;
         await LoadAsync(silent: false, _cts.Token);
     }
 
     public override void OnNavigatedFrom()
     {
         _cts?.Cancel();
+        _session.SessionChanged -= OnSessionChanged;
+        Weather.Cancel();
+    }
+
+    private void OnSessionChanged(object? sender, EventArgs e)
+    {
+        if (_session.Current?.City == _weatherCity)
+        {
+            return;
+        }
+
+        _weatherCity = _session.Current?.City;
+        Weather.StartLoading();
     }
 
     /// <summary>Reloads in place. After a successful load the old content stays visible (silent); from the Error state it shows the skeleton again, so it also serves as "Coba lagi".</summary>
@@ -106,6 +148,32 @@ public sealed partial class DashboardViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task SetTrendRangeAsync(TrendRange range)
+    {
+        if (range == SelectedRange || State != LoadState.Loaded)
+        {
+            return;
+        }
+
+        var data = await RunAsync(token => _dashboard.GetDashboardAsync(range, token), (_cts ??= new CancellationTokenSource()).Token, silent: true);
+        if (data is not null)
+        {
+            SelectedRange = range;
+            TrendErrorMessage = null;
+            ApplyTrend(data.Trend, range);
+            return;
+        }
+
+        if (State == LoadState.Error)
+        {
+            TrendErrorMessage = ErrorMessage;
+            ErrorMessage = null;
+            State = LoadState.Loaded;
+            OnPropertyChanged(nameof(SelectedRange));   // puts the chips back on the range that is still drawn
+        }
+    }
+
+    [RelayCommand]
     private Task StartReviewAsync() => _navigation.NavigateTo<EveningReviewViewModel>();
 
     [RelayCommand]
@@ -116,10 +184,13 @@ public sealed partial class DashboardViewModel : ViewModelBase
         var today = _clock.Today;
         Result<UserProfileDto>? profile = null;
 
+        _weatherCity = _session.Current?.City;
+        Weather.StartLoading();
+
         var data = await RunAsync(async token =>
         {
             // Both calls start together; a failing profile call must not fail the dashboard.
-            var dashboardTask = _dashboard.GetDashboardAsync(TrendRange.Weekly, token);
+            var dashboardTask = _dashboard.GetDashboardAsync(SelectedRange, token);
             var profileTask = _profile.GetProfileAsync(token);
             var result = await dashboardTask;
             if (result.IsSuccess)
@@ -142,7 +213,6 @@ public sealed partial class DashboardViewModel : ViewModelBase
     private void Apply(DashboardDto data, Result<UserProfileDto>? profile, DateOnly today)
     {
         Greeting = BuildGreeting();
-        CityLineText = string.Format(CultureInfo.CurrentCulture, _text.Get("Weather.CityLine"), _session.Current?.City ?? "");
         TodayText = UiFormat.LongDate(today);
         IsSubmitted = data.TodayState == TodayReviewState.Submitted;
         HeroCtaText = _text.Get(IsSubmitted ? "Dashboard.HeroCta.View" : "Dashboard.HeroCta.Fill");
@@ -152,14 +222,64 @@ public sealed partial class DashboardViewModel : ViewModelBase
         TotalCo2Explanation = data.TotalCo2Explanation;
         StreakText = UiFormat.Count(data.CurrentStreak);
         LevelName = data.Level.LevelName;
-        BreakdownLegend = data.Breakdown.Select(b => new CategoryLegendItem(b.CategoryId, b.CategoryName)).ToList();
-        ReflectionDaysText = profile is { IsSuccess: true, Value: not null }
-            ? UiFormat.Count(profile.Value.TotalReviewCount)
-            : UnknownValue;
+        TrendErrorMessage = null;
+        SelectedRange = data.Range;
+        ApplyTrend(data.Trend, data.Range);
+        ApplyBreakdown(data.Breakdown);
+        int? reflectionDays = profile is { IsSuccess: true, Value: not null } ? profile.Value.TotalReviewCount : null;
+        ReflectionDaysText = reflectionDays is { } days ? UiFormat.Count(days) : UnknownValue;
+        ApplyInsights(data.Insights, reflectionDays);
 
         // An account without reviews is a normal, loaded screen with zeros (UIR-57), never a separate empty screen.
         IsEmpty = false;
     }
+
+    private void ApplyInsights(IReadOnlyList<InsightDto> insights, int? reflectionDays)
+    {
+        var personal = insights.Where(i => i.Kind != InsightKind.EmptyState).Take(MaxInsights).ToList();
+        if (personal.Count == 0)
+        {
+            var emptyBody = insights.FirstOrDefault()?.Text ?? _text.Get("Dashboard.InsightEmptyBody");
+            InsightRows =
+            [
+                InsightRowItem.For(InsightKind.EmptyState, _text.Get("Dashboard.InsightEmptyTitle"), emptyBody),
+                InsightRowItem.Tip(_text.Get("Dashboard.InsightHabitTitle"), _text.Get("Dashboard.InsightHabitBody")),
+            ];
+            InsightSubtitle = _text.Get("Dashboard.InsightSubtitle");
+            return;
+        }
+
+        InsightRows = personal.Select(i => InsightRowItem.For(i.Kind, _text.Get($"Dashboard.Insight.{i.Kind}"), i.Text)).ToList();
+        InsightSubtitle = reflectionDays is { } days
+            ? string.Format(CultureInfo.CurrentCulture, _text.Get("Dashboard.InsightSubtitleFilled"), UiFormat.Count(days))
+            : _text.Get("Dashboard.InsightSubtitleFilledNoCount");
+    }
+
+    private void ApplyTrend(IReadOnlyList<TrendPointDto> trend, TrendRange range)
+    {
+        HasTrendData = trend.Any(p => p.HasReview);
+        TrendSeries = ChartFactory.Trend(trend);
+        TrendXAxes = ChartFactory.TrendXAxes(trend, range);
+        TrendYAxes = ChartFactory.TrendYAxes(trend);
+        TrendAutomationText = _text.Get("Dashboard.TrendTitle") + ": " + string.Join("; ", trend.Select(DescribeTrendPoint));
+    }
+
+    private string DescribeTrendPoint(TrendPointDto point) =>
+        UiFormat.Date(point.Date) + " " + (point.HasReview ? UiFormat.Co2(point.Co2Kg) : _text.Get("Dashboard.TrendNoReview"));
+
+    private void ApplyBreakdown(IReadOnlyList<CategoryBreakdownDto> breakdown)
+    {
+        HasBreakdownData = breakdown.Any(b => b.Co2Kg > 0);
+        BreakdownLegend = breakdown
+            .Select(b => new CategoryLegendItem(b.CategoryId, b.CategoryName, HasBreakdownData ? FormatPercent(b.Percentage) : "", HasBreakdownData ? b.Explanation : ""))
+            .ToList();
+        BreakdownSeries = HasBreakdownData ? ChartFactory.Breakdown(breakdown) : [];
+        BreakdownAutomationHelp = string.Join(" ", BreakdownLegend.Select(l => l.Explanation).Where(e => e.Length > 0));
+        BreakdownAutomationText = _text.Get(HasBreakdownData ? "Dashboard.BreakdownTitle" : "Dashboard.BreakdownAutomation")
+            + (HasBreakdownData ? ": " + string.Join("; ", BreakdownLegend.Select(l => $"{l.Name} {l.PercentText}")) : "");
+    }
+
+    private static string FormatPercent(decimal percentage) => percentage.ToString("0.0", PercentCulture) + "%";
 
     private string BuildGreeting() =>
         string.Format(CultureInfo.CurrentCulture, _text.Get("Dashboard.Greeting"), _session.Current?.UserName ?? "");
@@ -177,5 +297,5 @@ public sealed partial class DashboardViewModel : ViewModelBase
     }
 }
 
-/// <summary>One legend row: colour comes from <see cref="CategoryId"/> (CategoryIdToBrushConverter), always next to the name (NFR-12).</summary>
-public sealed record CategoryLegendItem(int CategoryId, string Name);
+/// <summary>One legend row: colour comes from <see cref="CategoryId"/> (CategoryIdToBrushConverter), always next to the name (NFR-12); <see cref="PercentText"/> and <see cref="Explanation"/> are empty while there is no data.</summary>
+public sealed record CategoryLegendItem(int CategoryId, string Name, string PercentText, string Explanation);

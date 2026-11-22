@@ -1,4 +1,6 @@
 using System.Windows;
+using Microsoft.Win32;
+using System.Windows.Threading;
 using EcoQuest.ViewModels;
 using EcoQuest.Views.Dialogs;
 
@@ -6,17 +8,46 @@ namespace EcoQuest.Navigation;
 
 public sealed class DialogService(IUiText text, ToastViewModel toast) : IDialogService
 {
-    public Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null)
+    public Task<bool> ConfirmAsync(string title, string message, string confirmText, string? cancelText = null, DialogIcon icon = DialogIcon.Info)
     {
-        var viewModel = new ConfirmDialogViewModel(title, message, confirmText, cancelText ?? text.Get("Common.Cancel"));
+        var viewModel = new ConfirmDialogViewModel(title, message, confirmText, cancelText ?? text.Get("Common.Cancel"), icon);
         return Task.FromResult(ShowModal(viewModel));
     }
 
-    public Task ShowInfoAsync(string title, string message, string? buttonText = null)
+    public async Task ShowInfoAsync(string title, string message, string? buttonText = null, DialogIcon icon = DialogIcon.Info)
     {
-        ShowModal(new ConfirmDialogViewModel(title, message, buttonText ?? text.Get("Common.Continue"), cancelText: null));
-        return Task.CompletedTask;
+        if (Application.Current?.Dispatcher is { } dispatcher)
+        {
+            await dispatcher.InvokeAsync(static () => { }, DispatcherPriority.Background);
+        }
+
+        ShowModal(new ConfirmDialogViewModel(title, message, buttonText ?? text.Get("Common.Continue"), cancelText: null, icon));
     }
+
+    public string? PickImageFile()
+    {
+        var picker = new OpenFileDialog { Filter = text.Get("FilePicker.ImageFilter"), CheckFileExists = true, Multiselect = false };
+        var owner = Application.Current?.MainWindow;
+        return (owner is null ? picker.ShowDialog() : picker.ShowDialog(owner)) == true ? picker.FileName : null;
+    }
+
+    public string? PickCsvSaveLocation(string suggestedFileName)
+    {
+        var picker = new SaveFileDialog
+        {
+            Title = text.Get("FilePicker.ExportTitle"),
+            Filter = text.Get("FilePicker.CsvFilter"),
+            DefaultExt = ".csv",
+            AddExtension = true,
+            FileName = suggestedFileName,
+            OverwritePrompt = true,
+        };
+        var owner = Application.Current?.MainWindow;
+        return (owner is null ? picker.ShowDialog() : picker.ShowDialog(owner)) == true ? picker.FileName : null;
+    }
+
+    public void ShowImagePreview(string absolutePath) =>
+        ShowOverlay(new ImagePreviewDialog { DataContext = new ImagePreviewDialogViewModel(absolutePath, text.Get("Common.Close")) });
 
     public void ShowToast(string message) => toast.Show(message);
 
@@ -38,10 +69,10 @@ public sealed class DialogService(IUiText text, ToastViewModel toast) : IDialogS
 
     // The dialog window is a borderless, transparent overlay that covers the owner's client area, so its
     // Overlay.Backdrop dims the shell like .modal-backdrop in the prototype.
-    private static bool ShowModal(ConfirmDialogViewModel viewModel)
-    {
-        var dialog = new ConfirmDialog { DataContext = viewModel };
+    private static bool ShowModal(ConfirmDialogViewModel viewModel) => ShowOverlay(new ConfirmDialog { DataContext = viewModel });
 
+    private static bool ShowOverlay(Window dialog)
+    {
         if (Application.Current.MainWindow is { IsLoaded: true, Content: FrameworkElement client } owner
             && PresentationSource.FromVisual(client) is { CompositionTarget: not null } source)
         {

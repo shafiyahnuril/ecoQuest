@@ -15,6 +15,7 @@ public static class PresentationServiceCollectionExtensions
         services.AddSingleton<ToastViewModel>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IOnboardingStore>(_ => new FileOnboardingStore(FileOnboardingStore.DefaultPath));
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<ecoQuest.MainWindow>();
 
@@ -22,6 +23,7 @@ public static class PresentationServiceCollectionExtensions
         services.AddTransient<RegisterViewModel>();
         services.AddTransient<OnboardingViewModel>();
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<WeatherSuggestionViewModel>();
         services.AddTransient<EveningReviewViewModel>();
         services.AddTransient<HistoryViewModel>();
         services.AddTransient<AchievementsViewModel>();

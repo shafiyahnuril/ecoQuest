@@ -13,13 +13,22 @@
                           Color="{StaticResource Color.Shadow.Toast}" po:Freeze="True" />
     </UserControl.Resources>
     <Border Background="{StaticResource Toast.Bg}" CornerRadius="{StaticResource Radius.Toast}"
-            Padding="{StaticResource Padding.Toast}" Effect="{StaticResource Effect.Toast}" Opacity="0">
+            Padding="{StaticResource Padding.Toast}" Effect="{StaticResource Effect.Toast}">
         <Border.RenderTransform>
             <TranslateTransform Y="{StaticResource Offset.Toast}" />
         </Border.RenderTransform>
         <Border.Style>
             <Style TargetType="Border">
+                <Setter Property="Opacity" Value="0" />
                 <Style.Triggers>
+                    <!-- Animations switched off in Windows: show and hide at once. -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsVisible}" Value="True" />
+                            <Condition Binding="{Binding Source={x:Static SystemParameters.ClientAreaAnimation}, Mode=OneWay}" Value="False" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Opacity" Value="1" />
+                    </MultiDataTrigger>
                     <DataTrigger Binding="{Binding IsVisible}" Value="True">
                         <DataTrigger.EnterActions>
                             <BeginStoryboard>

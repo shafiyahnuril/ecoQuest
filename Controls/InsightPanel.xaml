@@ -1,0 +1,92 @@
+<UserControl x:Class="EcoQuest.Controls.InsightPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ctl="clr-namespace:EcoQuest.Controls"
+             xmlns:conv="clr-namespace:EcoQuest.Converters"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             xmlns:items="clr-namespace:EcoQuest.ViewModels.Items"
+             mc:Ignorable="d" IsTabStop="False" Focusable="False">
+    <!-- .insight-card (INVENTORY-v7): DataContext exposes InsightSubtitle and InsightRows (DashboardViewModel). Reference: 04/07-dashboard-*.png. -->
+    <UserControl.Resources>
+        <conv:ResourceKeyConverter x:Key="ResourceKey" />
+        <Style x:Key="Text.InsightTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Label}">
+            <Setter Property="FontFamily" Value="{StaticResource Font.Bold}" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{StaticResource Brand.Forest}" />
+            <Setter Property="Margin" Value="0,1,0,5" />
+        </Style>
+        <!-- Insight row (.insight-row): bordered, 11 radius, padding 13, min height 75. -->
+        <Style x:Key="Border.InsightRow" TargetType="Border" BasedOn="{StaticResource Border.Card}">
+            <Setter Property="Padding" Value="{StaticResource Padding.InsightRow}" />
+            <Setter Property="Background" Value="{StaticResource Bg.InsightRow}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Radius.InsightRow}" />
+            <Setter Property="MinHeight" Value="{StaticResource MinHeight.InsightRow}" />
+        </Style>
+        <Style x:Key="ContentPresenter.InsightRow" TargetType="ContentPresenter">
+            <Setter Property="Margin" Value="0,10,0,0" />
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Margin" Value="0" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Style="{StaticResource Border.Card}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" MinHeight="16" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Margin="0,0,0,8" Text="{DynamicResource Dashboard.InsightTitle}"
+                               AutomationProperties.HeadingLevel="Level2" />
+                    <TextBlock Style="{StaticResource Text.Small}" FontSize="13" LineHeight="20.8" MaxWidth="{StaticResource MaxWidth.InsightText}"
+                               HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding InsightSubtitle}" />
+                </StackPanel>
+                <Border Grid.Column="1" Width="{StaticResource Size.InsightIcon}" Height="{StaticResource Size.InsightIcon}" VerticalAlignment="Top"
+                        Margin="14,0,0,0" Background="{StaticResource Bg.Banner}" CornerRadius="{StaticResource Radius.InsightIcon}"
+                        AutomationProperties.IsOffscreenBehavior="Offscreen">
+                    <ctl:IconView Data="{DynamicResource Icon.Leaf}" Foreground="{StaticResource Brand.Forest}" Width="{StaticResource Size.IconMd}"
+                                  Height="{StaticResource Size.IconMd}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </Grid>
+            <ItemsControl Grid.Row="2" Grid.IsSharedSizeScope="True" ItemsSource="{Binding InsightRows}" IsTabStop="False"
+                          AlternationCount="{x:Static vm:DashboardViewModel.MaxInsights}" ItemContainerStyle="{StaticResource ContentPresenter.InsightRow}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type items:InsightRowItem}">
+                        <Border Style="{StaticResource Border.InsightRow}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="InsightBubble" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Width="{StaticResource Size.BubbleInsightRow}" Height="{StaticResource Size.BubbleInsightRow}" VerticalAlignment="Top"
+                                      AutomationProperties.IsOffscreenBehavior="Offscreen">
+                                    <Ellipse Fill="{Binding BubbleBackgroundKey, Converter={StaticResource ResourceKey}}" />
+                                    <ctl:IconView Data="{Binding IconKey, Converter={StaticResource ResourceKey}}"
+                                                  Foreground="{Binding BubbleForegroundKey, Converter={StaticResource ResourceKey}}"
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  Width="{StaticResource Size.IconBubbleInsightRow}" Height="{StaticResource Size.IconBubbleInsightRow}" />
+                                </Grid>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock Style="{StaticResource Text.InsightTitle}" TextWrapping="Wrap" Text="{Binding Title}" />
+                                    <TextBlock Style="{StaticResource Text.Small}" LineHeight="18" TextWrapping="Wrap" Text="{Binding Body}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</UserControl>

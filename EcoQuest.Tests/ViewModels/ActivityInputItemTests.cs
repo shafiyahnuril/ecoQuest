@@ -274,18 +274,20 @@ public class ActivityInputItemTests
         item.ApplyImpact(Impact(1, 0.45m));
 
         Assert.Equal("≈ 0,45 kg CO₂", item.ImpactText);
-        Assert.Equal("3,00 km × 0,15 kg CO₂/km = 0,45 kg CO₂", item.FormulaExplanation);
+        Assert.Equal(
+            "3,00 km × 0,15 kg CO₂/km = 0,45 kg CO₂" + Environment.NewLine + "0,45 × 20 × 1,0 = 9 poin" + Environment.NewLine + item.Description,
+            item.ExplanationText);
     }
 
     [Fact]
-    public void ApplyImpact_with_null_or_zero_shows_zero_and_clears_the_formula()
+    public void ApplyImpact_with_null_or_zero_shows_zero_and_falls_back_to_the_description()
     {
         var item = Item<NumericItemViewModel>(1);
         item.ApplyImpact(Impact(1, 0.45m));
 
         item.ApplyImpact(null);
         Assert.Equal("0 kg CO₂", item.ImpactText);
-        Assert.Null(item.FormulaExplanation);
+        Assert.Equal(item.Description, item.ExplanationText);
 
         item.ApplyImpact(Impact(1, 0m));
         Assert.Equal("0 kg CO₂", item.ImpactText);
@@ -303,5 +305,27 @@ public class ActivityInputItemTests
 
         Assert.Equal("Catatan maksimal 500 karakter", item.NoteErrorText);
         Assert.Null(item.ErrorText);
+    }
+
+    [Fact]
+    public void A_cleared_row_keeps_its_note_and_photo_controls_visible()
+    {
+        var item = Item<NumericItemViewModel>(1);
+        item.Quantity = 3m;
+        item.Note = "naik sepeda";
+        item.PhotoSourcePath = "foto.jpg";
+        item.Quantity = 0m;
+
+        Assert.False(item.IsFilled);
+        Assert.True(item.HasLeftover);
+        Assert.True(item.ShowExtras);
+        Assert.True(item.ShowPhotoColumn);
+
+        item.Note = "";
+        item.PhotoSourcePath = null;
+
+        Assert.False(item.HasLeftover);
+        Assert.False(item.ShowExtras);
+        Assert.False(item.ShowPhotoColumn);
     }
 }

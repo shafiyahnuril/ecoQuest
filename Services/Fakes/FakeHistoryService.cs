@@ -27,6 +27,7 @@ public sealed class FakeHistoryService : IHistoryService
     public async Task<Result<ExportResultDto>> ExportCsvAsync(HistoryFilter filter, string targetFilePath, CancellationToken ct = default)
     {
         await _ctx.DelayAsync(ct);
+        if (_ctx.FailOnce("export")) return _ctx.NetworkFailure<ExportResultDto>();
 
         // Format per SRS FR-5.4 (D-13): UTF-8 BOM, comma separator, invariant numbers.
         var inv = CultureInfo.InvariantCulture;

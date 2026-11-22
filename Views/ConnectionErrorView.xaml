@@ -1,6 +1,51 @@
 <UserControl x:Class="EcoQuest.Views.ConnectionErrorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- STUB (FE-02): replaced by the real screen in its own feature task. -->
-    <TextBlock Style="{StaticResource Text.Header}" Text="{DynamicResource Offline.Title}" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EcoQuest.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:ConnectionErrorViewModel}">
+    <!-- S-11. Reference: 06-offline.png (.offline, .offline img). D-21: full screen without sidebar, page header or date; only the card. -->
+    <UserControl.Resources>
+        <Style x:Key="Text.Hint" TargetType="TextBlock" BasedOn="{StaticResource Text.BodySecondary}">
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="Button.Retry" TargetType="Button" BasedOn="{StaticResource Button.Primary}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsConfigurationVariant}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer x:Name="PageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                  IsTabStop="False" FocusVisualStyle="{x:Null}">
+        <Grid MinHeight="{Binding ViewportHeight, ElementName=PageScroll}">
+            <Border x:Name="Card" Style="{StaticResource Border.Card}" MaxWidth="{StaticResource MaxWidth.OfflineCard}"
+                    Margin="{StaticResource Margin.OfflinePage}" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <StackPanel x:Name="CardContent" MaxWidth="{StaticResource MaxWidth.OfflineContent}" Margin="{StaticResource Margin.OfflineContent}"
+                            HorizontalAlignment="Center">
+                    <Image x:Name="Illustration" Source="{StaticResource Image.OfflineIsland}" Stretch="Uniform"
+                           MaxWidth="{StaticResource Width.OfflineImage}" Height="{StaticResource Height.OfflineImage}"
+                           AutomationProperties.Name="" AutomationProperties.IsOffscreenBehavior="Offscreen"
+                           IsHitTestVisible="False" />
+                    <TextBlock x:Name="TitleText" Style="{StaticResource Text.Header}" TextAlignment="Center" TextWrapping="Wrap"
+                               AutomationProperties.HeadingLevel="Level1" Text="{Binding Title}" />
+                    <TextBlock x:Name="MessageText" Style="{StaticResource Text.BodySecondary}" TextAlignment="Center" TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.OfflineText}" Text="{Binding Message}" />
+                    <TextBlock x:Name="HintText" Style="{StaticResource Text.Hint}" TextAlignment="Center" TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.OfflineText}" Text="{Binding Hint}" />
+                    <Button x:Name="RetryButton" Style="{StaticResource Button.Retry}" HorizontalAlignment="Center"
+                            Margin="{StaticResource Margin.OfflineAction}" Content="{DynamicResource Common.Retry}"
+                            Command="{Binding RetryCommand}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

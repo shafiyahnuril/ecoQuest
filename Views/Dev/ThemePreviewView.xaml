@@ -484,7 +484,7 @@
                                     </Binding>
                                 </TextBlock.Visibility>
                             </TextBlock>
-                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding ImpactText}" ToolTip="{Binding FormulaExplanation}" Margin="0,5,0,0" />
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding ImpactText}" ToolTip="{Binding ExplanationText}" Margin="0,5,0,0" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -827,6 +827,40 @@
   <TextBlock Style="{StaticResource Text.Tiny}" Text="Icon.Chevron" TextAlignment="Center" Margin="0,4,0,0" />
 </StackPanel>
             </WrapPanel>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Dashboard: panel insight dan kartu cuaca (kosong, terisi, data nyata, saran umum, memuat)" Margin="0,16,0,10" />
+            <UniformGrid Columns="2" Margin="0,0,0,12">
+                <ctl:InsightPanel x:Name="PreviewInsightEmpty" Margin="0,0,8,16" />
+                <ctl:InsightPanel x:Name="PreviewInsightFilled" Margin="8,0,0,16" />
+                <ctl:WeatherSuggestionCard x:Name="PreviewWeatherLive" Margin="0,0,8,16" />
+                <ctl:WeatherSuggestionCard x:Name="PreviewWeatherFallback" Margin="8,0,0,16" />
+                <ctl:WeatherSuggestionCard x:Name="PreviewWeatherLoading" Margin="0,0,8,16" />
+            </UniformGrid>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Layar Tidak dapat terhubung: varian jaringan dan konfigurasi" Margin="0,16,0,10" />
+            <UniformGrid Columns="2" Margin="0,0,0,12">
+                <ContentControl x:Name="PreviewNetworkError" Height="640" Margin="0,0,8,0" IsTabStop="False" />
+                <ContentControl x:Name="PreviewConfigError" Height="640" Margin="8,0,0,0" IsTabStop="False" />
+            </UniformGrid>
+
+            <TextBlock Style="{StaticResource Text.Title}" Text="Riwayat: daftar hari + panel detail terisi, filter dengan error rentang, empty state" Margin="0,16,0,10" />
+            <StackPanel Margin="0,0,0,12">
+                <Border Height="620" Margin="0,0,0,12" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ContentControl x:Name="PreviewHistoryFilled" IsTabStop="False" />
+                    </ScrollViewer>
+                </Border>
+                <Border Height="300" Margin="0,0,0,12" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ContentControl x:Name="PreviewHistoryRangeError" IsTabStop="False" />
+                    </ScrollViewer>
+                </Border>
+                <Border Height="620" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ContentControl x:Name="PreviewHistoryEmpty" IsTabStop="False" />
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
 
             <TextBlock Style="{StaticResource Text.Title}" Text="State umum: skeleton, empty, error, busy" Margin="0,16,0,10" />
             <StackPanel>

@@ -1,8 +1,9 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:po="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:conv="clr-namespace:ecoQuest.Converters"
+                    xmlns:econv="clr-namespace:EcoQuest.Converters"
                     xmlns:ctl="clr-namespace:EcoQuest.Controls"
                     mc:Ignorable="po">
     <!--
@@ -12,6 +13,7 @@
 
     <conv:HalfHeightToCornerRadiusConverter x:Key="HalfHeightToCornerRadius" />
     <conv:RoundedClipConverter x:Key="RoundedClip" />
+    <econv:CompactWidthConverter x:Key="IsCompactWidth" />
 
     <!-- Base window style: crisp edges at fractional DPI. Assign with Style="{StaticResource Window.Base}". -->
     <Style x:Key="Window.Base" TargetType="Window">
@@ -159,6 +161,20 @@
         </Setter>
     </Style>
 
+    <!-- Chrome-less button around a picture (photo thumbnails): keyboard focus ring and hand cursor only. -->
+    <Style x:Key="Button.Thumb" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===================== Text inputs ===================== -->
     <Style x:Key="TextBox.Default" TargetType="TextBox">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -179,7 +195,7 @@
                     <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource Radius.Input}"
                             SnapsToDevicePixels="True">
-                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                       Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -210,6 +226,12 @@
 
     <Style x:Key="TextBox.Time" TargetType="TextBox" BasedOn="{StaticResource TextBox.Default}">
         <Setter Property="MinWidth" Value="{StaticResource MinWidth.TimeInput}" />
+        <Style.Triggers>
+            <!-- Owner decision (FE-09): the 220 px control column of @media(max-width:1160px) only fits two time boxes of 84. -->
+            <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource IsCompactWidth}}" Value="True">
+                <Setter Property="MinWidth" Value="{StaticResource MinWidth.TimeInputCompact}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="Button.Stepper" TargetType="Button">
@@ -383,6 +405,7 @@
 
     <!-- ===================== Switch / Chip / Segmented ===================== -->
     <Style x:Key="ToggleButton.Switch" TargetType="ToggleButton">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Visual}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontFamily" Value="{StaticResource Font.SemiBold}" />
@@ -471,6 +494,73 @@
                             <Setter Property="FontFamily" Value="{StaticResource Font.Bold}" />
                             <Setter Property="FontWeight" Value="Bold" />
                             <Setter Property="Foreground" Value="{StaticResource Brand.Forest}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== DatePicker ===================== -->
+    <!-- The default DatePickerTextBox template shows an English watermark; this one is a plain text host. -->
+    <Style x:Key="DatePickerTextBox.Plain" TargetType="DatePickerTextBox">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
+        <Setter Property="CaretBrush" Value="{StaticResource Text.Primary}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePickerTextBox">
+                    <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden" VerticalAlignment="Center" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DatePicker.Default" TargetType="DatePicker">
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Regular}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
+        <Setter Property="Height" Value="{StaticResource Height.ButtonSmall}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Grid x:Name="PART_Root">
+                        <Border x:Name="Bd" Background="{StaticResource Bg.Input}" BorderBrush="{StaticResource Line.Input}" BorderThickness="1"
+                                CornerRadius="{StaticResource Radius.Input}" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <DatePickerTextBox x:Name="PART_TextBox" Style="{StaticResource DatePickerTextBox.Plain}" Margin="10,0,0,0"
+                                                   FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" />
+                                <Button x:Name="PART_Button" Grid.Column="1" Style="{StaticResource Button.Icon}" Width="{StaticResource Height.ButtonSmall}"
+                                        Height="Auto" Focusable="False" AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}">
+                                    <ctl:IconView Data="{DynamicResource Icon.Calendar}" Foreground="{StaticResource Brand.Forest}"
+                                                  Width="{StaticResource Size.IconInfo}" Height="{StaticResource Size.IconInfo}"
+                                                  AutomationProperties.IsOffscreenBehavior="Offscreen" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                        <Popup x:Name="PART_Popup" PlacementTarget="{Binding ElementName=Bd}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Brand.Primary}" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="ctl:InputState.IsInvalid" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource State.Error}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="{StaticResource Opacity.Disabled}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -581,6 +671,20 @@
 
     <!-- Dashboard hero illustration (floating_garden_island_waterfall.png, shown at <= 540 DIP; decoded at 2x for 200% DPI). -->
     <BitmapImage x:Key="Image.HeroIsland" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/floating_garden_island_waterfall.png" DecodePixelWidth="1080"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
+    <!-- Onboarding steps 2 and 3 (shown at 285 DIP high; decoded at 2x). Step 1 reuses Image.HeroIsland. -->
+    <BitmapImage x:Key="Image.OnboardingDesk" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/cozy_eco_evening_desk_diorama.png" DecodePixelWidth="456"
+                 CacheOption="OnLoad" po:Freeze="True" />
+    <BitmapImage x:Key="Image.OnboardingSprout" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_sprout_in_mossy_pot.png" DecodePixelWidth="570"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
+    <!-- Offline illustration (eco_friendly_offline_wi_fi_island.png, shown at <= 320 DIP; decoded at 2x). -->
+    <BitmapImage x:Key="Image.OfflineIsland" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_friendly_offline_wi_fi_island.png" DecodePixelWidth="640"
+                 CacheOption="OnLoad" po:Freeze="True" />
+
+    <!-- Summary success illustration (eco_island_success_badge.png, shown at <= 205 DIP; decoded at 2x). -->
+    <BitmapImage x:Key="Image.SummarySuccess" UriSource="pack://application:,,,/EcoQuest;component/Resources/Images/eco_island_success_badge.png" DecodePixelWidth="410"
                  CacheOption="OnLoad" po:Freeze="True" />
 
     <!-- StateHost (UIR-05): Idle/Loading -> LoadingContent, Error -> ErrorBanner, Loaded+IsEmpty -> EmptyContent, Loaded -> Content.

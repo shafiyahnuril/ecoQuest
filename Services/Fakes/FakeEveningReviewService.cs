@@ -20,10 +20,12 @@ public sealed class FakeEveningReviewService : IEveningReviewService
 
     private readonly FakeContext _ctx;
     private readonly FakeStore _store;
+    private readonly string _photoRoot;
 
-    public FakeEveningReviewService(FakeContext ctx, FakeStore store)
+    public FakeEveningReviewService(FakeContext ctx, FakeStore store, string? photoRoot = null)
     {
         _ctx = ctx; _store = store;
+        _photoRoot = photoRoot ?? FakePhotoStorageService.DefaultRoot;
     }
 
     public async Task<Result<TodayReviewDto>> GetTodayAsync(CancellationToken ct = default)
@@ -60,21 +62,47 @@ public sealed class FakeEveningReviewService : IEveningReviewService
         if (validation.HasWarnings && !request.WarningsAcknowledged)
             return Result<ReviewSummaryDto>.Failure(ErrorCode.WarningsNotAcknowledged, FakeMessages.WarningsNotAcknowledged);
 
-        var impacts = request.Items
+        var filled = request.Items
             .Select(i => (Input: i, Type: FakeData.ActivityTypes.FirstOrDefault(t => t.ActivityTypeId == i.ActivityTypeId)))
             .Where(x => x.Type is not null && FakeImpact.IsFilled(x.Input, x.Type))
-            .Select(x => FakeImpact.Build(x.Input, x.Type!, Guid.NewGuid()))
             .ToList();
 
         if (_ctx.Scenario == FakeScenario.Errors)
         {
             if (_ctx.FailOnce("submit")) return _ctx.NetworkFailure<ReviewSummaryDto>();
 
-            _store.SubmitToday(impacts);   // "another device already saved it"
+            _store.SubmitToday(BuildImpacts(filled));   // "another device already saved it"
             return Result<ReviewSummaryDto>.Failure(ErrorCode.ReviewAlreadySubmitted, FakeMessages.ReviewAlreadySubmitted);
         }
 
-        return Result<ReviewSummaryDto>.Success(_store.SubmitToday(impacts));
+        return Result<ReviewSummaryDto>.Success(_store.SubmitToday(BuildImpacts(filled)));
+    }
+
+    // Copies each picked photo below %AppData%\EcoQuest\photos (like PhotoStorageService) so History can resolve the relative path.
+    private List<ActivityImpactDto> BuildImpacts(IEnumerable<(ActivityInput Input, ActivityTypeDto? Type)> filled) =>
+        filled.Select(x =>
+        {
+            var logId = Guid.NewGuid();
+            var impact = FakeImpact.Build(x.Input, x.Type!, logId);
+            return impact with { PhotoPath = StorePhoto(x.Input.PhotoSourcePath, logId) };
+        }).ToList();
+
+    private string? StorePhoto(string? sourcePath, Guid logId)
+    {
+        if (string.IsNullOrEmpty(sourcePath) || !File.Exists(sourcePath)) return null;
+
+        var relative = $"photos/{logId:N}{Path.GetExtension(sourcePath).ToLowerInvariant()}";
+        try
+        {
+            var target = Path.Combine(_photoRoot, relative);
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            File.Copy(sourcePath, target, overwrite: true);
+            return relative;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 
     /// <summary>Pure validation of SRS 4.3; also used directly by tests.</summary>

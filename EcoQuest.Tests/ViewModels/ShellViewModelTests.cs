@@ -194,6 +194,7 @@ public class ShellViewModelTests
             _nav.NavigateTo<LoginViewModel>(Arg.Any<object?>());
         });
         Assert.False(shell.HasPendingReview);
+        _ = _dialogs.Received(1).ConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>(), DialogIcon.Info);
     }
 
     [Fact]
@@ -337,5 +338,39 @@ public class ShellViewModelTests
         await shell.RefreshPendingCommand.ExecuteAsync(null);
 
         Assert.True(shell.HasPendingReview);
+    }
+
+    [Fact]
+    public void Connection_error_screen_has_no_sidebar_even_with_an_active_session()
+    {
+        _session.Start(Dinda);
+        var shell = Create();
+        var screen = Screen<ConnectionErrorViewModel>();
+
+        NavigateTo(screen);
+
+        Assert.False(shell.IsAuthenticated);
+        Assert.Same(screen, shell.AuthViewModel);
+        Assert.Null(shell.MainViewModel);
+        Assert.Null(shell.SelectedMenu);
+    }
+
+    [Fact]
+    public void Returning_from_the_connection_error_screen_restores_sidebar_and_selected_menu()
+    {
+        _session.Start(Dinda);
+        ReviewReturns(Ok(TodayReviewState.Submitted));
+        var shell = Create();
+        NavigateTo(Screen<HistoryViewModel>());
+        NavigateTo(Screen<ConnectionErrorViewModel>());
+
+        var history = Screen<HistoryViewModel>();
+        NavigateTo(history);
+
+        Assert.True(shell.IsAuthenticated);
+        Assert.Same(history, shell.MainViewModel);
+        Assert.Null(shell.AuthViewModel);
+        Assert.Equal(MainMenu.History, shell.SelectedMenu);
+        Assert.Single(shell.MenuItems, item => item.IsSelected);
     }
 }
