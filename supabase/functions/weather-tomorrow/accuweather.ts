@@ -46,8 +46,75 @@ export const SUPPORTED_CITIES = [
 
 const SUPPORTED_CITY_SET = new Set<string>(SUPPORTED_CITIES);
 
+const WIT_CITIES = new Set<string>(["Ambon", "Jayapura"]);
+const WITA_CITIES = new Set<string>([
+  "Balikpapan",
+  "Banjarmasin",
+  "Denpasar",
+  "Gorontalo",
+  "Kendari",
+  "Kupang",
+  "Makassar",
+  "Manado",
+  "Mataram",
+  "Palu",
+  "Samarinda",
+]);
+
+const CITY_SEARCH_ALIASES: Record<string, readonly string[]> = {
+  // Query "Surakarta" lebih dulu karena query "Solo" di AccuWeather sempat mengembalikan desa Solo (+08:00).
+  Solo: ["Surakarta", "Solo"],
+};
+
+export type LogErrorFn = (entry: Record<string, unknown>) => void;
+
+export const defaultLogError: LogErrorFn = (entry) => {
+  console.error(JSON.stringify({ level: "error", fn: "weather-tomorrow", ...entry }));
+};
+
 export function isSupportedCity(city: unknown): city is string {
   return typeof city === "string" && SUPPORTED_CITY_SET.has(city.trim());
+}
+
+export function getExpectedGmtOffset(city: string): number {
+  const trimmed = city.trim();
+  if (WIT_CITIES.has(trimmed)) return 9;
+  if (WITA_CITIES.has(trimmed)) return 8;
+  return 7;
+}
+
+export function getSearchQueriesForCity(city: string): string[] {
+  const trimmed = city.trim();
+  const aliases = CITY_SEARCH_ALIASES[trimmed];
+  return aliases ? [...aliases] : [trimmed];
+}
+
+export function selectMatchingLocationKey(candidates: unknown, city: string): string | null {
+  if (!Array.isArray(candidates)) return null;
+  const expectedOffset = getExpectedGmtOffset(city);
+
+  for (const item of candidates) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+    const obj = item as Record<string, unknown>;
+    const key = typeof obj.Key === "string" ? obj.Key.trim() : "";
+    const countryId = (obj.Country as { ID?: unknown } | undefined)?.ID;
+    const gmtOffset = (obj.TimeZone as { GmtOffset?: unknown } | undefined)?.GmtOffset;
+
+    if (
+      key.length > 0 &&
+      countryId === "ID" &&
+      typeof gmtOffset === "number" &&
+      gmtOffset === expectedOffset
+    ) {
+      return key;
+    }
+  }
+
+  return null;
+}
+
+function isQuotaOrAuthStatus(status: number): boolean {
+  return status === 401 || status === 403 || status === 429;
 }
 
 /** Mengembalikan tanggal besok di zona waktu Asia/Jakarta (UTC+7) dalam format YYYY-MM-DD. */
@@ -147,24 +214,79 @@ export async function resolveLocationKeyFromAccuWeather(
   apiKey: string,
   fetchFn: FetchLike = fetch,
   timeoutMs = 4000,
+  logError: LogErrorFn = defaultLogError,
 ): Promise<string | null> {
-  const url =
-    `https://dataservice.accuweather.com/locations/v1/cities/ID/search?apikey=${encodeURIComponent(apiKey)}&q=${encodeURIComponent(city)}&language=id-id`;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const resp = await fetchFn(url, { signal: controller.signal });
-    if (!resp.ok) return null;
-    const arr = await resp.json();
-    if (Array.isArray(arr) && arr.length > 0 && typeof arr[0]?.Key === "string") {
-      return arr[0].Key;
+  for (const query of getSearchQueriesForCity(city)) {
+    const url =
+      `https://dataservice.accuweather.com/locations/v1/cities/ID/search?apikey=${encodeURIComponent(apiKey)}&q=${encodeURIComponent(query)}&language=id-id`;
+    const controller = new AbortController();
+    let timedOut = false;
+    const timer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
+
+    try {
+      const resp = await fetchFn(url, { signal: controller.signal });
+      if (!resp.ok) {
+        logError({
+          step: "resolveLocationKeyFromAccuWeather",
+          city,
+          query,
+          httpStatus: resp.status,
+          errorType: isQuotaOrAuthStatus(resp.status) ? "quota_or_auth_error" : "http_error",
+        });
+        return null;
+      }
+
+      let arr: unknown;
+      try {
+        arr = await resp.json();
+      } catch {
+        logError({
+          step: "resolveLocationKeyFromAccuWeather",
+          city,
+          query,
+          httpStatus: resp.status,
+          errorType: "invalid_json",
+        });
+        continue;
+      }
+
+      const key = selectMatchingLocationKey(arr, city);
+      if (key) {
+        return key;
+      }
+
+      logError({
+        step: "resolveLocationKeyFromAccuWeather",
+        city,
+        query,
+        httpStatus: resp.status,
+        errorType: "city_not_found",
+        candidateCount: Array.isArray(arr) ? arr.length : 0,
+      });
+    } catch (err) {
+      const errName = (err as { name?: string } | null)?.name;
+      const errorType = timedOut
+        ? "timeout"
+        : (errName === "AbortError" || controller.signal.aborted)
+        ? "abort"
+        : "network_error";
+      logError({
+        step: "resolveLocationKeyFromAccuWeather",
+        city,
+        query,
+        httpStatus: null,
+        errorType,
+      });
+      return null;
+    } finally {
+      clearTimeout(timer);
     }
-    return null;
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timer);
   }
+
+  return null;
 }
 
 export async function fetchForecastFromAccuWeather(
@@ -173,17 +295,56 @@ export async function fetchForecastFromAccuWeather(
   apiKey: string,
   fetchFn: FetchLike = fetch,
   timeoutMs = 4000,
+  logError: LogErrorFn = defaultLogError,
 ): Promise<ParsedDailyForecast | null> {
   const url =
     `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${encodeURIComponent(locationKey)}?apikey=${encodeURIComponent(apiKey)}&language=id-id&metric=true`;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+
   try {
     const resp = await fetchFn(url, { signal: controller.signal });
-    if (!resp.ok) return null;
+    if (!resp.ok) {
+      logError({
+        step: "fetchForecastFromAccuWeather",
+        locationKey,
+        forDate: targetDate,
+        httpStatus: resp.status,
+        errorType: isQuotaOrAuthStatus(resp.status) ? "quota_or_auth_error" : "http_error",
+      });
+      return null;
+    }
+
     const text = await resp.text();
-    return parseAccuWeather5Day(text, targetDate);
-  } catch {
+    const parsed = parseAccuWeather5Day(text, targetDate);
+    if (!parsed) {
+      logError({
+        step: "fetchForecastFromAccuWeather",
+        locationKey,
+        forDate: targetDate,
+        httpStatus: resp.status,
+        errorType: "target_date_not_found",
+      });
+    }
+    return parsed;
+  } catch (err) {
+    const errName = (err as { name?: string } | null)?.name;
+    const errorType = timedOut
+      ? "timeout"
+      : (errName === "AbortError" || controller.signal.aborted)
+      ? "abort"
+      : "network_error";
+    logError({
+      step: "fetchForecastFromAccuWeather",
+      locationKey,
+      forDate: targetDate,
+      httpStatus: null,
+      errorType,
+    });
     return null;
   } finally {
     clearTimeout(timer);
