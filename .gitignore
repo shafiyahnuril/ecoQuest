@@ -19,3 +19,8 @@ x86/
 
 ## Env Variables
 .env
+
+## Supabase CLI temp
+supabase/.temp/
+supabase/.branches/
+supabase/.env

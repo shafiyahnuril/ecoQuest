@@ -68,4 +68,17 @@ public class InsightGeneratorTests
 
         Assert.Null(InsightGenerator.Equivalence(0.4m));
     }
+
+    [Fact]
+    public void Week_over_week_handles_extreme_values_without_overflow()
+    {
+        var exception = Record.Exception(() =>
+            InsightGenerator.WeekOverWeek(
+             decimal.MaxValue,
+             0.0000000000000000000000000001m
+            )
+        );
+
+        Assert.Null(exception);
+    }
 }

@@ -114,27 +114,43 @@ public static class InsightGenerator
         if (previousWeekCo2Kg == 0m)
             return null;
 
-        var changePercentage =
-            (currentWeekCo2Kg - previousWeekCo2Kg)
-            / previousWeekCo2Kg * 100m;
-
-        var direction = changePercentage > 0m
+        var direction = currentWeekCo2Kg > previousWeekCo2Kg
             ? "naik"
-            : changePercentage < 0m
+            : currentWeekCo2Kg < previousWeekCo2Kg
                 ? "turun"
                 : "tetap";
 
-        var percentage = Math.Abs(changePercentage).ToString(
+        if (direction == "tetap")
+        {
+            return new InsightDto(
+                InsightKind.WeekOverWeek,
+                "Dibanding 7 hari sebelumnya, CO₂ yang kamu hindari tetap sama."
+            );
+        }
+
+        decimal changePercentage;
+
+        try
+        {
+            changePercentage = currentWeekCo2Kg > previousWeekCo2Kg
+                ? (currentWeekCo2Kg / previousWeekCo2Kg - 1m) * 100m
+                : (1m - currentWeekCo2Kg / previousWeekCo2Kg) * 100m;
+        }
+        catch (OverflowException)
+        {
+            return new InsightDto(
+                InsightKind.WeekOverWeek,
+                "Dibanding 7 hari sebelumnya, CO₂ yang kamu hindari naik sangat besar."
+            );
+        }
+
+        var percentage = changePercentage.ToString(
             "0.#",
             CultureInfo.InvariantCulture);
 
-        var message = direction == "tetap"
-            ? "Dibanding 7 hari sebelumnya, CO₂ yang kamu hindari tetap sama."
-            : $"Dibanding 7 hari sebelumnya, CO₂ yang kamu hindari {direction} {percentage}%.";
-
         return new InsightDto(
             InsightKind.WeekOverWeek,
-            message
+            $"Dibanding 7 hari sebelumnya, CO₂ yang kamu hindari {direction} {percentage}%."
         );
     }
 

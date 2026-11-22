@@ -8,6 +8,7 @@ using EcoQuest.Core.Contracts.Dtos;
 using EcoQuest.Core.Contracts.Repositories;
 using EcoQuest.Core.Contracts.Services;
 using EcoQuest.Data.Errors;
+using System.IO;
 
 namespace EcoQuest.Services;
 
@@ -80,9 +81,23 @@ public sealed class HistoryService(
         }
     }
 
-    public Task<Result<ExportResultDto>> ExportCsvAsync(
+    public async Task<Result<ExportResultDto>> ExportCsvAsync(
         HistoryFilter filter,
         string targetFilePath,
         CancellationToken ct = default)
-        => Task.FromResult(Result<ExportResultDto>.Failure(ErrorCode.Unknown, "Ekspor CSV belum tersedia")); // diganti BE-20
+    {
+        var history = await GetHistoryAsync(filter, ct);
+        if (!history.IsSuccess)
+            return Result<ExportResultDto>.Failure(history.Error, history.Message ?? Messages.For(history.Error));
+
+        try
+        {
+            var rows = await CsvExporter.WriteAsync(targetFilePath, history.Value!, ct);
+            return Result<ExportResultDto>.Success(new ExportResultDto(targetFilePath, rows));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Result<ExportResultDto>.Failure(ErrorCode.FileError, Messages.FileError);
+        }
+    }
 }

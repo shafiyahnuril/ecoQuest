@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Xunit;
+using System.IO;
 
 namespace EcoQuest.Tests.Services;
 
@@ -178,14 +179,46 @@ public class HistoryServiceTests
         Assert.Equal("0,75 × 20 × 1,2 = 18 poin", item.PointsExplanation);
     }
 
-    [Fact]
-    public async Task ExportCsvAsync_returns_not_available_stub()
+        [Fact]
+    public async Task ExportCsvAsync_writes_filtered_rows_and_returns_row_count()
     {
-        var res = await CreateSut().ExportCsvAsync(new HistoryFilter(null, null, []), "C:\\temp\\export.csv");
+        var date = new DateOnly(2026, 11, 18);
+        var reviewId = Guid.NewGuid();
+        _reviews.GetDailyTotalsAsync(_activeUser.UserId, null, null, Arg.Any<CancellationToken>())
+                .Returns([new DailyTotalRow(date, 0.45m, 9)]);
+        _reviews.GetHistoryAsync(_activeUser.UserId, null, null, null, Arg.Any<CancellationToken>())
+                .Returns([MakeRow(date, reviewId)]);
+        var path = Path.Combine(Path.GetTempPath(), $"ecoquest-{Guid.NewGuid():N}.csv");
+
+        try
+        {
+            var res = await CreateSut().ExportCsvAsync(new HistoryFilter(null, null, []), path);
+
+            Assert.True(res.IsSuccess);
+            Assert.Equal(1, res.Value!.RowCount);
+            Assert.Equal(path, res.Value.FilePath);
+            Assert.True(File.Exists(path));
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public async Task ExportCsvAsync_returns_FileError_when_path_cannot_be_written()
+    {
+        var date = new DateOnly(2026, 11, 18);
+        _reviews.GetDailyTotalsAsync(_activeUser.UserId, null, null, Arg.Any<CancellationToken>())
+                .Returns([new DailyTotalRow(date, 0.45m, 9)]);
+        _reviews.GetHistoryAsync(_activeUser.UserId, null, null, null, Arg.Any<CancellationToken>())
+                .Returns([MakeRow(date, Guid.NewGuid())]);
+        var path = Path.Combine(Path.GetTempPath(), $"tidak-ada-{Guid.NewGuid():N}", "export.csv");
+
+        var res = await CreateSut().ExportCsvAsync(new HistoryFilter(null, null, []), path);
 
         Assert.False(res.IsSuccess);
-        Assert.Equal(ErrorCode.Unknown, res.Error);
-        Assert.Equal("Ekspor CSV belum tersedia", res.Message);
+        Assert.Equal(ErrorCode.FileError, res.Error);
     }
 
     [Fact]
