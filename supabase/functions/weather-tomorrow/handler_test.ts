@@ -21,12 +21,15 @@ const SECRET_ACCU_KEY = "SUPER_SECRET_ACCU_KEY_VALUE";
 function baseDeps(overrides: Partial<WeatherDeps> = {}): {
   deps: WeatherDeps;
   calls: { resolve: number; forecast: number; upsert: number; saveLoc: number };
+  logs: Record<string, unknown>[];
 } {
   const calls = { resolve: 0, forecast: 0, upsert: 0, saveLoc: 0 };
+  const logs: Record<string, unknown>[] = [];
   const deps: WeatherDeps = {
     expectedApiKey: "sb_publishable_test_key",
     accuWeatherApiKey: SECRET_ACCU_KEY,
     now: () => NOW,
+    logError: (entry) => logs.push(entry),
     getCache: async () => null,
     upsertCache: async () => {
       calls.upsert++;
@@ -45,7 +48,7 @@ function baseDeps(overrides: Partial<WeatherDeps> = {}): {
     },
     ...overrides,
   };
-  return { deps, calls };
+  return { deps, calls, logs };
 }
 
 Deno.test("GET method returns 405", async () => {
@@ -122,7 +125,7 @@ Deno.test("Cache hit (< 24h) returns source=cache without calling AccuWeather", 
 });
 
 Deno.test("Cache miss fetches AccuWeather, saves locationKey, and upserts weathercache", async () => {
-  const { deps, calls } = baseDeps();
+  const { deps, calls, logs } = baseDeps();
   const req = new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
     method: "POST",
     headers: { apikey: "sb_publishable_test_key" },
@@ -136,25 +139,108 @@ Deno.test("Cache miss fetches AccuWeather, saves locationKey, and upserts weathe
   assertEquals(calls.saveLoc, 1);
   assertEquals(calls.forecast, 1);
   assertEquals(calls.upsert, 1);
+  assertEquals(logs.length, 0);
   const text = JSON.stringify(body);
   assert(!text.includes(SECRET_ACCU_KEY), "must not contain AccuWeather API key");
   assert(!text.includes("accuweather.com"), "must not contain upstream domain");
 });
 
-Deno.test("Upstream error/exception returns 503 and never leaks secret key", async () => {
-  const { deps } = baseDeps({
-    fetchForecastRemote: async () => {
-      throw new Error(`GET https://dataservice.accuweather.com/foo?apikey=${SECRET_ACCU_KEY} failed 503`);
-    },
-  });
-  const req = new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
-    method: "POST",
-    headers: { apikey: "sb_publishable_test_key" },
-    body: JSON.stringify({ city: "Yogyakarta" }),
-  });
-  const resp = await handleWeatherTomorrow(req, deps);
-  assertEquals(resp.status, 503);
-  const text = await resp.text();
-  assert(!text.includes(SECRET_ACCU_KEY), "must never leak secret key");
-  assert(!text.includes("accuweather.com"), "must never leak upstream URL");
+Deno.test("Each 503 branch and saveLocationKey failure emits structured log without leaking secrets", async () => {
+  // 1. Missing API key -> 503 + structured log
+  {
+    const { deps, logs } = baseDeps({ accuWeatherApiKey: "" });
+    const resp = await handleWeatherTomorrow(
+      new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
+        method: "POST",
+        headers: { apikey: "sb_publishable_test_key" },
+        body: JSON.stringify({ city: "Solo" }),
+      }),
+      deps,
+    );
+    assertEquals(resp.status, 503);
+    assertEquals(logs.length, 1);
+    assertEquals(logs[0].step, "handler.check_api_key");
+    assertEquals(logs[0].errorType, "missing_api_key");
+  }
+
+  // 2. Unresolved location -> 503 + structured log
+  {
+    const { deps, logs } = baseDeps({ resolveLocationKeyRemote: async () => null });
+    const resp = await handleWeatherTomorrow(
+      new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
+        method: "POST",
+        headers: { apikey: "sb_publishable_test_key" },
+        body: JSON.stringify({ city: "Solo" }),
+      }),
+      deps,
+    );
+    assertEquals(resp.status, 503);
+    assertEquals(logs.length, 1);
+    assertEquals(logs[0].step, "handler.resolve_location");
+    assertEquals(logs[0].errorType, "location_unresolved");
+  }
+
+  // 3. saveLocationKey failure is logged (not silently swallowed) while still returning forecast
+  {
+    const { deps, logs } = baseDeps({
+      saveLocationKey: async () => {
+        throw new Error("rls_denied");
+      },
+    });
+    const resp = await handleWeatherTomorrow(
+      new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
+        method: "POST",
+        headers: { apikey: "sb_publishable_test_key" },
+        body: JSON.stringify({ city: "Solo" }),
+      }),
+      deps,
+    );
+    assertEquals(resp.status, 200);
+    assertEquals(logs.length, 1);
+    assertEquals(logs[0].step, "handler.save_location_key");
+    assertEquals(logs[0].errorType, "db_save_location_failed");
+  }
+
+  // 4. Forecast unavailable -> 503 + structured log
+  {
+    const { deps, logs } = baseDeps({ fetchForecastRemote: async () => null });
+    const resp = await handleWeatherTomorrow(
+      new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
+        method: "POST",
+        headers: { apikey: "sb_publishable_test_key" },
+        body: JSON.stringify({ city: "Solo" }),
+      }),
+      deps,
+    );
+    assertEquals(resp.status, 503);
+    assertEquals(logs.length, 1);
+    assertEquals(logs[0].step, "handler.fetch_forecast");
+    assertEquals(logs[0].errorType, "forecast_unavailable");
+  }
+
+  // 5. Unhandled exception with secret in message -> 503 + log without leaking secret/URL
+  {
+    const { deps, logs } = baseDeps({
+      fetchForecastRemote: async () => {
+        throw new Error(`GET https://dataservice.accuweather.com/foo?apikey=${SECRET_ACCU_KEY} failed 503`);
+      },
+    });
+    const resp = await handleWeatherTomorrow(
+      new Request("https://example.supabase.co/functions/v1/weather-tomorrow", {
+        method: "POST",
+        headers: { apikey: "sb_publishable_test_key" },
+        body: JSON.stringify({ city: "Yogyakarta" }),
+      }),
+      deps,
+    );
+    assertEquals(resp.status, 503);
+    assertEquals(logs.length, 1);
+    assertEquals(logs[0].step, "handler.unhandled_exception");
+    const serializedLog = JSON.stringify(logs[0]);
+    assert(!serializedLog.includes(SECRET_ACCU_KEY), "log must never leak secret key");
+    assert(!serializedLog.includes("accuweather.com"), "log must never leak upstream URL");
+    const text = await resp.text();
+    assert(!text.includes(SECRET_ACCU_KEY), "body must never leak secret key");
+    assert(!text.includes("accuweather.com"), "body must never leak upstream URL");
+  }
 });
