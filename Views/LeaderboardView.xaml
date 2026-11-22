@@ -25,13 +25,17 @@
                     </Grid.ColumnDefinitions>
                     <Border x:Name="Accent" Background="Transparent" />
                     <TextBlock Grid.Column="1" Style="{StaticResource Text.TableCell}" Margin="{StaticResource Padding.LeaderboardRow}" Text="{Binding RankText}" />
-                    <DockPanel Grid.Column="2" Margin="{StaticResource Padding.LeaderboardRow}" LastChildFill="True">
-                        <Border x:Name="YouPill" DockPanel.Dock="Right" Style="{StaticResource Border.Pill}" Margin="{StaticResource Margin.LeaderboardYou}"
+                    <Grid Grid.Column="2" Margin="{StaticResource Padding.LeaderboardRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="Name" Style="{StaticResource Text.TableCell}" MaxWidth="{StaticResource MaxWidth.LeaderboardName}" Text="{Binding UserName}" ToolTip="{Binding UserName}" />
+                        <Border x:Name="YouPill" Grid.Column="1" Style="{StaticResource Border.Pill}" Margin="{StaticResource Margin.LeaderboardYou}"
                                 VerticalAlignment="Center" Visibility="Collapsed">
                             <TextBlock Style="{StaticResource Text.Pill}" Text="{DynamicResource Leaderboard.You}" TextWrapping="NoWrap" />
                         </Border>
-                        <TextBlock x:Name="Name" Style="{StaticResource Text.TableCell}" Text="{Binding UserName}" ToolTip="{Binding UserName}" />
-                    </DockPanel>
+                    </Grid>
                     <TextBlock Grid.Column="3" Style="{StaticResource Text.TableCell}" Margin="{StaticResource Padding.LeaderboardRow}" Text="{Binding Co2Text}" />
                     <TextBlock Grid.Column="4" Style="{StaticResource Text.TableCell}" Margin="{StaticResource Padding.LeaderboardRow}" Text="{Binding LevelText}"
                                ToolTip="{Binding LevelText}" />

@@ -26,6 +26,13 @@ public sealed partial class LoginViewModel(IAuthService auth, INavigationService
     /// <summary>Incremented to ask the view to move focus to the password box (bound to PasswordBoxHelper.FocusRequest).</summary>
     [ObservableProperty] private int _passwordFocusRequest;
 
+    /// <summary>True after a NetworkError: the view shows the banner with "Coba lagi" instead of the inline message.</summary>
+    [ObservableProperty] private bool _hasNetworkError;
+
+    partial void OnIdentifierChanged(string value) => HasNetworkError = false;
+
+    partial void OnPasswordChanged(string value) => HasNetworkError = false;
+
     private bool CanLogin() => !IsBusy && !string.IsNullOrWhiteSpace(Identifier) && !string.IsNullOrEmpty(Password);
 
     [RelayCommand(CanExecute = nameof(CanLogin))]
@@ -38,6 +45,7 @@ public sealed partial class LoginViewModel(IAuthService auth, INavigationService
         }
 
         ErrorMessage = null;
+        HasNetworkError = false;
         IsBusy = true;
         LoginCommand.NotifyCanExecuteChanged();
         try
@@ -51,6 +59,7 @@ public sealed partial class LoginViewModel(IAuthService auth, INavigationService
             }
 
             ErrorMessage = result.Message;
+            HasNetworkError = result.Error == ErrorCode.NetworkError;
             if (result.Error == ErrorCode.InvalidCredentials)
             {
                 Password = "";

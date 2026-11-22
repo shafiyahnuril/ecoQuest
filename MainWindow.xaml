@@ -43,6 +43,10 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource Bg.NavHover}" />
                 </Trigger>
+                <!-- Keyboard focus: the ring plus a fill, so a focused item is never mistaken for the idle or the active one. -->
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Bg.NavHover}" />
+                </Trigger>
                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
                     <Setter Property="Background" Value="{StaticResource Bg.NavActive}" />
                 </DataTrigger>

@@ -306,4 +306,26 @@ public class ActivityInputItemTests
         Assert.Equal("Catatan maksimal 500 karakter", item.NoteErrorText);
         Assert.Null(item.ErrorText);
     }
+
+    [Fact]
+    public void A_cleared_row_keeps_its_note_and_photo_controls_visible()
+    {
+        var item = Item<NumericItemViewModel>(1);
+        item.Quantity = 3m;
+        item.Note = "naik sepeda";
+        item.PhotoSourcePath = "foto.jpg";
+        item.Quantity = 0m;
+
+        Assert.False(item.IsFilled);
+        Assert.True(item.HasLeftover);
+        Assert.True(item.ShowExtras);
+        Assert.True(item.ShowPhotoColumn);
+
+        item.Note = "";
+        item.PhotoSourcePath = null;
+
+        Assert.False(item.HasLeftover);
+        Assert.False(item.ShowExtras);
+        Assert.False(item.ShowPhotoColumn);
+    }
 }

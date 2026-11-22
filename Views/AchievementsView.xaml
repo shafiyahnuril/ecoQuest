@@ -38,6 +38,7 @@
 
         <DataTemplate x:Key="BadgeCell" DataType="{x:Type items:BadgeItemViewModel}">
             <Border Style="{StaticResource Border.Card}" Padding="{StaticResource Padding.BadgeCell}" Margin="{StaticResource Margin.BadgeCell}"
+                    Focusable="True" KeyboardNavigation.IsTabStop="True" FocusVisualStyle="{StaticResource Focus.Visual}"
                     ToolTip="{Binding Description}" ToolTipService.ShowOnDisabled="True"
                     AutomationProperties.Name="{Binding AutomationName}" AutomationProperties.HelpText="{Binding Description}">
                 <StackPanel>

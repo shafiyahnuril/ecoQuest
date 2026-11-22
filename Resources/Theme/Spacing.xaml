@@ -83,6 +83,7 @@
     <Thickness x:Key="Margin.TimeLabel">0,0,0,2</Thickness>
     <Thickness x:Key="Margin.TimeClear">4,0,0,3</Thickness>
     <sys:Double x:Key="MaxWidth.Tooltip">320</sys:Double>
+    <sys:Double x:Key="MaxWidth.LeaderboardName">220</sys:Double>
     <sys:Double x:Key="Size.IconSm">18</sys:Double>
     <sys:Double x:Key="Size.IconMd">22</sys:Double>
     <sys:Double x:Key="Stroke.Icon">1.75</sys:Double>

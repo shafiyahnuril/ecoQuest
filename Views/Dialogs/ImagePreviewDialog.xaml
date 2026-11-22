@@ -57,7 +57,7 @@
                 <DockPanel>
                     <Button x:Name="CloseButton" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="{StaticResource Margin.DialogActions}"
                             Style="{StaticResource Button.Primary}" Content="{Binding CloseText}" Command="{Binding CloseCommand}"
-                            IsDefault="True" MinWidth="{StaticResource MinWidth.DialogButton}" />
+                            IsDefault="True" IsCancel="True" MinWidth="{StaticResource MinWidth.DialogButton}" />
                     <Grid>
                         <Image Stretch="Uniform" StretchDirection="DownOnly" AutomationProperties.Name="{DynamicResource Review.PhotoPreview}"
                                Source="{Binding FilePath, Converter={StaticResource LocalImage}, ConverterParameter=1600}" />

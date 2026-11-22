@@ -386,4 +386,33 @@ public class RegisterViewModelTests
 
         await _nav.Received(1).NavigateTo<LoginViewModel>(null);
     }
+
+    // ---------- network error banner ----------
+
+    [Fact]
+    public async Task NetworkError_shows_the_banner_and_retry_resubmits_the_same_input()
+    {
+        RegisterReturns(Result<UserSession>.Failure(ErrorCode.NetworkError, "gagal"));
+        var vm = CreateFilled();
+        await vm.RegisterCommand.ExecuteAsync(null);
+        Assert.True(vm.HasNetworkError);
+
+        RegisterReturns(Result<UserSession>.Success(Dinda));
+        await vm.RegisterCommand.ExecuteAsync(null);
+
+        await _auth.Received(2).RegisterAsync(Arg.Is<RegisterRequest>(r => r.UserName == "dinda_2026" && r.Password == "Rahasia123"), Arg.Any<CancellationToken>());
+        Assert.False(vm.HasNetworkError);
+    }
+
+    [Fact]
+    public async Task Editing_a_field_hides_the_banner()
+    {
+        RegisterReturns(Result<UserSession>.Failure(ErrorCode.NetworkError, "gagal"));
+        var vm = CreateFilled();
+        await vm.RegisterCommand.ExecuteAsync(null);
+
+        vm.Email = "lain@mail.ugm.ac.id";
+
+        Assert.False(vm.HasNetworkError);
+    }
 }

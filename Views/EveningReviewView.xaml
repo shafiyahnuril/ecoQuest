@@ -188,8 +188,8 @@
                                                Visibility="{Binding HasNoteError, Converter={StaticResource BoolToVisibility}}" />
                                 </StackPanel>
                                 <!-- Turunan (tidak di referensi): the prototype only reserves this column; SRS UIR-38 / TC-41 require the photo attachment.
-                                     Shown only while the row is filled; emptying the row hides it but keeps the attached photo. -->
-                                <StackPanel Grid.Column="2" Visibility="{Binding IsFilled, Converter={StaticResource BoolToVisibility}}">
+                                     Shown while the row is filled or still holds a photo, so a cleared row can always drop it. -->
+                                <StackPanel Grid.Column="2" Visibility="{Binding ShowPhotoColumn, Converter={StaticResource BoolToVisibility}}">
                                     <TextBlock Style="{StaticResource Text.Small}" Margin="0,0,0,6" Text="{DynamicResource Review.PhotoLabel}" />
                                     <Button Style="{StaticResource Button.PhotoAdd}" Content="{DynamicResource Review.PhotoAdd}" Command="{Binding PickPhotoCommand}" />
                                     <StackPanel Orientation="Horizontal" Visibility="{Binding HasPhoto, Converter={StaticResource BoolToVisibility}}">

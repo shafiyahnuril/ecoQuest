@@ -80,7 +80,12 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     public bool HasPhotoMessage => PhotoMessageText is not null;
 
     /// <summary>The note area opens on request once the row is filled; a note error always shows it so the message is never hidden.</summary>
-    public bool ShowExtras => (IsFilled && IsExtrasExpanded) || HasNoteError;
+    public bool ShowExtras => (IsFilled && IsExtrasExpanded) || HasNoteError || HasLeftover;
+
+    /// <summary>A cleared row that still holds a note or photo. The validator blocks saving it, so both controls stay visible to let the user remove them.</summary>
+    public bool HasLeftover => !IsFilled && (!string.IsNullOrEmpty(Note) || HasPhoto);
+
+    public bool ShowPhotoColumn => IsFilled || HasPhoto;
 
     public abstract bool IsFilled { get; }
 
@@ -117,6 +122,8 @@ public abstract partial class ActivityInputItemViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(IsFilled));
         OnPropertyChanged(nameof(ShowExtras));
+        OnPropertyChanged(nameof(HasLeftover));
+        OnPropertyChanged(nameof(ShowPhotoColumn));
         Changed?.Invoke(this, EventArgs.Empty);
     }
 

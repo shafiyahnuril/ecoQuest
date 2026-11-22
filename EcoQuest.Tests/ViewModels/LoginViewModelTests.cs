@@ -165,4 +165,70 @@ public class LoginViewModelTests
 
         await _nav.Received(1).NavigateTo<RegisterViewModel>(null);
     }
+
+    // ---------- network error banner ----------
+
+    [Fact]
+    public async Task NetworkError_shows_the_banner_and_retry_resubmits_the_same_input()
+    {
+        AuthReturns(Result<UserSession>.Failure(ErrorCode.NetworkError, "gagal"));
+        var vm = Create();
+
+        await vm.LoginCommand.ExecuteAsync(null);
+
+        Assert.True(vm.HasNetworkError);
+        Assert.Equal("gagal", vm.ErrorMessage);
+
+        AuthReturns(Result<UserSession>.Success(Dinda));
+        await vm.LoginCommand.ExecuteAsync(null);                  // what the banner's "Coba lagi" runs
+
+        await _auth.Received(2).LoginAsync(Arg.Is<LoginRequest>(r => r.Identifier == "dinda" && r.Password == "Rahasia123"), Arg.Any<CancellationToken>());
+        Assert.False(vm.HasNetworkError);
+        Assert.Null(vm.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task Other_errors_do_not_show_the_banner()
+    {
+        AuthReturns(Result<UserSession>.Failure(ErrorCode.InvalidCredentials, "salah"));
+        var vm = Create();
+
+        await vm.LoginCommand.ExecuteAsync(null);
+
+        Assert.False(vm.HasNetworkError);
+        Assert.Equal("salah", vm.ErrorMessage);
+        Assert.Equal("", vm.Password);
+    }
+
+    [Fact]
+    public async Task Editing_a_field_hides_the_banner()
+    {
+        AuthReturns(Result<UserSession>.Failure(ErrorCode.NetworkError, "gagal"));
+        var vm = Create();
+        await vm.LoginCommand.ExecuteAsync(null);
+
+        vm.Identifier = "dinda2";
+
+        Assert.False(vm.HasNetworkError);
+    }
+
+    [Fact]
+    public async Task The_banner_is_hidden_and_retry_is_disabled_while_the_retry_runs()
+    {
+        AuthReturns(Result<UserSession>.Failure(ErrorCode.NetworkError, "gagal"));
+        var vm = Create();
+        await vm.LoginCommand.ExecuteAsync(null);
+
+        var gate = new TaskCompletionSource<Result<UserSession>>();
+        _auth.LoginAsync(Arg.Any<LoginRequest>(), Arg.Any<CancellationToken>()).Returns(gate.Task);
+        var retry = vm.LoginCommand.ExecuteAsync(null);
+
+        Assert.False(vm.HasNetworkError);
+        Assert.False(vm.LoginCommand.CanExecute(null));
+        vm.LoginCommand.Execute(null);
+        await _auth.Received(2).LoginAsync(Arg.Any<LoginRequest>(), Arg.Any<CancellationToken>());
+
+        gate.SetResult(Result<UserSession>.Success(Dinda));
+        await retry;
+    }
 }

@@ -24,7 +24,7 @@ namespace EcoQuest.Tests.ViewModels;
 [Collection(WpfCollection.Name)]
 public class LeaderboardLayoutTests(ITestOutputHelper output)
 {
-    private static readonly (double W, double H)[] Sizes = [(1100, 700), (1280, 800), (1536, 864), (1920, 1080)];
+    private static readonly (double W, double H)[] Sizes = [(1100, 700), (1280, 800), (1536, 864), (1920, 1080), (1280, 720)];
     private const string LongName = "pengguna_dengan_nama_yang_sangat_panjang_sekali";
 
     public enum Case { Normal, LongNames, OutsideTop20 }

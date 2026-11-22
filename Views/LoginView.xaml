@@ -12,6 +12,7 @@
     <!-- S-01 Login. Reference: design-reference/screens/01-login.png and the effective body.auth-mode rules of styles.css (INVENTORY-v7).
          Two panels: visual (1fr) | form (0.94fr, min 460), page max 1560. Heights <= 740 px follow @media(max-height:740px). -->
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
         <conv:ShortHeightConverter x:Key="IsShortHeight" />
 
         <!-- Short-window variants. Each style reads the UserControl height, because StaticResource cannot switch at runtime. -->
@@ -81,6 +82,9 @@
 
         <Style x:Key="Border.LoginError" TargetType="Border" BasedOn="{StaticResource Border.AuthError}">
             <Style.Triggers>
+                <DataTrigger Binding="{Binding HasNetworkError}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
@@ -163,6 +167,9 @@
                         <TextBlock Style="{StaticResource Text.Base}" Foreground="{StaticResource State.ErrorText}"
                                    Text="{Binding ErrorMessage}" AutomationProperties.LiveSetting="Assertive" />
                     </Border>
+
+                    <ctl:ErrorBanner Margin="{StaticResource Margin.AuthBanner}" Message="{Binding ErrorMessage}" RetryText="{DynamicResource Common.Retry}"
+                                     RetryCommand="{Binding LoginCommand}" Visibility="{Binding HasNetworkError, Converter={StaticResource BoolToVisibility}}" />
 
                     <Button Style="{StaticResource Button.LoginSubmit}" Command="{Binding LoginCommand}" IsDefault="True" />
 

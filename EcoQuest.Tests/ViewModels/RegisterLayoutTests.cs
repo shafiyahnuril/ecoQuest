@@ -73,7 +73,7 @@ public class RegisterLayoutTests(ITestOutputHelper output)
             Top(view, "PasswordLabel") - (Top(view, "UserNameMessage") + Named<FrameworkElement>(view, "UserNameMessage").ActualHeight));
     }
 
-    private static readonly (double W, double H)[] Sizes = [(1100, 700), (1280, 800), (1536, 864), (1920, 1080)];
+    private static readonly (double W, double H)[] Sizes = [(1100, 700), (1280, 800), (1536, 864), (1920, 1080), (1280, 720)];
 
     private static List<Metrics> RunAll() => WpfTestHost.Run(() => Sizes.Select(s => Measure(s.W, s.H)).ToList());
 
