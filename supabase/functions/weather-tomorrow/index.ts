@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import {
+  defaultLogError,
   fetchForecastFromAccuWeather,
   resolveLocationKeyFromAccuWeather,
 } from "./accuweather.ts";
@@ -11,6 +12,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SERVICE_ROLE_KEY") ?? "";
 
   if (!supabaseUrl || !serviceRoleKey) {
+    defaultLogError({
+      step: "index.startup_env",
+      httpStatus: 500,
+      errorType: "server_misconfigured",
+    });
     return new Response(JSON.stringify({ error: "SERVER_MISCONFIGURED" }), {
       status: 500,
       headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -36,15 +42,37 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .eq("fordate", forDate)
         .maybeSingle();
 
-      if (error || !data) return null;
-      return data as CachedWeatherRow;
+      if (error) {
+        defaultLogError({
+          step: "db.getCache",
+          city,
+          forDate,
+          httpStatus: null,
+          errorType: "db_error",
+          code: error.code ?? null,
+          message: error.message,
+        });
+        return null;
+      }
+      return data ? (data as CachedWeatherRow) : null;
     },
 
     async upsertCache(row: CachedWeatherRow): Promise<void> {
       const { error } = await admin
         .from("weathercache")
         .upsert(row, { onConflict: "city,fordate" });
-      if (error) throw new Error(error.message);
+      if (error) {
+        defaultLogError({
+          step: "db.upsertCache",
+          city: row.city,
+          forDate: row.fordate,
+          httpStatus: null,
+          errorType: "db_error",
+          code: error.code ?? null,
+          message: error.message,
+        });
+        throw new Error(error.code ?? "db_upsert_cache_failed");
+      }
     },
 
     async getLocationKey(city: string): Promise<string | null> {
@@ -54,18 +82,42 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .eq("city", city)
         .maybeSingle();
 
-      if (error || !data) return null;
-      return typeof data.locationkey === "string" ? data.locationkey : null;
+      if (error) {
+        defaultLogError({
+          step: "db.getLocationKey",
+          city,
+          httpStatus: null,
+          errorType: "db_error",
+          code: error.code ?? null,
+          message: error.message,
+        });
+        return null;
+      }
+      return data && typeof data.locationkey === "string" ? data.locationkey : null;
     },
 
     async saveLocationKey(city: string, key: string): Promise<void> {
-      const { error } = await admin
+      const { data, error } = await admin
         .from("weatherlocations")
         .upsert(
           { city, locationkey: key, resolvedat: new Date().toISOString() },
           { onConflict: "city" },
-        );
-      if (error) throw new Error(error.message);
+        )
+        .select("city, locationkey")
+        .single();
+
+      if (error || !data || data.locationkey !== key) {
+        defaultLogError({
+          step: "db.saveLocationKey",
+          city,
+          locationKey: key,
+          httpStatus: null,
+          errorType: "db_save_location_failed",
+          code: error?.code ?? null,
+          message: error?.message ?? "weatherlocations upsert returned empty or mismatched row",
+        });
+        throw new Error(error?.code ?? "weatherlocations_upsert_unverified");
+      }
     },
 
     resolveLocationKeyRemote: (city, apiKey) => resolveLocationKeyFromAccuWeather(city, apiKey),
