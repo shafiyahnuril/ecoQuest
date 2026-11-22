@@ -1,8 +1,10 @@
 import {
+  defaultLogError,
   formatSummary,
   getTomorrowJakarta,
   isSupportedCity,
   parseCachedDayJson,
+  type LogErrorFn,
   type ParsedDailyForecast,
 } from "./accuweather.ts";
 
@@ -18,6 +20,7 @@ export interface WeatherDeps {
   expectedApiKey?: string;
   accuWeatherApiKey?: string;
   now?: () => Date;
+  logError?: LogErrorFn;
   getCache: (city: string, forDate: string) => Promise<CachedWeatherRow | null>;
   upsertCache: (row: CachedWeatherRow) => Promise<void>;
   getLocationKey: (city: string) => Promise<string | null>;
@@ -63,6 +66,7 @@ export async function handleWeatherTomorrow(req: Request, deps: WeatherDeps): Pr
 
   const now = (deps.now ?? (() => new Date()))();
   const forDate = getTomorrowJakarta(now);
+  const logError = deps.logError ?? defaultLogError;
 
   try {
     const cached = await deps.getCache(city, forDate);
@@ -83,6 +87,13 @@ export async function handleWeatherTomorrow(req: Request, deps: WeatherDeps): Pr
 
     const accuKey = deps.accuWeatherApiKey?.trim();
     if (!accuKey) {
+      logError({
+        step: "handler.check_api_key",
+        city,
+        forDate,
+        httpStatus: 503,
+        errorType: "missing_api_key",
+      });
       return jsonResponse(503, { error: "UPSTREAM_UNAVAILABLE" });
     }
 
@@ -90,17 +101,39 @@ export async function handleWeatherTomorrow(req: Request, deps: WeatherDeps): Pr
     if (!locationKey) {
       locationKey = await deps.resolveLocationKeyRemote(city, accuKey);
       if (!locationKey) {
+        logError({
+          step: "handler.resolve_location",
+          city,
+          forDate,
+          httpStatus: 503,
+          errorType: "location_unresolved",
+        });
         return jsonResponse(503, { error: "UPSTREAM_UNAVAILABLE" });
       }
       try {
         await deps.saveLocationKey(city, locationKey);
-      } catch {
-        // Kegagalan simpan locationKey tidak menghalangi respons forecast.
+      } catch (err) {
+        logError({
+          step: "handler.save_location_key",
+          city,
+          locationKey,
+          httpStatus: null,
+          errorType: "db_save_location_failed",
+          detail: err instanceof Error ? err.name : "UnknownError",
+        });
       }
     }
 
     const forecast = await deps.fetchForecastRemote(locationKey, forDate, accuKey);
     if (!forecast) {
+      logError({
+        step: "handler.fetch_forecast",
+        city,
+        forDate,
+        locationKey,
+        httpStatus: 503,
+        errorType: "forecast_unavailable",
+      });
       return jsonResponse(503, { error: "UPSTREAM_UNAVAILABLE" });
     }
 
@@ -112,8 +145,15 @@ export async function handleWeatherTomorrow(req: Request, deps: WeatherDeps): Pr
         rawresponse: forecast.rawDayJson,
         retrievedat: now.toISOString(),
       });
-    } catch {
-      // Kegagalan upsert cache tidak menghalangi respons forecast ke client.
+    } catch (err) {
+      logError({
+        step: "handler.upsert_cache",
+        city,
+        forDate,
+        httpStatus: null,
+        errorType: "db_upsert_cache_failed",
+        detail: err instanceof Error ? err.name : "UnknownError",
+      });
     }
 
     return jsonResponse(200, {
@@ -122,7 +162,14 @@ export async function handleWeatherTomorrow(req: Request, deps: WeatherDeps): Pr
       source: "live",
       DailyForecasts: [JSON.parse(forecast.rawDayJson)],
     });
-  } catch {
+  } catch (err) {
+    logError({
+      step: "handler.unhandled_exception",
+      city,
+      forDate,
+      httpStatus: 503,
+      errorType: err instanceof Error ? err.name : "UnknownError",
+    });
     return jsonResponse(503, { error: "UPSTREAM_UNAVAILABLE" });
   }
 }
