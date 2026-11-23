@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:ShellViewModel}"
         Style="{StaticResource Window.Base}" UseLayoutRounding="True" SnapsToDevicePixels="True"
-        Title="{DynamicResource Brand.Name}" Height="800" Width="1280"
+        Title="{DynamicResource Brand.Name}" Icon="pack://application:,,,/Resources/app-icon.ico" Height="800" Width="1280"
         MinWidth="{StaticResource Window.MinWidth}" MinHeight="{StaticResource Window.MinHeight}"
         WindowStartupLocation="CenterScreen">
     <!-- DataContext = ShellViewModel (set by App.OnStartup). Shell of UI-UX-Flow-Frontend 3:
